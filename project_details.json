@@ -1,0 +1,44 @@
+{
+    "project_name": "Student Matcher + Well-being App",
+    "platform": "iOS (Swift, SwiftUI)",
+    "backend": "Firebase (Firestore + Authentication)",
+    "ai": {
+      "provider": "Google Gemini API",
+      "usage": [
+        "Virtual Assistant Page: personalized advice based on user data (Screen Time, HealthKit, Calendar)",
+        "Optional: assist in matching students by classes, study/gym preferences"
+      ]
+    },
+    "features": {
+      "onboarding": [
+        "Welcome screen",
+        "Permissions screen (Screen Time, HealthKit, Calendar)",
+        "Set Preferences (gym buddy, study partner, classes)"
+      ],
+      "main_pages": [
+        "Home Dashboard: screen time, heart rate, calendar, suggested matches, links to AI Chat + Event Calendar",
+        "Student Matcher: filter by classes, gym/study partner preference, schedule compatibility",
+        "Match Profile: shared classes/interests, overlapping free times, option to DM/connect",
+        "AI Virtual Chat: wellness advice based on user data",
+        "Event Calendar: list upcoming events, RSVP 'I'm going/I'm not going', create event page"
+      ]
+    },
+    "ai_notes": {
+      "prompt_example": "User data: Screen Time 6h, Heart Rate 90 bpm, Calendar 3 classes + 1 meeting. Provide 2-3 concise wellness or productivity tips.",
+      "matching": "Optional rule-based first; AI can enhance match suggestions later"
+    },
+    "team_use": {
+      "multi_login": "Multiple teammates can install the app from Xcode using same Firebase backend; anonymous nickname or email/password login via Firebase Auth",
+      "real_device_testing": "Plug-in required only to install/update app; afterward it runs independently"
+    },
+    "hackathon_strategy": {
+      "focus": "Get MVP working with Gemini API on Virtual Assistant and Firebase-backed Event Calendar",
+      "time_saving_tips": [
+        "Use Gemini API instead of Llama for hackathon MVP",
+        "Start with rule-based matching; add AI-enhanced matching if time permits"
+      ],
+      "estimated_time_for_signup": "1-2 hours for Firebase Authentication + SwiftUI login page",
+      "estimated_pages": 9
+    }
+  }
+  
