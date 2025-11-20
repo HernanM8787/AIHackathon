@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C8BDFFF2ECEEC20008B451A /* SignupStep1View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BDFFE2ECEEC20008B451A /* SignupStep1View.swift */; };
+		5C8BE0012ECEEC25008B451A /* SignupStep2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE0002ECEEC25008B451A /* SignupStep2View.swift */; };
+		5C8BE0032ECEEC2E008B451A /* AccountInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE0022ECEEC2E008B451A /* AccountInformationView.swift */; };
+		5C8BE0052ECEEC34008B451A /* WelcomeScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE0042ECEEC34008B451A /* WelcomeScreenView.swift */; };
+		5C8BE0072ECEEC64008B451A /* SignupFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE0062ECEEC64008B451A /* SignupFlowView.swift */; };
 		5C919FA12ECD7D540054DE34 /* PermissionRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F8D2ECD7D540054DE34 /* PermissionRequestView.swift */; };
 		5C919FA32ECD7D540054DE34 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F942ECD7D540054DE34 /* FirebaseService.swift */; };
 		5C919FA52ECD7D540054DE34 /* VirtualAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F7A2ECD7D540054DE34 /* VirtualAssistantView.swift */; };
@@ -65,6 +70,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5C8BDFFE2ECEEC20008B451A /* SignupStep1View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupStep1View.swift; sourceTree = "<group>"; };
+		5C8BE0002ECEEC25008B451A /* SignupStep2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupStep2View.swift; sourceTree = "<group>"; };
+		5C8BE0022ECEEC2E008B451A /* AccountInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInformationView.swift; sourceTree = "<group>"; };
+		5C8BE0042ECEEC34008B451A /* WelcomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreenView.swift; sourceTree = "<group>"; };
+		5C8BE0062ECEEC64008B451A /* SignupFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupFlowView.swift; sourceTree = "<group>"; };
 		5C919F752ECD7D540054DE34 /* AIHackathonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHackathonApp.swift; sourceTree = "<group>"; };
 		5C919F762ECD7D540054DE34 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		5C919F772ECD7D540054DE34 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -223,6 +233,7 @@
 		5C919F8F2ECD7D540054DE34 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				5C8BE0042ECEEC34008B451A /* WelcomeScreenView.swift */,
 				5C919F8C2ECD7D540054DE34 /* OnboardingFlowView.swift */,
 				5C919F8D2ECD7D540054DE34 /* PermissionRequestView.swift */,
 				5C919F8E2ECD7D540054DE34 /* PreferenceSetupView.swift */,
@@ -288,8 +299,12 @@
 		5C91A0072ED09A2C0054DE34 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				5C8BE0022ECEEC2E008B451A /* AccountInformationView.swift */,
 				5C91A00C2ED0C8750054DE34 /* LoginView.swift */,
+				5C8BE0062ECEEC64008B451A /* SignupFlowView.swift */,
 				5C91A0052ED09A1C0054DE34 /* SignupView.swift */,
+				5C8BDFFE2ECEEC20008B451A /* SignupStep1View.swift */,
+				5C8BE0002ECEEC25008B451A /* SignupStep2View.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -423,12 +438,17 @@
 				5C919FAA2ECD7D540054DE34 /* GeminiService.swift in Sources */,
 				5C919FAB2ECD7D540054DE34 /* CalendarService.swift in Sources */,
 				5C919FAC2ECD7D540054DE34 /* AuthService.swift in Sources */,
+				5C8BE0072ECEEC64008B451A /* SignupFlowView.swift in Sources */,
 				5C919FF12ECD87E50054DE34 /* GeminiConfig.swift in Sources */,
 				5C919FAD2ECD7D540054DE34 /* Match.swift in Sources */,
+				5C8BDFFF2ECEEC20008B451A /* SignupStep1View.swift in Sources */,
 				5C91A0102ECE484B0054DE34 /* BottomTabBar.swift in Sources */,
 				5C919FAE2ECD7D540054DE34 /* MatchRow.swift in Sources */,
 				5C919FAF2ECD7D540054DE34 /* AppRootView.swift in Sources */,
 				5C919FB02ECD7D540054DE34 /* ScreenTimeService.swift in Sources */,
+				5C8BE0032ECEEC2E008B451A /* AccountInformationView.swift in Sources */,
+				5C8BE0012ECEEC25008B451A /* SignupStep2View.swift in Sources */,
+				5C8BE0052ECEEC34008B451A /* WelcomeScreenView.swift in Sources */,
 				5C919FB12ECD7D540054DE34 /* OnboardingFlowView.swift in Sources */,
 				5C919FB22ECD7D540054DE34 /* AIHackathonApp.swift in Sources */,
 				5C919FB32ECD7D540054DE34 /* UserProfile.swift in Sources */,
