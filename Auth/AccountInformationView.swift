@@ -1,0 +1,233 @@
+import SwiftUI
+import FirebaseAuth
+
+struct AccountInformationView: View {
+    @EnvironmentObject private var appState: AppState
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var academicLevel: String = "Undergraduate"
+    @State private var major: String = ""
+    @State private var email: String = ""
+    @State private var isSaving = false
+    @State private var showChangePassword = false
+    @State private var showNotificationSettings = false
+    
+    private let academicLevels = ["Undergraduate", "Graduate", "Doctoral", "Postdoctoral"]
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    Spacer()
+                    Text("Account Information")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    Spacer()
+                    // Invisible button to balance the layout
+                    Button(action: {}) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.clear)
+                    }
+                }
+                .padding()
+                
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // Academic Level
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Academic Level")
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                            
+                            Menu {
+                                ForEach(academicLevels, id: \.self) { level in
+                                    Button(level) {
+                                        academicLevel = level
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(academicLevel)
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Image(systemName: "chevron.down")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.6))
+                                }
+                                .padding()
+                                .background(Color(red: 0.15, green: 0.15, blue: 0.3))
+                                .cornerRadius(12)
+                            }
+                        }
+                        
+                        // Major (Optional)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Major (Optional)")
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                            
+                            TextField("", text: $major, prompt: Text("Enter your major").foregroundColor(.gray))
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color(red: 0.15, green: 0.15, blue: 0.3))
+                                .cornerRadius(12)
+                        }
+                        
+                        // Email Address
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Email Address")
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                            
+                            TextField("", text: $email, prompt: Text("Enter your email").foregroundColor(.gray))
+                                .foregroundColor(.white)
+                                .keyboardType(.emailAddress)
+                                .textInputAutocapitalization(.never)
+                                .padding()
+                                .background(Color(red: 0.15, green: 0.15, blue: 0.3))
+                                .cornerRadius(12)
+                        }
+                        
+                        // Change Password
+                        NavigationLink(destination: ChangePasswordView()) {
+                            HStack {
+                                Text("Change Password")
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                            .padding()
+                            .background(Color(red: 0.1, green: 0.1, blue: 0.2))
+                            .cornerRadius(12)
+                        }
+                        
+                        // Notification Settings
+                        NavigationLink(destination: NotificationSettingsView()) {
+                            HStack {
+                                Text("Notification Settings")
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                            .padding()
+                            .background(Color(red: 0.1, green: 0.1, blue: 0.2))
+                            .cornerRadius(12)
+                        }
+                    }
+                    .padding()
+                }
+                
+                // Save Changes Button
+                Button(action: saveChanges) {
+                    if isSaving {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Text("Save Changes")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.purple)
+                .cornerRadius(12)
+                .padding()
+                .disabled(isSaving)
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .onAppear {
+            loadUserData()
+        }
+    }
+    
+    private func loadUserData() {
+        // Get email from Firebase Auth (the login credential)
+        email = Auth.auth().currentUser?.email ?? appState.userProfile.email
+        academicLevel = appState.userProfile.academicLevel ?? "Undergraduate"
+        major = appState.userProfile.major ?? ""
+    }
+    
+    private func saveChanges() {
+        isSaving = true
+        Task {
+            do {
+                var updatedProfile = appState.userProfile
+                updatedProfile.email = email
+                updatedProfile.academicLevel = academicLevel
+                updatedProfile.major = major.isEmpty ? nil : major
+                try await appState.updateProfile(updatedProfile)
+                await MainActor.run {
+                    isSaving = false
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    isSaving = false
+                    // Handle error - could show an alert here
+                }
+            }
+        }
+    }
+}
+
+// Placeholder views for navigation
+struct ChangePasswordView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack {
+                Text("Change Password")
+                    .font(.title)
+                    .foregroundColor(.white)
+                Text("Password change functionality coming soon")
+                    .foregroundColor(.gray)
+                    .padding()
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct NotificationSettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack {
+                Text("Notification Settings")
+                    .font(.title)
+                    .foregroundColor(.white)
+                Text("Notification settings coming soon")
+                    .foregroundColor(.gray)
+                    .padding()
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        AccountInformationView()
+            .environmentObject(AppState())
+    }
+}
+
