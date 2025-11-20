@@ -4,6 +4,8 @@ struct UserProfile: Identifiable, Codable {
     let id: String
     var displayName: String
     var email: String
+    var academicLevel: String?
+    var major: String?
     var gymPreference: String
     var studyPreference: String
     var classes: [String]
@@ -14,6 +16,8 @@ struct UserProfile: Identifiable, Codable {
         id: "demo-user",
         displayName: "Taylor",
         email: "taylor@example.com",
+        academicLevel: "Undergraduate",
+        major: "Psychology",
         gymPreference: "Morning partner",
         studyPreference: "Evening focus",
         classes: ["CS101", "Math 221", "ENG 105"],
@@ -34,6 +38,8 @@ extension UserProfile {
             id: id,
             displayName: username,
             email: email,
+            academicLevel: nil,
+            major: nil,
             gymPreference: "TBD",
             studyPreference: "TBD",
             classes: [],

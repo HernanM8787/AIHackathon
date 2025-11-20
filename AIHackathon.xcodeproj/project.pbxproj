@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C8BDFD32ECEA1C8008B451A /* AccountInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BDFD22ECEA1C8008B451A /* AccountInformationView.swift */; };
 		5C919FA12ECD7D540054DE34 /* PermissionRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F8D2ECD7D540054DE34 /* PermissionRequestView.swift */; };
 		5C919FA32ECD7D540054DE34 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F942ECD7D540054DE34 /* FirebaseService.swift */; };
 		5C919FA52ECD7D540054DE34 /* VirtualAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F7A2ECD7D540054DE34 /* VirtualAssistantView.swift */; };
@@ -68,6 +69,7 @@
 /* Begin PBXFileReference section */
 		5C8BDFCC2ECE93A0008B451A /* AIHackathon-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AIHackathon-Info.plist"; sourceTree = "<group>"; };
 		5C8BDFCD2ECE9634008B451A /* AIHackathon.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIHackathon.entitlements; sourceTree = "<group>"; };
+		5C8BDFD22ECEA1C8008B451A /* AccountInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInformationView.swift; sourceTree = "<group>"; };
 		5C919F752ECD7D540054DE34 /* AIHackathonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHackathonApp.swift; sourceTree = "<group>"; };
 		5C919F762ECD7D540054DE34 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		5C919F772ECD7D540054DE34 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -295,6 +297,7 @@
 		5C91A0072ED09A2C0054DE34 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				5C8BDFD22ECEA1C8008B451A /* AccountInformationView.swift */,
 				5C91A00C2ED0C8750054DE34 /* LoginView.swift */,
 				5C91A0052ED09A1C0054DE34 /* SignupView.swift */,
 			);
@@ -423,6 +426,7 @@
 				5C919FA52ECD7D540054DE34 /* VirtualAssistantView.swift in Sources */,
 				5C91A0062ED09A1C0054DE34 /* SignupView.swift in Sources */,
 				5C91A00D2ED0C8750054DE34 /* LoginView.swift in Sources */,
+				5C8BDFD32ECEA1C8008B451A /* AccountInformationView.swift in Sources */,
 				5C919FA62ECD7D540054DE34 /* CreateEventView.swift in Sources */,
 				5C919FA72ECD7D540054DE34 /* EventCard.swift in Sources */,
 				5C919FA82ECD7D540054DE34 /* PreferenceSetupView.swift in Sources */,

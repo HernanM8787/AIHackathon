@@ -19,6 +19,13 @@ struct PermissionRequestView: View {
             }
             Spacer()
             if isProcessing { ProgressView() }
+            Button("Continue") {
+                withAnimation {
+                    appState.markOnboardingComplete()
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .buttonStyle(.borderedProminent)
         }
         .padding()
     }

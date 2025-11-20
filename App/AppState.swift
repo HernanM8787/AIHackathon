@@ -33,6 +33,7 @@ final class AppState: ObservableObject {
         } else {
             authStep = .login
         }
+        onboardingComplete = UserDefaults.standard.bool(forKey: "onboarding_complete")
     }
 
     func signUp(email: String, password: String, username: String) async throws {
@@ -60,6 +61,7 @@ final class AppState: ObservableObject {
         try? await authService.signOut()
         isAuthenticated = false
         onboardingComplete = false
+        UserDefaults.standard.set(false, forKey: "onboarding_complete")
         userProfile = .mock
         authStep = .login
         events = []
@@ -96,13 +98,22 @@ final class AppState: ObservableObject {
             userProfile.metrics.restingHeartRate = rate ?? userProfile.metrics.restingHeartRate
         }
     }
+    
+    func updateProfile(_ profile: UserProfile) async throws {
+        try await authService.updateProfile(profile)
+        userProfile = profile
+    }
 
     func showSignup() {
         authStep = .signup
     }
-
     func showLogin() {
         authStep = .login
+    }
+
+    func markOnboardingComplete() {
+        onboardingComplete = true
+        UserDefaults.standard.set(true, forKey: "onboarding_complete")
     }
 }
 
