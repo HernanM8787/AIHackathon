@@ -12,11 +12,15 @@ struct WelcomeScreenView: View {
             VStack(spacing: 0) {
                 Spacer()
                 
-                // Abstract blob shape at the top
+                // Glowing circle blob
                 GeometryReader { geometry in
                     ZStack {
-                        // Pulsing glow layers - stronger and more vibrant
-                        blobPath(geometry: geometry)
+                        let centerX = geometry.size.width * 0.5
+                        let centerY = geometry.size.height * 0.5
+                        let radius: CGFloat = min(geometry.size.width, geometry.size.height) * 0.25
+                        
+                        // Outer glow layer
+                        Circle()
                             .fill(
                                 RadialGradient(
                                     colors: [
@@ -26,14 +30,17 @@ struct WelcomeScreenView: View {
                                         Color.clear
                                     ],
                                     center: .center,
-                                    startRadius: 30,
-                                    endRadius: 150
+                                    startRadius: radius * 0.5,
+                                    endRadius: radius * 2.5
                                 )
                             )
+                            .frame(width: radius * 5, height: radius * 5)
                             .blur(radius: 40)
                             .opacity(glowIntensity)
+                            .position(x: centerX, y: centerY)
                         
-                        blobPath(geometry: geometry)
+                        // Middle glow layer
+                        Circle()
                             .fill(
                                 RadialGradient(
                                     colors: [
@@ -42,35 +49,36 @@ struct WelcomeScreenView: View {
                                         Color.clear
                                     ],
                                     center: .center,
-                                    startRadius: 15,
-                                    endRadius: 90
+                                    startRadius: radius * 0.3,
+                                    endRadius: radius * 1.8
                                 )
                             )
+                            .frame(width: radius * 3.6, height: radius * 3.6)
                             .blur(radius: 30)
                             .opacity(glowIntensity * 1.0)
+                            .position(x: centerX, y: centerY)
                         
-                        // Main blob shape
-                        blobPath(geometry: geometry)
+                        // Main glowing circle
+                        Circle()
                             .fill(
-                                LinearGradient(
+                                RadialGradient(
                                     colors: [
                                         Color(red: 0.2, green: 0.2, blue: 0.25),
                                         Color(red: 0.15, green: 0.15, blue: 0.2)
                                     ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: radius
                                 )
                             )
+                            .frame(width: radius * 2, height: radius * 2)
                             .shadow(
                                 color: Color(red: 0.6, green: 0.5, blue: 0.8).opacity(glowIntensity * 0.8),
                                 radius: 30 * glowIntensity,
                                 x: 0,
                                 y: 0
                             )
-                            .overlay(
-                                blobPath(geometry: geometry)
-                                    .stroke(Color(red: 0.1, green: 0.1, blue: 0.15), lineWidth: 2)
-                            )
+                            .position(x: centerX, y: centerY)
                     }
                 }
                 .frame(height: 200)
@@ -166,25 +174,6 @@ struct WelcomeScreenView: View {
         }
     }
     
-    private func blobPath(geometry: GeometryProxy) -> Path {
-        Path { path in
-            // Create a circular blob with padding from edges
-            let padding: CGFloat = 40  // Padding from screen edges
-            let maxRadius = min(geometry.size.width, geometry.size.height) * 0.35  // 35% of smaller dimension
-            let radius = maxRadius - padding  // Ensure padding from edges
-            
-            let centerX = geometry.size.width * 0.5  // Center horizontally
-            let centerY = geometry.size.height * 0.4  // Center vertically
-            
-            // Create a perfect circle
-            path.addEllipse(in: CGRect(
-                x: centerX - radius,
-                y: centerY - radius,
-                width: radius * 2,
-                height: radius * 2
-            ))
-        }
-    }
 }
 
 #Preview {
