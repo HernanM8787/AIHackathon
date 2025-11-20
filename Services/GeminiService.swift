@@ -1,7 +1,18 @@
 import Foundation
 
 struct GeminiPart: Codable {
-    let text: String
+    let text: String?
+    let inlineData: InlineData?
+    
+    init(text: String? = nil, inlineData: InlineData? = nil) {
+        self.text = text
+        self.inlineData = inlineData
+    }
+}
+
+struct InlineData: Codable {
+    let mimeType: String
+    let data: String
 }
 
 struct GeminiContent: Codable {
@@ -83,15 +94,21 @@ final class GeminiService {
         }
 
         let decoded = try JSONDecoder().decode(GeminiGenerateResponse.self, from: data)
-        guard let reply = decoded.candidates?
-            .compactMap({ $0.content?.parts.first?.text })
-            .first?
-            .trimmingCharacters(in: .whitespacesAndNewlines),
-              reply.isEmpty == false else {
+        // Collect all text parts from the response
+        let replyText = decoded.candidates?
+            .compactMap { candidate -> String? in
+                candidate.content?.parts
+                    .compactMap { $0.text }
+                    .joined(separator: " ")
+            }
+            .joined(separator: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        
+        guard !replyText.isEmpty else {
             throw GeminiServiceError.emptyResponse
         }
 
-        return reply
+        return replyText
     }
 
     private func buildContents(from messages: [ChatMessage], profile: UserProfile) -> [GeminiContent] {
@@ -113,9 +130,63 @@ final class GeminiService {
 
         for message in messages {
             let role = message.role == .user ? "user" : "model"
-            contents.append(GeminiContent(role: role, parts: [GeminiPart(text: message.text)]))
+            var parts: [GeminiPart] = []
+            
+            // Add image if present
+            if let imageData = message.imageData {
+                // Determine MIME type from image data
+                let mimeType = detectMimeType(from: imageData)
+                let base64String = imageData.base64EncodedString()
+                parts.append(GeminiPart(inlineData: InlineData(mimeType: mimeType, data: base64String)))
+            }
+            
+            // Add text if present
+            if !message.text.isEmpty {
+                parts.append(GeminiPart(text: message.text))
+            }
+            
+            if !parts.isEmpty {
+                contents.append(GeminiContent(role: role, parts: parts))
+            }
         }
 
         return contents
+    }
+    
+    private func detectMimeType(from data: Data) -> String {
+        // Check for common image formats
+        guard data.count >= 4 else { return "image/jpeg" }
+        
+        var bytes = [UInt8](repeating: 0, count: min(12, data.count))
+        data.copyBytes(to: &bytes, count: bytes.count)
+        
+        // PNG: 89 50 4E 47
+        if bytes.count >= 4 && bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 {
+            return "image/png"
+        }
+        
+        // JPEG: FF D8 FF
+        if bytes.count >= 3 && bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF {
+            return "image/jpeg"
+        }
+        
+        // GIF: 47 49 46 38
+        if bytes.count >= 4 && bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x38 {
+            return "image/gif"
+        }
+        
+        // WEBP: Check for "RIFF" and "WEBP"
+        if bytes.count >= 12 {
+            let riffBytes = Array(bytes[0..<4])
+            let webpBytes = Array(bytes[8..<12])
+            if let riffString = String(bytes: riffBytes, encoding: .ascii),
+               let webpString = String(bytes: webpBytes, encoding: .ascii),
+               riffString == "RIFF" && webpString == "WEBP" {
+                return "image/webp"
+            }
+        }
+        
+        // Default to JPEG
+        return "image/jpeg"
     }
 }
