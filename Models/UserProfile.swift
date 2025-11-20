@@ -6,6 +6,8 @@ struct UserProfile: Identifiable, Codable {
     var email: String
     var academicLevel: String?
     var major: String?
+    var biometricsEnabled: Bool = false
+    var biometricDeviceID: String?
     var gymPreference: String
     var studyPreference: String
     var classes: [String]
@@ -40,6 +42,8 @@ extension UserProfile {
             email: email,
             academicLevel: nil,
             major: nil,
+            biometricsEnabled: false,
+            biometricDeviceID: nil,
             gymPreference: "TBD",
             studyPreference: "TBD",
             classes: [],

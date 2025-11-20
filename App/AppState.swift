@@ -4,23 +4,37 @@ import Combine
 @MainActor
 final class AppState: ObservableObject {
     enum AuthStep: Equatable {
+        case welcome
         case login
         case signup
         case authenticated
     }
 
-    @Published var authStep: AuthStep = .login
+    @Published var authStep: AuthStep = .welcome
     @Published var isAuthenticated = false
     @Published var onboardingComplete = false
     @Published var userProfile: UserProfile = .mock
-    @Published var permissionState = PermissionState()
-    @Published var events: [Event] = []
+    @Published var permissionState: PermissionState = PermissionState() {
+        didSet {
+            permissionStorage.save(permissionState)
+        }
+    }
+    @Published var events: [Event] = MockData.events
+    @Published var deviceCalendarEvents: [Event] = []
     @Published var matches: [Match] = MockData.matches
+    @Published var heartRateHistory: [HeartRateSample] = []
+    @Published var assignments: [Assignment] = MockData.assignments
 
+    private let permissionStorage = PermissionStorage()
     private let authService = AuthService()
     private let firebaseService = FirebaseService()
     private let calendarService = CalendarService()
     private let healthKitService = HealthKitService()
+
+    init() {
+        permissionState = permissionStorage.load()
+        onboardingComplete = UserDefaults.standard.bool(forKey: "onboarding_complete")
+    }
 
     func bootstrap() async {
         guard isAuthenticated == false else { return }
@@ -28,19 +42,18 @@ final class AppState: ObservableObject {
             userProfile = profile
             isAuthenticated = true
             authStep = .authenticated
-            await refreshCalendarEvents()
-            await refreshHealthData()
+            await refreshAssignments()
         } else {
-            authStep = .login
+            authStep = .welcome
         }
-        onboardingComplete = UserDefaults.standard.bool(forKey: "onboarding_complete")
     }
 
-    func signUp(email: String, password: String, username: String) async throws {
-        let profile = try await authService.createAccount(email: email, password: password, username: username)
+    func signUp(email: String, password: String, username: String, academicLevel: String? = nil, major: String? = nil) async throws {
+        let profile = try await authService.createAccount(email: email, password: password, username: username, academicLevel: academicLevel, major: major)
         userProfile = profile
         isAuthenticated = true
         authStep = .authenticated
+        await refreshAssignments()
     }
 
     func signIn(email: String, password: String) async throws {
@@ -48,55 +61,25 @@ final class AppState: ObservableObject {
         userProfile = profile
         isAuthenticated = true
         authStep = .authenticated
+        await refreshAssignments()
     }
 
     func refreshData() async {
+        async let eventsTask = fetchEventsForCurrentUser()
         async let matchesTask = firebaseService.fetchMatches()
+        async let assignmentsTask = fetchAssignmentsForCurrentUser()
+        events = (try? await eventsTask) ?? MockData.events
         matches = (try? await matchesTask) ?? MockData.matches
-        await refreshCalendarEvents()
-        await refreshHealthData()
+        assignments = (try? await assignmentsTask) ?? MockData.assignments
     }
 
     func signOut() async {
         try? await authService.signOut()
         isAuthenticated = false
-        onboardingComplete = false
-        UserDefaults.standard.set(false, forKey: "onboarding_complete")
         userProfile = .mock
-        authStep = .login
-        events = []
-    }
-
-    func refreshCalendarEvents() async {
-        var allEvents: [Event] = []
-        
-        // Fetch events from Firebase (user's personal calendar)
-        if isAuthenticated {
-            do {
-                let firebaseEvents = try await firebaseService.fetchEvents(for: userProfile.id)
-                allEvents.append(contentsOf: firebaseEvents)
-            } catch {
-                print("Error fetching Firebase events: \(error)")
-            }
-        }
-        
-        // Fetch events from local device calendar
-        if permissionState.calendarGranted {
-            let localEvents = await calendarService.fetchUpcomingEvents(limit: 20)
-            allEvents.append(contentsOf: localEvents)
-        }
-        
-        // Remove duplicates and sort by start date
-        events = Array(Set(allEvents.map { $0.id }))
-            .compactMap { id in allEvents.first(where: { $0.id == id }) }
-            .sorted(by: { $0.startDate < $1.startDate })
-    }
-
-    func refreshHealthData() async {
-        guard permissionState.healthKitGranted else { return }
-        if let rate = try? await healthKitService.latestRestingHeartRate() {
-            userProfile.metrics.restingHeartRate = rate ?? userProfile.metrics.restingHeartRate
-        }
+        deviceCalendarEvents = []
+        assignments = []
+        authStep = .welcome
     }
     
     func updateProfile(_ profile: UserProfile) async throws {
@@ -104,21 +87,173 @@ final class AppState: ObservableObject {
         userProfile = profile
     }
 
+    func updateBiometrics(enabled: Bool, deviceID: String?) async throws {
+        try await authService.updateBiometrics(enabled: enabled, deviceID: deviceID)
+        userProfile.biometricsEnabled = enabled
+        userProfile.biometricDeviceID = deviceID
+        if !enabled {
+            KeychainHelper.deleteCredentials()
+        }
+    }
+
+    func refreshCalendarEvents() async {
+        async let remoteEventsTask = fetchEventsForCurrentUser()
+        async let deviceEventsTask = fetchDeviceEventsForToday()
+        let remoteEvents = (try? await remoteEventsTask) ?? MockData.events
+        let deviceEvents = await deviceEventsTask
+        await MainActor.run {
+            events = remoteEvents
+            deviceCalendarEvents = deviceEvents
+        }
+    }
+
+    func refreshAssignments() async {
+        guard isAuthenticated else {
+            assignments = []
+            return
+        }
+        do {
+            assignments = try await firebaseService.fetchAssignments(for: userProfile.id)
+        } catch {
+            print("Failed to fetch assignments: \(error)")
+        }
+    }
+
+    @discardableResult
+    func requestRemindersPermission() async -> Bool {
+        let granted = await calendarService.requestReminderAccess()
+        permissionState.remindersGranted = granted
+        return granted
+    }
+
+    @discardableResult
+    func requestHealthKitPermission() async -> Bool {
+        let granted = (try? await healthKitService.requestAuthorization()) ?? false
+        permissionState.healthKitGranted = granted
+        if granted {
+            await refreshHealthData()
+        }
+        return granted
+    }
+
+    @discardableResult
+    func requestCalendarPermission() async -> Bool {
+        let granted = await calendarService.requestAccess()
+        permissionState.calendarGranted = granted
+        if granted {
+            await refreshCalendarEvents()
+        }
+        return granted
+    }
+
+    func addAssignment(title: String, course: String, dueDate: Date, details: String, createReminder: Bool = false) async throws {
+        let assignment = Assignment(
+            id: "",
+            title: title,
+            course: course,
+            dueDate: dueDate,
+            details: details,
+            isCompleted: false
+        )
+        try await firebaseService.save(assignment: assignment, userId: userProfile.id)
+        if createReminder {
+            do {
+                try await calendarService.saveReminder(title: title, dueDate: dueDate, notes: details)
+                permissionState.remindersGranted = true
+            } catch {
+                print("Failed to save reminder: \(error)")
+            }
+        }
+        await refreshAssignments()
+    }
+
+    func setAssignment(_ assignment: Assignment, completed: Bool) async {
+        guard isAuthenticated else { return }
+        do {
+            try await firebaseService.updateAssignmentCompletion(
+                assignmentId: assignment.id,
+                userId: userProfile.id,
+                isCompleted: completed
+            )
+            await refreshAssignments()
+        } catch {
+            print("Failed to update assignment: \(error)")
+        }
+    }
+
+    func deleteAssignment(_ assignment: Assignment) async {
+        guard isAuthenticated else { return }
+        do {
+            try await firebaseService.deleteAssignment(
+                assignmentId: assignment.id,
+                userId: userProfile.id
+            )
+            await refreshAssignments()
+        } catch {
+            print("Failed to delete assignment: \(error)")
+        }
+    }
+
+    func refreshHealthData() async {
+        guard permissionState.healthKitGranted else { return }
+        do {
+            let oneHourAgo = Date().addingTimeInterval(-3600)
+            let history = try await healthKitService.heartRateSamples(since: oneHourAgo)
+            heartRateHistory = history
+            var latestActive = history.last?.bpm
+            if latestActive == nil {
+                latestActive = try await healthKitService.latestHeartRate()
+            }
+            let fallbackResting = try await healthKitService.latestRestingHeartRate()
+            if let heartRate = latestActive ?? fallbackResting {
+                var updatedProfile = userProfile
+                updatedProfile.metrics.restingHeartRate = heartRate
+                userProfile = updatedProfile
+            }
+        } catch {
+            print("Failed to fetch heart rate: \(error)")
+        }
+    }
+
     func showSignup() {
         authStep = .signup
     }
+
     func showLogin() {
         authStep = .login
+    }
+    
+    func showWelcome() {
+        authStep = .welcome
     }
 
     func markOnboardingComplete() {
         onboardingComplete = true
         UserDefaults.standard.set(true, forKey: "onboarding_complete")
+        authStep = .authenticated
+    }
+
+    private func fetchEventsForCurrentUser() async throws -> [Event] {
+        guard isAuthenticated else { return MockData.events }
+        return try await firebaseService.fetchEvents(for: userProfile.id)
+    }
+
+    private func fetchAssignmentsForCurrentUser() async throws -> [Assignment] {
+        guard isAuthenticated else { return MockData.assignments }
+        return try await firebaseService.fetchAssignments(for: userProfile.id)
+    }
+
+    private func fetchDeviceEventsForToday() async -> [Event] {
+        guard permissionState.calendarGranted else { return [] }
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+        return await calendarService.fetchEvents(from: startOfDay, to: endOfDay)
     }
 }
 
-struct PermissionState {
-    var screenTimeGranted = false
+struct PermissionState: Codable {
+    var remindersGranted = false
     var healthKitGranted = false
     var calendarGranted = false
 }

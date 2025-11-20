@@ -16,7 +16,7 @@ struct EventCalendarView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
                         MonthCalendarView(
-                            events: appState.events,
+                            events: appState.deviceCalendarEvents,
                             selectedDate: $selectedDate
                         )
                         .padding(.top)
@@ -111,6 +111,9 @@ struct EventCalendarView: View {
         .onAppear {
             loadEventsForDate(selectedDate)
         }
+        .onChange(of: appState.deviceCalendarEvents) { _ in
+            loadEventsForDate(selectedDate)
+        }
         .refreshable {
             await appState.refreshCalendarEvents()
             loadEventsForDate(selectedDate)
@@ -128,7 +131,7 @@ struct EventCalendarView: View {
     }
     
     private func loadEventsForDate(_ date: Date) {
-        eventsForSelectedDate = appState.events.filter { event in
+        eventsForSelectedDate = appState.deviceCalendarEvents.filter { event in
             calendar.isDate(event.startDate, inSameDayAs: date)
         }
     }
