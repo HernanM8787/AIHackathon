@@ -4,12 +4,13 @@ import Combine
 @MainActor
 final class AppState: ObservableObject {
     enum AuthStep: Equatable {
+        case welcome
         case login
         case signup
         case authenticated
     }
 
-    @Published var authStep: AuthStep = .login
+    @Published var authStep: AuthStep = .welcome
     @Published var isAuthenticated = false
     @Published var onboardingComplete = false
     @Published var userProfile: UserProfile = .mock
@@ -27,12 +28,12 @@ final class AppState: ObservableObject {
             isAuthenticated = true
             authStep = .authenticated
         } else {
-            authStep = .login
+            authStep = .welcome
         }
     }
 
-    func signUp(email: String, password: String, username: String) async throws {
-        let profile = try await authService.createAccount(email: email, password: password, username: username)
+    func signUp(email: String, password: String, username: String, academicLevel: String? = nil, major: String? = nil) async throws {
+        let profile = try await authService.createAccount(email: email, password: password, username: username, academicLevel: academicLevel, major: major)
         userProfile = profile
         isAuthenticated = true
         authStep = .authenticated
@@ -57,7 +58,7 @@ final class AppState: ObservableObject {
         isAuthenticated = false
         onboardingComplete = false
         userProfile = .mock
-        authStep = .login
+        authStep = .welcome
     }
     
     func updateProfile(_ profile: UserProfile) async throws {
