@@ -79,6 +79,11 @@ final class AppState: ObservableObject {
             userProfile.metrics.restingHeartRate = rate ?? userProfile.metrics.restingHeartRate
         }
     }
+    
+    func updateProfile(_ profile: UserProfile) async throws {
+        try await authService.updateProfile(profile)
+        userProfile = profile
+    }
 
     func showSignup() {
         authStep = .signup

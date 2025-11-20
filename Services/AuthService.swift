@@ -101,6 +101,26 @@ actor AuthService {
               let email = data["email"] as? String else {
             return nil
         }
-        return UserProfile.placeholder(id: uid, username: name, email: email)
+        var profile = UserProfile.placeholder(id: uid, username: name, email: email)
+        profile.academicLevel = data["academicLevel"] as? String
+        profile.major = data["major"] as? String
+        return profile
+    }
+    
+    func updateProfile(_ profile: UserProfile) async throws {
+        guard let user = auth.currentUser else { throw AuthError.missingUser }
+        var updateData: [String: Any] = [
+            "displayName": profile.displayName,
+            "email": profile.email,
+            "updatedAt": FieldValue.serverTimestamp()
+        ]
+        if let academicLevel = profile.academicLevel {
+            updateData["academicLevel"] = academicLevel
+        }
+        if let major = profile.major {
+            updateData["major"] = major
+        }
+        try await db.collection("users").document(user.uid).updateData(updateData)
+        cachedProfile = profile
     }
 }

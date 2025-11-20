@@ -82,9 +82,15 @@ struct HomeDashboardView: View {
                     NavigationLink("Calendar") { EventCalendarView() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Sign Out", role: .destructive) {
-                        Task {
-                            await appState.signOut()
+                    HStack {
+                        NavigationLink(destination: AccountInformationView()) {
+                            Image(systemName: "person.circle")
+                                .foregroundColor(.primary)
+                        }
+                        Button("Sign Out", role: .destructive) {
+                            Task {
+                                await appState.signOut()
+                            }
                         }
                     }
                 }
