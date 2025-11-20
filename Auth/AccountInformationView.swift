@@ -8,6 +8,7 @@ struct AccountInformationView: View {
     @State private var academicLevel: String = "Undergraduate"
     @State private var major: String = ""
     @State private var email: String = ""
+    @State private var biometricsEnabled: Bool = false
     @State private var isSaving = false
     @State private var showChangePassword = false
     @State private var showNotificationSettings = false
@@ -110,22 +111,40 @@ struct AccountInformationView: View {
                             .padding()
                             .background(Color(red: 0.1, green: 0.1, blue: 0.2))
                             .cornerRadius(12)
+                            .frame(maxWidth: .infinity)
                         }
                         
-                        // Notification Settings
-                        NavigationLink(destination: NotificationSettingsView()) {
-                            HStack {
-                                Text("Notification Settings")
+                        // Notification Settings + Face ID Toggle stacked
+                        VStack(spacing: 12) {
+                            NavigationLink(destination: NotificationSettingsView()) {
+                                HStack {
+                                    Text("Notification Settings")
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.6))
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color(red: 0.1, green: 0.1, blue: 0.2))
+                                .cornerRadius(12)
+                            }
+                            
+                            Toggle(isOn: $biometricsEnabled) {
+                                Label("Use Face ID on this device", systemImage: "faceid")
                                     .foregroundColor(.white)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.6))
                             }
                             .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color(red: 0.1, green: 0.1, blue: 0.2))
                             .cornerRadius(12)
+                            .tint(Color(red: 99/255.0, green: 102/255.0, blue: 241/255.0))
+                            .onChange(of: biometricsEnabled) { _, newValue in
+                                toggleBiometrics(newValue)
+                            }
                         }
+                        .frame(maxWidth: .infinity)
                     }
                     .padding()
                 }
@@ -160,6 +179,7 @@ struct AccountInformationView: View {
         email = Auth.auth().currentUser?.email ?? appState.userProfile.email
         academicLevel = appState.userProfile.academicLevel ?? "Undergraduate"
         major = appState.userProfile.major ?? ""
+        biometricsEnabled = appState.userProfile.biometricsEnabled
     }
     
     private func saveChanges() {
@@ -170,6 +190,7 @@ struct AccountInformationView: View {
                 updatedProfile.email = email
                 updatedProfile.academicLevel = academicLevel
                 updatedProfile.major = major.isEmpty ? nil : major
+                updatedProfile.biometricsEnabled = biometricsEnabled
                 try await appState.updateProfile(updatedProfile)
                 await MainActor.run {
                     isSaving = false
@@ -179,6 +200,22 @@ struct AccountInformationView: View {
                 await MainActor.run {
                     isSaving = false
                     // Handle error - could show an alert here
+                }
+            }
+        }
+    }
+
+    private func toggleBiometrics(_ enabled: Bool) {
+        guard let deviceID = UIDevice.current.identifierForVendor?.uuidString else {
+            biometricsEnabled = false
+            return
+        }
+        Task {
+            do {
+                try await appState.updateBiometrics(enabled: enabled, deviceID: enabled ? deviceID : nil)
+            } catch {
+                await MainActor.run {
+                    biometricsEnabled.toggle()
                 }
             }
         }

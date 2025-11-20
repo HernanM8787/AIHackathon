@@ -20,6 +20,8 @@ final class AppState: ObservableObject {
 
     private let authService = AuthService()
     private let firebaseService = FirebaseService()
+    private let calendarService = CalendarService()
+    private let healthKitService = HealthKitService()
 
     func bootstrap() async {
         guard isAuthenticated == false else { return }
@@ -47,7 +49,7 @@ final class AppState: ObservableObject {
     }
 
     func refreshData() async {
-        async let eventsTask = firebaseService.fetchEvents()
+        async let eventsTask = fetchEventsForCurrentUser()
         async let matchesTask = firebaseService.fetchMatches()
         events = (try? await eventsTask) ?? MockData.events
         matches = (try? await matchesTask) ?? MockData.matches
@@ -66,6 +68,33 @@ final class AppState: ObservableObject {
         userProfile = profile
     }
 
+    func updateBiometrics(enabled: Bool, deviceID: String?) async throws {
+        try await authService.updateBiometrics(enabled: enabled, deviceID: deviceID)
+        userProfile.biometricsEnabled = enabled
+        userProfile.biometricDeviceID = deviceID
+        if !enabled {
+            KeychainHelper.deleteCredentials()
+        }
+    }
+
+    func refreshCalendarEvents() async {
+        let fetched = (try? await fetchEventsForCurrentUser()) ?? MockData.events
+        await MainActor.run {
+            events = fetched
+        }
+    }
+
+    func refreshHealthData() async {
+        guard permissionState.healthKitGranted else { return }
+        do {
+            if let heartRate = try await healthKitService.latestRestingHeartRate() {
+                userProfile.metrics.restingHeartRate = heartRate
+            }
+        } catch {
+            print("Failed to fetch heart rate: \(error)")
+        }
+    }
+
     func showSignup() {
         authStep = .signup
     }
@@ -76,6 +105,17 @@ final class AppState: ObservableObject {
     
     func showWelcome() {
         authStep = .welcome
+    }
+
+    func markOnboardingComplete() {
+        onboardingComplete = true
+        UserDefaults.standard.set(true, forKey: "onboarding_complete")
+        authStep = .authenticated
+    }
+
+    private func fetchEventsForCurrentUser() async throws -> [Event] {
+        guard isAuthenticated else { return MockData.events }
+        return try await firebaseService.fetchEvents(for: userProfile.id)
     }
 }
 

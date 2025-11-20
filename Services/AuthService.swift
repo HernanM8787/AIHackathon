@@ -170,6 +170,8 @@ actor AuthService {
         var profile = UserProfile.placeholder(id: uid, username: name, email: email)
         profile.academicLevel = data["academicLevel"] as? String
         profile.major = data["major"] as? String
+        profile.biometricsEnabled = data["biometricsEnabled"] as? Bool ?? false
+        profile.biometricDeviceID = data["biometricDeviceID"] as? String
         return profile
     }
     
@@ -186,7 +188,28 @@ actor AuthService {
         if let major = profile.major {
             updateData["major"] = major
         }
+        updateData["biometricsEnabled"] = profile.biometricsEnabled
+        if let deviceID = profile.biometricDeviceID {
+            updateData["biometricDeviceID"] = deviceID
+        } else {
+            updateData["biometricDeviceID"] = FieldValue.delete()
+        }
         try await db.collection("users").document(user.uid).updateData(updateData)
         cachedProfile = profile
+    }
+
+    func updateBiometrics(enabled: Bool, deviceID: String?) async throws {
+        guard let user = auth.currentUser else { throw AuthError.missingUser }
+        var updateData: [String: Any] = [
+            "biometricsEnabled": enabled
+        ]
+        if let deviceID {
+            updateData["biometricDeviceID"] = deviceID
+        } else {
+            updateData["biometricDeviceID"] = FieldValue.delete()
+        }
+        try await db.collection("users").document(user.uid).updateData(updateData)
+        cachedProfile?.biometricsEnabled = enabled
+        cachedProfile?.biometricDeviceID = deviceID
     }
 }

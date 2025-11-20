@@ -1,4 +1,5 @@
 import SwiftUI
+import LocalAuthentication
 
 struct LoginView: View {
     @EnvironmentObject private var appState: AppState
@@ -98,6 +99,16 @@ struct LoginView: View {
                                             .stroke(Color.white.opacity(0.1), lineWidth: 1)
                                     )
                             )
+                            
+                            HStack(spacing: 6) {
+                                Image(systemName: "faceid")
+                                    .foregroundColor(.white.opacity(0.6))
+                                Text("Use Face ID")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Spacer()
+                            }
+                            .padding(.top, 4)
                         }
                         
                         // Forgot Password Link
@@ -147,7 +158,27 @@ struct LoginView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 24)
                     
-                    // Sign Up Link
+                        // Face ID Button
+                        Button(action: authenticateWithFaceID) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "faceid")
+                                    .font(.system(size: 20))
+                                Text("Use Face ID")
+                                    .font(.system(size: 16, weight: .semibold))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0), lineWidth: 1.5)
+                            )
+                            .foregroundColor(.white)
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 16)
+                        .disabled(isSubmitting)
+
+                        // Sign Up Link
                     HStack(spacing: 4) {
                         Text("Don't have an account?")
                             .font(.system(size: 14, weight: .regular))
@@ -197,6 +228,7 @@ struct LoginView: View {
             do {
                 try await appState.signIn(email: trimmedEmail, password: password)
                 await MainActor.run {
+                    KeychainHelper.saveCredentials(email: trimmedEmail, password: password)
                     isSubmitting = false
                 }
             } catch let error as AuthError {
@@ -211,6 +243,56 @@ struct LoginView: View {
                     showErrorAlert = true
                     isSubmitting = false
                 }
+            }
+        }
+    }
+
+    private func authenticateWithFaceID() {
+        guard let credentials = KeychainHelper.loadCredentials() else {
+            errorMessage = "Enable Face ID in Settings after signing in once."
+            showErrorAlert = true
+            return
+        }
+        
+        let context = LAContext()
+        var authError: NSError?
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError) else {
+            errorMessage = authError?.localizedDescription ?? "Face ID is not available."
+            showErrorAlert = true
+            return
+        }
+        
+        context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Sign in with Face ID") { success, evaluateError in
+            if success {
+                Task { await signInWithBiometricCredentials(credentials) }
+            } else if let evaluateError {
+                DispatchQueue.main.async {
+                    errorMessage = evaluateError.localizedDescription
+                    showErrorAlert = true
+                }
+            }
+        }
+    }
+    
+    private func signInWithBiometricCredentials(_ credentials: KeychainHelper.Credentials) async {
+        await MainActor.run {
+            isSubmitting = true
+        }
+        do {
+            try await appState.signIn(email: credentials.email, password: credentials.password)
+            await MainActor.run {
+                email = credentials.email
+                if appState.userProfile.biometricsEnabled {
+                    KeychainHelper.saveCredentials(email: credentials.email, password: credentials.password)
+                }
+                isSubmitting = false
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = error.localizedDescription
+                showErrorAlert = true
+                isSubmitting = false
+                KeychainHelper.deleteCredentials()
             }
         }
     }
