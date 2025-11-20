@@ -5,18 +5,17 @@ struct EventCard: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            // Colored indicator dot
             Circle()
                 .fill(event.category.color)
-                .frame(width: 8, height: 8)
+                .frame(width: 10, height: 10)
                 .padding(.top, 6)
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(event.title)
                     .font(.headline)
                     .foregroundStyle(.white)
                 
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     Text(timeString)
                         .font(.subheadline)
                         .foregroundStyle(.gray)
@@ -32,19 +31,21 @@ struct EventCard: View {
                 
                 Text(event.category.rawValue)
                     .font(.caption)
-                    .foregroundStyle(event.category.color)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(event.category.color.opacity(0.15))
+                            .fill(event.category.color.opacity(0.4))
                     )
             }
-            
             Spacer()
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 4)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(white: 0.12))
+        )
     }
 
     private var timeString: String {

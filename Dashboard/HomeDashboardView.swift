@@ -11,18 +11,26 @@ struct HomeDashboardView: View {
     @State private var showingAddAssignment = false
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            matcher
-                .tag(DashboardTab.matcher)
-            dashboard
-                .tag(DashboardTab.dashboard)
-            assistant
-                .tag(DashboardTab.assistant)
-        }
-        .toolbar(.hidden, for: .tabBar)
-        .overlay(alignment: .bottom) {
-            BottomTabBar(selected: $selectedTab)
-                .padding(.bottom, 8)
+        ZStack {
+            Group {
+                switch selectedTab {
+                case .dashboard:
+                    dashboard
+                case .stats:
+                    statsView
+                case .add:
+                    addView
+                case .calendar:
+                    calendarView
+                case .profile:
+                    profileView
+                }
+            }
+            
+            VStack {
+                Spacer()
+                BottomTabBar(selected: $selectedTab)
+            }
         }
         .task(id: appState.permissionState.healthKitGranted) {
             await refreshHeartRateIfNeeded()
@@ -42,92 +50,155 @@ struct HomeDashboardView: View {
             }
         }
     }
-
-    private var matcher: some View {
-        NavigationStack {
-            StudentMatcherView()
-                .environmentObject(appState)
-                .navigationTitle("Matcher")
+    
+    private var statsView: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            Text("Stats View")
+                .foregroundStyle(.white)
         }
     }
-
-    private var assistant: some View {
+    
+    private var addView: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            Text("Add View")
+                .foregroundStyle(.white)
+        }
+    }
+    
+    private var calendarView: some View {
         NavigationStack {
-            VirtualAssistantView()
+            EventCalendarView()
                 .environmentObject(appState)
-                .navigationTitle("Assistant")
+        }
+    }
+    
+    private var profileView: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            Text("Profile View")
+                .foregroundStyle(.white)
         }
     }
 
     private var dashboard: some View {
-        NavigationStack {
+        ZStack {
+            // Dark background
+            Color.black
+                .ignoresSafeArea()
+            
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Welcome, \(appState.userProfile.displayName)")
-                        .font(.largeTitle.bold())
-                        .padding(.bottom, 8)
-                    MetricCard(
-                        title: "Reminders",
-                        value: appState.permissionState.remindersGranted ? "Enabled" : "Not Linked"
-                    )
-                    MetricCard(
-                        title: "Heart Rate",
-                        value: heartRateDisplayText
-                    )
-                    Button {
-                        Task {
-                            await refreshHeartRateIfNeeded(force: true)
-                        }
-                    } label: {
-                        Label(isHeartRateLoading ? "Refreshing..." : "Refresh Heart Rate", systemImage: "arrow.clockwise")
-                            .font(.subheadline.weight(.semibold))
-                    }
-                    .disabled(isHeartRateLoading || !appState.permissionState.healthKitGranted)
-                    .padding(.bottom, 8)
-                    if appState.permissionState.healthKitGranted {
-                        if appState.heartRateHistory.isEmpty {
-                            Text("No heart rate data from the last hour.")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            HeartRateChartView(samples: appState.heartRateHistory)
-                                .frame(height: 180)
-                                .padding(.bottom, 4)
-                        }
-                    }
-
-                    SectionHeader(title: "Today")
-                    TodayOverview(
-                        events: appState.deviceCalendarEvents,
-                        assignments: assignmentsDueToday,
-                        calendarLinked: appState.permissionState.calendarGranted,
-                        onAddAssignment: { showingAddAssignment = true },
-                        onToggleAssignment: { assignment, completed in
-                            Task {
-                                await appState.setAssignment(assignment, completed: completed)
+                VStack(alignment: .leading, spacing: 20) {
+                    // Header with profile and welcome
+                    HStack(spacing: 12) {
+                        // Profile picture
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [.blue.opacity(0.6), .purple.opacity(0.6)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 50, height: 50)
+                            .overlay {
+                                Image(systemName: "person.fill")
+                                    .foregroundStyle(.white)
+                                    .font(.title3)
                             }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Welcome back,")
+                                .font(.subheadline)
+                                .foregroundStyle(.gray)
+                            Text(appState.userProfile.displayName)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
                         }
+                        
+                        Spacer()
+                        
+                        // Bell icon
+                        Button(action: {}) {
+                            Image(systemName: "bell")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    
+                    // Mental State Card
+                    MentalStateCard()
+                        .padding(.horizontal)
+                    
+                    // AI Insight Card
+                    AIInsightCard(
+                        insight: "Your mood is stable, but your upcoming PSY-201 exam might be a stressor. Prioritizing study breaks could improve focus and wellbeing."
                     )
-
-                    SectionHeader(title: "Suggested Matches")
-                    ForEach(appState.matches) { match in
-                        MatchRow(match: match)
+                    .padding(.horizontal)
+                    
+                    // Activity Cards (side by side)
+                    HStack(spacing: 12) {
+                        ActivityCard(
+                            title: "Study Activity",
+                            value: "4.5 hours",
+                            icon: "book.fill",
+                            progress: nil
+                        )
+                        
+                        ActivityCard(
+                            title: "Screen Time",
+                            value: formatScreenTime(appState.userProfile.metrics.screenTimeHours),
+                            icon: "iphone",
+                            progress: min(appState.userProfile.metrics.screenTimeHours / 10.0, 1.0)
+                        )
                     }
-                }
-                .padding()
-            }
-            .navigationTitle("Dashboard")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink("Calendar") { EventCalendarView() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: AccountInformationView()) {
-                        Image(systemName: "person.circle")
-                            .foregroundColor(.primary)
+                    .padding(.horizontal)
+                    
+                    // Upcoming Events Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Upcoming Events")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal)
+                        
+                        if appState.permissionState.calendarGranted {
+                            if appState.deviceCalendarEvents.isEmpty {
+                                Text("No upcoming events in your calendar.")
+                                    .foregroundStyle(.gray)
+                                    .padding(.horizontal)
+                            } else {
+                                ForEach(Array(appState.deviceCalendarEvents.prefix(5))) { event in
+                                    DashboardEventCard(event: event)
+                                        .padding(.horizontal)
+                                }
+                            }
+                        } else {
+                            Text("Calendar Not Linked")
+                                .foregroundStyle(.gray)
+                                .padding(.horizontal)
+                        }
                     }
+                    .padding(.top, 8)
+                    .padding(.bottom, 100) // Space for bottom tab bar
                 }
             }
+        }
+        .navigationBarHidden(true)
+    }
+    
+    private func formatScreenTime(_ hours: Double) -> String {
+        let totalMinutes = Int(hours * 60)
+        let h = totalMinutes / 60
+        let m = totalMinutes % 60
+        if h > 0 {
+            return "\(h)h \(m)m"
+        } else {
+            return "\(m)m"
         }
     }
 }

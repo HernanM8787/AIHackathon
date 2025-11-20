@@ -63,6 +63,13 @@
 		5CA95CA12ECFB06B005C9EE1 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA02ECFB06B005C9EE1 /* Assignment.swift */; };
 		5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */; };
 		C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */; };
+		C347AE9D2ECEB6C4004A51E4 /* AIInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */; };
+		C347AE9F2ECEB754004A51E4 /* ActivityCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */; };
+		C347AEA12ECEB75D004A51E4 /* DashboardEventCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA02ECEB75D004A51E4 /* DashboardEventCard.swift */; };
+		C347AEA32ECEB767004A51E4 /* EventCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA22ECEB767004A51E4 /* EventCard.swift */; };
+		C347AEA52ECEB770004A51E4 /* MentalStateCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */; };
+		C347AEA72ECEB782004A51E4 /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA62ECEB782004A51E4 /* MetricCard.swift */; };
+		C37102792ECF6E89007915AF /* CalendarSuggestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +135,13 @@
 		5CA95CA02ECFB06B005C9EE1 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionStorage.swift; sourceTree = "<group>"; };
 		C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCalendarView.swift; sourceTree = "<group>"; };
+		C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightCard.swift; sourceTree = "<group>"; };
+		C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCard.swift; sourceTree = "<group>"; };
+		C347AEA02ECEB75D004A51E4 /* DashboardEventCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardEventCard.swift; sourceTree = "<group>"; };
+		C347AEA22ECEB767004A51E4 /* EventCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCard.swift; sourceTree = "<group>"; };
+		C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentalStateCard.swift; sourceTree = "<group>"; };
+		C347AEA62ECEB782004A51E4 /* MetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCard.swift; sourceTree = "<group>"; };
+		C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSuggestionCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,11 +216,18 @@
 		5C919F7F2ECD7D540054DE34 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				C347AEA62ECEB782004A51E4 /* MetricCard.swift */,
+				C347AEA02ECEB75D004A51E4 /* DashboardEventCard.swift */,
 				5C91A00F2ECE484B0054DE34 /* BottomTabBar.swift */,
 				5C919F7C2ECD7D540054DE34 /* EventCard.swift */,
 				5C919F7D2ECD7D540054DE34 /* MatchRow.swift */,
 				5C919F7E2ECD7D540054DE34 /* MetricCard.swift */,
 				C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */,
+				C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */,
+				C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */,
+				C347AEA22ECEB767004A51E4 /* EventCard.swift */,
+				C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */,
+				C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -457,8 +478,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C347AEA72ECEB782004A51E4 /* MetricCard.swift in Sources */,
 				5C919FA12ECD7D540054DE34 /* PermissionRequestView.swift in Sources */,
 				5C919FA32ECD7D540054DE34 /* FirebaseService.swift in Sources */,
+				C37102792ECF6E89007915AF /* CalendarSuggestionCard.swift in Sources */,
 				5C8BDFFD2ECED3EF008B451A /* WelcomeScreenView.swift in Sources */,
 				5C919FA52ECD7D540054DE34 /* VirtualAssistantView.swift in Sources */,
 				5C91A0062ED09A1C0054DE34 /* SignupView.swift in Sources */,
@@ -469,6 +492,7 @@
 				5C8BDFFB2ECED3E1008B451A /* SignupStep2View.swift in Sources */,
 				5C919FA62ECD7D540054DE34 /* CreateEventView.swift in Sources */,
 				5C919FA72ECD7D540054DE34 /* EventCard.swift in Sources */,
+				C347AEA52ECEB770004A51E4 /* MentalStateCard.swift in Sources */,
 				5C919FA82ECD7D540054DE34 /* PreferenceSetupView.swift in Sources */,
 				5CA95C992ECF9CFF005C9EE1 /* HeartRateSample.swift in Sources */,
 				5C919FA92ECD7D540054DE34 /* MatchProfileView.swift in Sources */,
@@ -486,6 +510,7 @@
 				5CA95CA12ECFB06B005C9EE1 /* Assignment.swift in Sources */,
 				5C919FAE2ECD7D540054DE34 /* MatchRow.swift in Sources */,
 				5C919FAF2ECD7D540054DE34 /* AppRootView.swift in Sources */,
+				C347AE9F2ECEB754004A51E4 /* ActivityCard.swift in Sources */,
 				5C919FB02ECD7D540054DE34 /* ScreenTimeService.swift in Sources */,
 				5C8BE0032ECEEC2E008B451A /* AccountInformationView.swift in Sources */,
 				5C8BE0012ECEEC25008B451A /* SignupStep2View.swift in Sources */,
@@ -496,8 +521,10 @@
 				5C919FB42ECD7D540054DE34 /* EventCalendarView.swift in Sources */,
 				5C919FB52ECD7D540054DE34 /* HealthKitService.swift in Sources */,
 				5C919FB62ECD7D540054DE34 /* Event.swift in Sources */,
+				C347AEA12ECEB75D004A51E4 /* DashboardEventCard.swift in Sources */,
 				5C919FF72ECD893E0054DE34 /* ChatMessage.swift in Sources */,
 				5C919FB72ECD7D540054DE34 /* DateHelpers.swift in Sources */,
+				C347AE9D2ECEB6C4004A51E4 /* AIInsightCard.swift in Sources */,
 				5C91A2402ED1FACE0054DE34 /* KeychainHelper.swift in Sources */,
 				5C919FB82ECD7D540054DE34 /* MetricCard.swift in Sources */,
 				5C919FB92ECD7D540054DE34 /* HomeDashboardView.swift in Sources */,
