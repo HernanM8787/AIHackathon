@@ -166,10 +166,10 @@ struct WelcomeScreenView: View {
     
     private func blobPath(geometry: GeometryProxy) -> Path {
         Path { path in
-            let width = geometry.size.width * 0.75
-            let height = geometry.size.height * 0.5
-            let centerX = geometry.size.width * 0.6
-            let centerY = geometry.size.height * 0.3
+            let width = geometry.size.width * 1.0  // Stretch more horizontally
+            let height = geometry.size.height * 0.7  // Stretch more vertically
+            let centerX = geometry.size.width * 0.5  // Center horizontally
+            let centerY = geometry.size.height * 0.4  // Center vertically
             
             // Create an organic blob shape
             path.move(to: CGPoint(x: centerX - width * 0.3, y: centerY - height * 0.2))

@@ -49,7 +49,7 @@ struct LoginView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Student Email Address")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white)
+                                .foregroundColor(.white.opacity(0.9))
                             
                             TextField("", text: $email, prompt: Text("you@university.com").foregroundColor(.white.opacity(0.5)))
                                 .textInputAutocapitalization(.never)
@@ -59,6 +59,10 @@ struct LoginView: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 12)
                                         .fill(Color(red: 0x2A/255.0, green: 0x2A/255.0, blue: 0x3A/255.0))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                        )
                                 )
                         }
                         
@@ -66,7 +70,7 @@ struct LoginView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Password")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white)
+                                .foregroundColor(.white.opacity(0.9))
                             
                             HStack {
                                 if showPassword {
@@ -89,6 +93,10 @@ struct LoginView: View {
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color(red: 0x2A/255.0, green: 0x2A/255.0, blue: 0x3A/255.0))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                    )
                             )
                         }
                         
@@ -100,7 +108,7 @@ struct LoginView: View {
                             }) {
                                 Text("Forgot Password?")
                                     .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(Color(red: 0x42/255.0, green: 0x85/255.0, blue: 0xF4/255.0))
+                                    .foregroundColor(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
                             }
                         }
                         .padding(.top, -8)
@@ -132,7 +140,7 @@ struct LoginView: View {
                     .padding(.vertical, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(red: 0x42/255.0, green: 0x85/255.0, blue: 0xF4/255.0))
+                            .fill(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
                     )
                     .disabled(isSubmitting || !canSubmit)
                     .opacity(canSubmit && !isSubmitting ? 1.0 : 0.6)
@@ -150,7 +158,7 @@ struct LoginView: View {
                         }) {
                             Text("Sign Up")
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(Color(red: 0x42/255.0, green: 0x85/255.0, blue: 0xF4/255.0))
+                                .foregroundColor(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
                         }
                     }
                     .padding(.bottom, 40)
