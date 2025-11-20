@@ -15,10 +15,9 @@ struct BottomTabBar: View {
             tabButton(icon: "house.fill", title: "Home", tab: .dashboard)
             tabButton(icon: "sparkles", title: "Assistant", tab: .assistant)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 18)
         .background(.ultraThinMaterial, in: Capsule())
-        .padding(.horizontal)
         .shadow(radius: 4, y: 2)
     }
 
@@ -37,6 +36,7 @@ struct BottomTabBar: View {
     }
 }
 
+#if DEBUG
 #Preview {
     StatefulPreviewWrapper(DashboardTab.dashboard) { binding in
         BottomTabBar(selected: binding)
@@ -58,4 +58,5 @@ struct StatefulPreviewWrapper<Value: Hashable, Content: View>: View {
         content($value)
     }
 }
+#endif
 

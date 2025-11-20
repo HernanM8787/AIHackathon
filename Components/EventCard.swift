@@ -4,24 +4,52 @@ struct EventCard: View {
     let event: Event
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(event.title)
-                .font(.headline)
-            Text(event.location)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Text(dateRange)
-                .font(.footnote)
-            HStack {
-                Button("I'm going") { }
-                Button("I'm not") { }
+        HStack(alignment: .top, spacing: 12) {
+            // Colored indicator dot
+            Circle()
+                .fill(event.category.color)
+                .frame(width: 8, height: 8)
+                .padding(.top, 6)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(event.title)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                
+                HStack(spacing: 8) {
+                    Text(timeString)
+                        .font(.subheadline)
+                        .foregroundStyle(.gray)
+                    
+                    if !event.location.isEmpty && event.location != "No location" {
+                        Text("•")
+                            .foregroundStyle(.gray)
+                        Text(event.location)
+                            .font(.subheadline)
+                            .foregroundStyle(.gray)
+                    }
+                }
+                
+                Text(event.category.rawValue)
+                    .font(.caption)
+                    .foregroundStyle(event.category.color)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(
+                        Capsule()
+                            .fill(event.category.color.opacity(0.15))
+                    )
             }
+            
+            Spacer()
         }
-        .padding()
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemBackground)))
+        .padding(.vertical, 8)
+        .padding(.horizontal, 4)
     }
 
-    private var dateRange: String {
-        DateHelpers.shared.rangeString(start: event.startDate, end: event.endDate)
+    private var timeString: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: event.startDate)
     }
 }

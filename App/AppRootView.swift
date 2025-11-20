@@ -13,10 +13,10 @@ struct AppRootView: View {
             case .signup:
                 SignupFlowView()
             case .authenticated:
-                if appState.onboardingComplete {
-                    HomeDashboardView()
-                } else {
+                if appState.onboardingComplete == false {
                     OnboardingFlowView()
+                } else {
+                    HomeDashboardView()
                 }
             }
         }
