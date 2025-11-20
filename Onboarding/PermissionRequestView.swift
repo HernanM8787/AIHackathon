@@ -31,13 +31,21 @@ struct PermissionRequestView: View {
 
     private func requestHealthKit() async {
         isProcessing = true
-        appState.permissionState.healthKitGranted = (try? await HealthKitService().requestAuthorization()) ?? false
+        let granted = (try? await HealthKitService().requestAuthorization()) ?? false
+        appState.permissionState.healthKitGranted = granted
+        if granted {
+            await appState.refreshHealthData()
+        }
         isProcessing = false
     }
 
     private func requestCalendar() async {
         isProcessing = true
-        appState.permissionState.calendarGranted = await CalendarService().requestAccess()
+        let granted = await CalendarService().requestAccess()
+        appState.permissionState.calendarGranted = granted
+        if granted {
+            await appState.refreshCalendarEvents()
+        }
         isProcessing = false
     }
 }

@@ -65,6 +65,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5C8BDFCC2ECE93A0008B451A /* AIHackathon-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AIHackathon-Info.plist"; sourceTree = "<group>"; };
+		5C8BDFCD2ECE9634008B451A /* AIHackathon.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIHackathon.entitlements; sourceTree = "<group>"; };
 		5C919F752ECD7D540054DE34 /* AIHackathonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHackathonApp.swift; sourceTree = "<group>"; };
 		5C919F762ECD7D540054DE34 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		5C919F772ECD7D540054DE34 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -132,6 +134,8 @@
 		5C919F082ECD61900054DE34 = {
 			isa = PBXGroup;
 			children = (
+				5C8BDFCD2ECE9634008B451A /* AIHackathon.entitlements */,
+				5C8BDFCC2ECE93A0008B451A /* AIHackathon-Info.plist */,
 				5C919F782ECD7D540054DE34 /* App */,
 				5C919F792ECD7D540054DE34 /* Assets.xcassets */,
 				5C91A0072ED09A2C0054DE34 /* Auth */,
@@ -590,11 +594,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W459MN44JQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AIHackathon-Info.plist";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "We will use your Calendar information to help you manage deadlines and give personalized advice based on it.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We analyze your heart rate via HealthKit to gauge stress levels and tailor mental-health guidance.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -623,11 +631,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W459MN44JQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AIHackathon-Info.plist";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "We will use your Calendar information to help you manage deadlines and give personalized advice based on it.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We analyze your heart rate via HealthKit to gauge stress levels and tailor mental-health guidance.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -37,6 +37,7 @@ struct BottomTabBar: View {
     }
 }
 
+#if DEBUG
 #Preview {
     StatefulPreviewWrapper(DashboardTab.dashboard) { binding in
         BottomTabBar(selected: binding)
@@ -58,4 +59,5 @@ struct StatefulPreviewWrapper<Value: Hashable, Content: View>: View {
         content($value)
     }
 }
+#endif
 

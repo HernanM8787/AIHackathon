@@ -14,11 +14,13 @@ final class AppState: ObservableObject {
     @Published var onboardingComplete = false
     @Published var userProfile: UserProfile = .mock
     @Published var permissionState = PermissionState()
-    @Published var events: [Event] = MockData.events
+    @Published var events: [Event] = []
     @Published var matches: [Match] = MockData.matches
 
     private let authService = AuthService()
     private let firebaseService = FirebaseService()
+    private let calendarService = CalendarService()
+    private let healthKitService = HealthKitService()
 
     func bootstrap() async {
         guard isAuthenticated == false else { return }
@@ -26,6 +28,8 @@ final class AppState: ObservableObject {
             userProfile = profile
             isAuthenticated = true
             authStep = .authenticated
+            await refreshCalendarEvents()
+            await refreshHealthData()
         } else {
             authStep = .login
         }
@@ -46,10 +50,10 @@ final class AppState: ObservableObject {
     }
 
     func refreshData() async {
-        async let eventsTask = firebaseService.fetchEvents()
         async let matchesTask = firebaseService.fetchMatches()
-        events = (try? await eventsTask) ?? MockData.events
         matches = (try? await matchesTask) ?? MockData.matches
+        await refreshCalendarEvents()
+        await refreshHealthData()
     }
 
     func signOut() async {
@@ -58,6 +62,22 @@ final class AppState: ObservableObject {
         onboardingComplete = false
         userProfile = .mock
         authStep = .login
+        events = []
+    }
+
+    func refreshCalendarEvents() async {
+        guard permissionState.calendarGranted else {
+            events = []
+            return
+        }
+        events = await calendarService.fetchUpcomingEvents()
+    }
+
+    func refreshHealthData() async {
+        guard permissionState.healthKitGranted else { return }
+        if let rate = try? await healthKitService.latestRestingHeartRate() {
+            userProfile.metrics.restingHeartRate = rate ?? userProfile.metrics.restingHeartRate
+        }
     }
 
     func showSignup() {

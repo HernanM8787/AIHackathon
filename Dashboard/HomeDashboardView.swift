@@ -45,19 +45,33 @@ struct HomeDashboardView: View {
                         .padding(.bottom, 8)
                     MetricCard(
                         title: "Screen Time",
-                        value: String(format: "%.1f h", appState.userProfile.metrics.screenTimeHours)
+                        value: appState.permissionState.screenTimeGranted
+                            ? String(format: "%.1f h", appState.userProfile.metrics.screenTimeHours)
+                            : "Not Linked"
                     )
                     MetricCard(
                         title: "Heart Rate",
-                        value: "\(appState.userProfile.metrics.restingHeartRate) bpm"
+                        value: appState.permissionState.healthKitGranted
+                            ? "\(appState.userProfile.metrics.restingHeartRate) bpm"
+                            : "Not Linked"
                     )
                     SectionHeader(title: "Suggested Matches")
                     ForEach(appState.matches) { match in
                         MatchRow(match: match)
                     }
                     SectionHeader(title: "Upcoming Events")
-                    ForEach(appState.events) { event in
-                        EventCard(event: event)
+                    if appState.permissionState.calendarGranted {
+                        if appState.events.isEmpty {
+                            Text("No upcoming events in your calendar.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(appState.events) { event in
+                                EventCard(event: event)
+                            }
+                        }
+                    } else {
+                        Text("Calendar Not Linked")
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .padding()
