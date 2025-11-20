@@ -43,6 +43,33 @@ struct HomeDashboardView: View {
                     Text("Welcome, \(appState.userProfile.displayName)")
                         .font(.largeTitle.bold())
                         .padding(.bottom, 8)
+                    
+                    // Daily Reflection Card
+                    NavigationLink {
+                        DailyReflectionView()
+                            .environmentObject(appState)
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Image(systemName: "sparkles")
+                                        .foregroundStyle(.yellow)
+                                    Text("Daily Reflection")
+                                        .font(.headline)
+                                }
+                                Text("Reflect on your day and get motivational feedback")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+                    
                     MetricCard(
                         title: "Screen Time",
                         value: String(format: "%.1f h", appState.userProfile.metrics.screenTimeHours)
