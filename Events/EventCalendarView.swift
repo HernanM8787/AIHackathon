@@ -10,57 +10,51 @@ struct EventCalendarView: View {
     
     var body: some View {
         ZStack {
-            // Dark background
-            Color.black
-                .ignoresSafeArea()
+            Color.black.ignoresSafeArea()
             
             if appState.permissionState.calendarGranted {
-                VStack(spacing: 0) {
-                    // Calendar View
-                    MonthCalendarView(
-                        events: appState.events,
-                        selectedDate: $selectedDate
-                    )
-                    .padding(.vertical)
-                    .onChange(of: selectedDate) { _ in
-                        loadEventsForDate(selectedDate)
-                    }
-                    
-                    // Events List for Selected Date
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Section Header
-                        Text(selectedDateHeader)
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal)
-                            .padding(.top, 20)
-                            .padding(.bottom, 12)
-                        
-                        // Events List
-                        if !eventsForSelectedDate.isEmpty {
-                            List {
-                                ForEach(eventsForSelectedDate) { event in
-                                    EventCard(event: event)
-                                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                                        .listRowSeparator(.hidden)
-                                        .listRowBackground(Color.clear)
-                                }
-                            }
-                            .listStyle(.plain)
-                            .scrollContentBackground(.hidden)
-                            .background(Color.black)
-                        } else {
-                            VStack(spacing: 12) {
-                                Image(systemName: "calendar")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.gray)
-                                Text("No events on \(formattedDate(selectedDate))")
-                                    .foregroundStyle(.gray)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 40)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        MonthCalendarView(
+                            events: appState.events,
+                            selectedDate: $selectedDate
+                        )
+                        .padding(.top)
+                        .onChange(of: selectedDate) { _ in
+                            loadEventsForDate(selectedDate)
                         }
+                        
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text(selectedDateHeader)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                            
+                            CalendarSuggestionCard(
+                                title: "AI Suggestion: Study Break",
+                                message: "You've been studying hard. A 15-minute stretch session can boost your focus. Try some simple neck and shoulder stretches."
+                            )
+                            
+                            if !eventsForSelectedDate.isEmpty {
+                                VStack(spacing: 14) {
+                                    ForEach(eventsForSelectedDate) { event in
+                                        EventCard(event: event)
+                                    }
+                                }
+                            } else {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "calendar")
+                                        .font(.largeTitle)
+                                        .foregroundStyle(.gray)
+                                    Text("No events on \(formattedDate(selectedDate))")
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 40)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 100)
                     }
                 }
             } else {
@@ -76,28 +70,25 @@ struct EventCalendarView: View {
                 .padding()
             }
             
-            // Floating New Event Button
             VStack {
                 Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: { showingCreateSheet = true }) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "plus")
-                            Text("New Event")
-                        }
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(
-                            Capsule()
-                                .fill(Color(white: 0.25))
-                        )
+                Button(action: { showingCreateSheet = true }) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "plus")
+                            .font(.headline)
+                        Text("New Event")
+                            .font(.headline)
                     }
-                    .padding(.trailing)
-                    .padding(.bottom, 20)
+                    .foregroundStyle(.black)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 14)
+                    .background(
+                        Capsule()
+                            .fill(Color.white)
+                            .shadow(color: .black.opacity(0.3), radius: 10, y: 6)
+                    )
                 }
+                .padding(.bottom, 24)
             }
         }
         .navigationTitle("")
@@ -128,12 +119,12 @@ struct EventCalendarView: View {
     
     private var selectedDateHeader: String {
         let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d"
+        let base = formatter.string(from: selectedDate)
         if calendar.isDateInToday(selectedDate) {
-            formatter.dateFormat = "'Today,' MMMM d"
-        } else {
-            formatter.dateFormat = "MMMM d"
+            return "Today, \(base)"
         }
-        return formatter.string(from: selectedDate)
+        return base
     }
     
     private func loadEventsForDate(_ date: Date) {
