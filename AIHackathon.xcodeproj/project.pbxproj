@@ -52,6 +52,7 @@
 		5C91A0062ED09A1C0054DE34 /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91A0052ED09A1C0054DE34 /* SignupView.swift */; };
 		5C91A00D2ED0C8750054DE34 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91A00C2ED0C8750054DE34 /* LoginView.swift */; };
 		5C91A0102ECE484B0054DE34 /* BottomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91A00F2ECE484B0054DE34 /* BottomTabBar.swift */; };
+		C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +107,7 @@
 		5C91A00D2ECE45B90054DE34 /* AIHackathon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIHackathon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C91A00E2ECE45B90054DE34 /* AIHackathonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIHackathonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C91A00F2ECE484B0054DE34 /* BottomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomTabBar.swift; sourceTree = "<group>"; };
+		C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCalendarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +185,7 @@
 				5C919F7C2ECD7D540054DE34 /* EventCard.swift */,
 				5C919F7D2ECD7D540054DE34 /* MatchRow.swift */,
 				5C919F7E2ECD7D540054DE34 /* MetricCard.swift */,
+				C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -428,6 +431,7 @@
 				5C919FAB2ECD7D540054DE34 /* CalendarService.swift in Sources */,
 				5C919FAC2ECD7D540054DE34 /* AuthService.swift in Sources */,
 				5C919FF12ECD87E50054DE34 /* GeminiConfig.swift in Sources */,
+				C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */,
 				5C919FAD2ECD7D540054DE34 /* Match.swift in Sources */,
 				5C91A0102ECE484B0054DE34 /* BottomTabBar.swift in Sources */,
 				5C919FAE2ECD7D540054DE34 /* MatchRow.swift in Sources */,
@@ -597,7 +601,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W459MN44JQ;
+				DEVELOPMENT_TEAM = W38TS4Z2VF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
@@ -614,7 +618,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonf;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -634,7 +638,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W459MN44JQ;
+				DEVELOPMENT_TEAM = W38TS4Z2VF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
@@ -651,7 +655,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonf;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -669,6 +673,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W38TS4Z2VF;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonTests;
@@ -689,6 +694,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W38TS4Z2VF;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonTests;

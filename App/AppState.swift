@@ -66,11 +66,28 @@ final class AppState: ObservableObject {
     }
 
     func refreshCalendarEvents() async {
-        guard permissionState.calendarGranted else {
-            events = []
-            return
+        var allEvents: [Event] = []
+        
+        // Fetch events from Firebase (user's personal calendar)
+        if isAuthenticated {
+            do {
+                let firebaseEvents = try await firebaseService.fetchEvents(for: userProfile.id)
+                allEvents.append(contentsOf: firebaseEvents)
+            } catch {
+                print("Error fetching Firebase events: \(error)")
+            }
         }
-        events = await calendarService.fetchUpcomingEvents()
+        
+        // Fetch events from local device calendar
+        if permissionState.calendarGranted {
+            let localEvents = await calendarService.fetchUpcomingEvents(limit: 20)
+            allEvents.append(contentsOf: localEvents)
+        }
+        
+        // Remove duplicates and sort by start date
+        events = Array(Set(allEvents.map { $0.id }))
+            .compactMap { id in allEvents.first(where: { $0.id == id }) }
+            .sorted(by: { $0.startDate < $1.startDate })
     }
 
     func refreshHealthData() async {
