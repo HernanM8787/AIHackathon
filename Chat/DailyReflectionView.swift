@@ -250,11 +250,15 @@ struct DailyReflectionView: View {
                 let reflectionMessage = ChatMessage(
                     role: .user,
                     text: """
-                    I'm reflecting on my day and would love some supportive, motivational feedback.
+                    I'm reflecting on my day and need a supportive friend right now.
                     
                     \(moodContext)\(influencesContext)\(trimmed.isEmpty ? "" : "Here's my reflection:\n\n\(trimmed)")
                     
-                    Please provide warm, empathetic, and uplifting feedback. Acknowledge my feelings, highlight any positive aspects or strengths you notice, and offer encouraging words to help me move forward. Be supportive and understanding. If I mentioned specific stressors or influences, please address those thoughtfully.
+                    Please respond as a caring friend would - be warm, empathetic, and encouraging. Keep your response concise (5 sentences MAX). Acknowledge my feelings briefly, then:
+                    1. Give me ONE quick mental exercise I can do right now (like a breathing technique, gratitude practice, or mindfulness tip)
+                    2. Suggest ONE relevant podcast episode or series that might help (mention the podcast name and why it's relevant)
+                    
+                    Be friendly, actionable, and supportive. I need a friend's perspective, not a long lecture.
                     """
                 )
                 
