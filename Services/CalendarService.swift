@@ -23,6 +23,26 @@ final class CalendarService {
         }
     }
 
+    func requestReminderAccess() async -> Bool {
+        do {
+            if #available(iOS 17, *) {
+                return try await store.requestFullAccessToReminders()
+            } else {
+                return try await withCheckedThrowingContinuation { continuation in
+                    store.requestAccess(to: .reminder) { granted, error in
+                        if let error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: granted)
+                        }
+                    }
+                }
+            }
+        } catch {
+            return false
+        }
+    }
+
     func fetchUpcomingEvents(limit: Int = 5) async -> [Event] {
         let calendars = store.calendars(for: .event)
         let now = Date()
@@ -74,6 +94,35 @@ final class CalendarService {
         // Save the event
         do {
             try store.save(ekEvent, span: .thisEvent, commit: true)
+        } catch {
+            throw CalendarError.saveFailed(error.localizedDescription)
+        }
+    }
+
+    func saveReminder(title: String, dueDate: Date?, notes: String?) async throws {
+        let hasAccess = await requestReminderAccess()
+        guard hasAccess else {
+            throw CalendarError.accessDenied
+        }
+
+        let reminder = EKReminder(eventStore: store)
+        reminder.title = title
+        reminder.notes = notes
+
+        if let dueDate {
+            reminder.dueDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dueDate)
+        }
+
+        reminder.calendar = store.defaultCalendarForNewReminders() ?? store.calendars(for: .reminder).first
+
+        guard let calendar = reminder.calendar else {
+            throw CalendarError.noCalendarAvailable
+        }
+
+        reminder.calendar = calendar
+
+        do {
+            try store.save(reminder, commit: true)
         } catch {
             throw CalendarError.saveFailed(error.localizedDescription)
         }

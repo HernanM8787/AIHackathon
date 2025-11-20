@@ -97,6 +97,49 @@ actor FirebaseService {
         // TODO: Replace with Firestore query
         return MockData.matches
     }
+
+    // MARK: - Assignments
+
+    func fetchAssignments(for userId: String) async throws -> [Assignment] {
+        let snapshot = try await db.collection("users")
+            .document(userId)
+            .collection("assignments")
+            .order(by: "dueDate", descending: false)
+            .getDocuments()
+
+        return snapshot.documents.compactMap { doc in
+            try? doc.data(as: FirestoreAssignment.self).toAssignment(id: doc.documentID)
+        }
+    }
+
+    func save(assignment: Assignment, userId: String) async throws {
+        let firestoreAssignment = FirestoreAssignment(from: assignment)
+        let data = try firestoreAssignment.toDictionary()
+        let collection = db.collection("users").document(userId).collection("assignments")
+
+        if assignment.id.isEmpty {
+            try await collection.document().setData(data)
+        } else {
+            try await collection.document(assignment.id).setData(data, merge: true)
+        }
+    }
+
+    func updateAssignmentCompletion(assignmentId: String, userId: String, isCompleted: Bool) async throws {
+        guard !assignmentId.isEmpty else { return }
+        let doc = db.collection("users").document(userId).collection("assignments").document(assignmentId)
+        try await doc.setData([
+            "isCompleted": isCompleted,
+            "updatedAt": FieldValue.serverTimestamp()
+        ], merge: true)
+    }
+
+    func deleteAssignment(assignmentId: String, userId: String) async throws {
+        guard !assignmentId.isEmpty else { return }
+        try await db.collection("users").document(userId)
+            .collection("assignments")
+            .document(assignmentId)
+            .delete()
+    }
 }
 
 // MARK: - Firestore Event Model
@@ -139,6 +182,44 @@ private struct FirestoreEvent: Codable {
         )
     }
     
+    func toDictionary() throws -> [String: Any] {
+        let encoder = Firestore.Encoder()
+        return try encoder.encode(self)
+    }
+}
+
+// MARK: - Firestore Assignment Model
+
+private struct FirestoreAssignment: Codable {
+    let title: String
+    let course: String
+    let dueDate: Timestamp
+    let details: String
+    let isCompleted: Bool
+    let createdAt: Timestamp?
+    let updatedAt: Timestamp?
+
+    init(from assignment: Assignment) {
+        self.title = assignment.title
+        self.course = assignment.course
+        self.dueDate = Timestamp(date: assignment.dueDate)
+        self.details = assignment.details
+        self.isCompleted = assignment.isCompleted
+        self.createdAt = Timestamp(date: Date())
+        self.updatedAt = Timestamp(date: Date())
+    }
+
+    func toAssignment(id: String) -> Assignment {
+        Assignment(
+            id: id,
+            title: title,
+            course: course,
+            dueDate: dueDate.dateValue(),
+            details: details,
+            isCompleted: isCompleted
+        )
+    }
+
     func toDictionary() throws -> [String: Any] {
         let encoder = Firestore.Encoder()
         return try encoder.encode(self)
