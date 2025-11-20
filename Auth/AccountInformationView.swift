@@ -143,7 +143,7 @@ struct AccountInformationView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.purple)
+                .background(Color(red: 99/255.0, green: 102/255.0, blue: 241/255.0))
                 .cornerRadius(12)
                 .padding()
                 .disabled(isSaving)
