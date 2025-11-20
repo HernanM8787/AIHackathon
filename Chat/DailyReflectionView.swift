@@ -244,22 +244,10 @@ struct DailyReflectionView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(
-                        ((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
-                        ? Color(red: 0.85, green: 0.83, blue: 0.80)
-                        : LinearGradient(
-                            colors: [
-                                Color(red: 0.70, green: 0.65, blue: 0.60),
-                                Color(red: 0.65, green: 0.60, blue: 0.55)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: 12)
-                    )
+                    .background(submitBackground, in: RoundedRectangle(cornerRadius: 12))
                     .foregroundStyle(.white)
                 }
-                .disabled((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
+                .disabled(isSubmitDisabled)
                 .padding(.horizontal)
                 .padding(.bottom)
             }
@@ -276,6 +264,26 @@ struct DailyReflectionView: View {
         )
         .navigationTitle("Daily Reflection")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private var isSubmitDisabled: Bool {
+        (reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating
+    }
+    
+    private var submitBackground: AnyShapeStyle {
+        if isSubmitDisabled {
+            return AnyShapeStyle(Color(red: 0.85, green: 0.83, blue: 0.80))
+        } else {
+            return AnyShapeStyle(LinearGradient(
+                colors: [
+                    Color(red: 0.70, green: 0.65, blue: 0.60),
+                    Color(red: 0.65, green: 0.60, blue: 0.55)
+                ],
+                startPoint: .topLeading,
+
+                endPoint: .bottomTrailing
+            ))
+        }
     }
     
     private func parseFeedbackWithLinks(_ text: String) -> AttributedString {
