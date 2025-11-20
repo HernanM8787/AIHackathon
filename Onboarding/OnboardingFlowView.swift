@@ -10,15 +10,13 @@ struct OnboardingFlowView: View {
                 .tag(0)
             PermissionRequestView()
                 .tag(1)
-            PreferenceSetupView(onFinish: completeOnboarding)
-                .tag(2)
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
     }
 
     private func completeOnboarding() {
         withAnimation {
-            appState.onboardingComplete = true
+            appState.markOnboardingComplete()
         }
     }
 }
@@ -26,7 +24,7 @@ struct OnboardingFlowView: View {
 private struct WelcomeView: View {
     var body: some View {
         VStack(spacing: 24) {
-            Text("Student Matcher + Well-being")
+            Text("Student Well-being")
                 .font(.largeTitle.bold())
             Text("Grant permissions and personalize your study + wellness plan.")
                 .multilineTextAlignment(.center)
