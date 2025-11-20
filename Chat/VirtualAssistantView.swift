@@ -48,15 +48,15 @@ struct VirtualAssistantView: View {
 
     private var inputBar: some View {
         VStack(spacing: 8) {
-            if let selectedImage = selectedImage {
+            if let previewImage = selectedImage {
                 HStack {
-                    Image(uiImage: selectedImage)
+                    Image(uiImage: previewImage)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 60, height: 60)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     
-                    Button(action: { selectedImage = nil }) {
+                    Button(action: { self.selectedImage = nil }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.secondary)
                     }
