@@ -2,7 +2,6 @@ import SwiftUI
 
 struct SignupStep2View: View {
     @EnvironmentObject private var appState: AppState
-    @Environment(\.dismiss) private var dismiss
     @State private var academicLevel: String = "Undergraduate"
     @State private var major: String = ""
     @State private var isSubmitting = false
@@ -25,7 +24,7 @@ struct SignupStep2View: View {
                 VStack(spacing: 16) {
                     HStack {
                         Button(action: {
-                            dismiss()
+                            // Navigation handled by NavigationStack - will go back to step 1
                         }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 18, weight: .semibold))

@@ -2,7 +2,6 @@ import SwiftUI
 
 struct SignupStep1View: View {
     @EnvironmentObject private var appState: AppState
-    @Environment(\.dismiss) private var dismiss
     @Binding var email: String
     @Binding var password: String
     @State private var showPassword = false
@@ -19,7 +18,9 @@ struct SignupStep1View: View {
                 // Header with back button and progress
                 VStack(spacing: 16) {
                     HStack {
-                        Button(action: { dismiss() }) {
+                        Button(action: {
+                            appState.showWelcome()
+                        }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(.white)

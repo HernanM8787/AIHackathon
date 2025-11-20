@@ -15,37 +15,39 @@ struct WelcomeScreenView: View {
                 // Abstract blob shape at the top
                 GeometryReader { geometry in
                     ZStack {
-                        // Pulsing glow layers
+                        // Pulsing glow layers - stronger and more vibrant
                         blobPath(geometry: geometry)
                             .fill(
                                 RadialGradient(
                                     colors: [
-                                        Color(red: 0.4, green: 0.4, blue: 0.5).opacity(glowIntensity * 0.6),
-                                        Color(red: 0.2, green: 0.2, blue: 0.3).opacity(glowIntensity * 0.4),
+                                        Color(red: 0.6, green: 0.5, blue: 0.8).opacity(glowIntensity * 0.9),
+                                        Color(red: 0.4, green: 0.4, blue: 0.6).opacity(glowIntensity * 0.7),
+                                        Color(red: 0.3, green: 0.3, blue: 0.5).opacity(glowIntensity * 0.5),
                                         Color.clear
                                     ],
                                     center: .center,
-                                    startRadius: 20,
-                                    endRadius: 100
+                                    startRadius: 30,
+                                    endRadius: 150
                                 )
                             )
-                            .blur(radius: 30)
+                            .blur(radius: 40)
                             .opacity(glowIntensity)
                         
                         blobPath(geometry: geometry)
                             .fill(
                                 RadialGradient(
                                     colors: [
-                                        Color(red: 0.3, green: 0.3, blue: 0.4).opacity(glowIntensity * 0.4),
+                                        Color(red: 0.5, green: 0.4, blue: 0.7).opacity(glowIntensity * 0.8),
+                                        Color(red: 0.3, green: 0.3, blue: 0.5).opacity(glowIntensity * 0.6),
                                         Color.clear
                                     ],
                                     center: .center,
-                                    startRadius: 10,
-                                    endRadius: 60
+                                    startRadius: 15,
+                                    endRadius: 90
                                 )
                             )
-                            .blur(radius: 20)
-                            .opacity(glowIntensity * 0.8)
+                            .blur(radius: 30)
+                            .opacity(glowIntensity * 1.0)
                         
                         // Main blob shape
                         blobPath(geometry: geometry)
@@ -60,8 +62,8 @@ struct WelcomeScreenView: View {
                                 )
                             )
                             .shadow(
-                                color: Color(red: 0.4, green: 0.4, blue: 0.6).opacity(glowIntensity * 0.5),
-                                radius: 20 * glowIntensity,
+                                color: Color(red: 0.6, green: 0.5, blue: 0.8).opacity(glowIntensity * 0.8),
+                                radius: 30 * glowIntensity,
                                 x: 0,
                                 y: 0
                             )
@@ -166,33 +168,47 @@ struct WelcomeScreenView: View {
     
     private func blobPath(geometry: GeometryProxy) -> Path {
         Path { path in
-            let width = geometry.size.width * 1.0  // Stretch more horizontally
-            let height = geometry.size.height * 0.7  // Stretch more vertically
+            // Make it more circular and stretch horizontally
+            let width = geometry.size.width * 1.2  // Stretch more horizontally
+            let height = geometry.size.width * 0.6  // Make it more circular (similar width/height ratio)
             let centerX = geometry.size.width * 0.5  // Center horizontally
             let centerY = geometry.size.height * 0.4  // Center vertically
             
-            // Create an organic blob shape
-            path.move(to: CGPoint(x: centerX - width * 0.3, y: centerY - height * 0.2))
+            // Create a more circular blob shape
+            let radiusX = width * 0.4
+            let radiusY = height * 0.5
+            
+            // Use a more circular approach with smooth curves
+            path.move(to: CGPoint(x: centerX, y: centerY - radiusY))
+            
+            // Top curve
             path.addCurve(
-                to: CGPoint(x: centerX + width * 0.4, y: centerY - height * 0.1),
-                control1: CGPoint(x: centerX - width * 0.1, y: centerY - height * 0.3),
-                control2: CGPoint(x: centerX + width * 0.2, y: centerY - height * 0.2)
+                to: CGPoint(x: centerX + radiusX, y: centerY),
+                control1: CGPoint(x: centerX + radiusX * 0.3, y: centerY - radiusY),
+                control2: CGPoint(x: centerX + radiusX, y: centerY - radiusY * 0.3)
             )
+            
+            // Right curve
             path.addCurve(
-                to: CGPoint(x: centerX + width * 0.3, y: centerY + height * 0.4),
-                control1: CGPoint(x: centerX + width * 0.5, y: centerY + height * 0.1),
-                control2: CGPoint(x: centerX + width * 0.4, y: centerY + height * 0.3)
+                to: CGPoint(x: centerX, y: centerY + radiusY),
+                control1: CGPoint(x: centerX + radiusX, y: centerY + radiusY * 0.3),
+                control2: CGPoint(x: centerX + radiusX * 0.3, y: centerY + radiusY)
             )
+            
+            // Bottom curve
             path.addCurve(
-                to: CGPoint(x: centerX - width * 0.2, y: centerY + height * 0.3),
-                control1: CGPoint(x: centerX + width * 0.1, y: centerY + height * 0.5),
-                control2: CGPoint(x: centerX - width * 0.1, y: centerY + height * 0.4)
+                to: CGPoint(x: centerX - radiusX, y: centerY),
+                control1: CGPoint(x: centerX - radiusX * 0.3, y: centerY + radiusY),
+                control2: CGPoint(x: centerX - radiusX, y: centerY + radiusY * 0.3)
             )
+            
+            // Left curve
             path.addCurve(
-                to: CGPoint(x: centerX - width * 0.3, y: centerY - height * 0.2),
-                control1: CGPoint(x: centerX - width * 0.4, y: centerY + height * 0.1),
-                control2: CGPoint(x: centerX - width * 0.3, y: centerY - height * 0.1)
+                to: CGPoint(x: centerX, y: centerY - radiusY),
+                control1: CGPoint(x: centerX - radiusX, y: centerY - radiusY * 0.3),
+                control2: CGPoint(x: centerX - radiusX * 0.3, y: centerY - radiusY)
             )
+            
             path.closeSubpath()
         }
     }

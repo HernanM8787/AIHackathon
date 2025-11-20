@@ -73,6 +73,10 @@ final class AppState: ObservableObject {
     func showLogin() {
         authStep = .login
     }
+    
+    func showWelcome() {
+        authStep = .welcome
+    }
 }
 
 struct PermissionState {
