@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 enum Mood: String, CaseIterable {
     case awful = "😢"
@@ -84,13 +85,13 @@ struct DailyReflectionView: View {
                                 .padding(.vertical, 12)
                                 .background(
                                     selectedMood == mood
-                                    ? Color.accentColor.opacity(0.2)
-                                    : Color(.secondarySystemBackground),
+                                    ? Color(red: 0.95, green: 0.93, blue: 0.90)
+                                    : Color(red: 0.97, green: 0.96, blue: 0.95),
                                     in: RoundedRectangle(cornerRadius: 12)
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(selectedMood == mood ? Color.accentColor : Color.clear, lineWidth: 2)
+                                        .stroke(selectedMood == mood ? Color(red: 0.75, green: 0.70, blue: 0.65) : Color.clear, lineWidth: 2)
                                 )
                             }
                             .buttonStyle(.plain)
@@ -125,15 +126,15 @@ struct DailyReflectionView: View {
                                     .padding(.vertical, 10)
                                     .background(
                                         selectedInfluences.contains(influence)
-                                        ? Color.accentColor.opacity(0.2)
-                                        : Color(.secondarySystemBackground),
+                                        ? Color(red: 0.92, green: 0.89, blue: 0.85)
+                                        : Color(red: 0.96, green: 0.95, blue: 0.94),
                                         in: Capsule()
                                     )
                                     .overlay(
                                         Capsule()
-                                            .stroke(selectedInfluences.contains(influence) ? Color.accentColor : Color.clear, lineWidth: 1.5)
+                                            .stroke(selectedInfluences.contains(influence) ? Color(red: 0.70, green: 0.65, blue: 0.60) : Color.clear, lineWidth: 1.5)
                                     )
-                                    .foregroundStyle(selectedInfluences.contains(influence) ? Color.accentColor : Color.primary)
+                                    .foregroundStyle(selectedInfluences.contains(influence) ? Color(red: 0.50, green: 0.45, blue: 0.40) : Color.primary)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -151,7 +152,21 @@ struct DailyReflectionView: View {
                     TextEditor(text: $reflectionText)
                         .frame(minHeight: 150)
                         .padding(12)
-                        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
+                        .background(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.98, green: 0.97, blue: 0.96),
+                                    Color(red: 0.96, green: 0.95, blue: 0.94)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            in: RoundedRectangle(cornerRadius: 12)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(red: 0.90, green: 0.88, blue: 0.86), lineWidth: 1)
+                        )
                         .overlay(
                             Group {
                                 if reflectionText.isEmpty {
@@ -175,20 +190,44 @@ struct DailyReflectionView: View {
                 
                 // AI Feedback Section
                 if let feedback = aiFeedback {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack(spacing: 8) {
                             Image(systemName: "sparkles")
-                                .foregroundStyle(.yellow)
+                                .foregroundStyle(Color(red: 0.85, green: 0.75, blue: 0.65))
+                                .font(.title3)
                             Text("AI Feedback")
                                 .font(.headline)
+                                .foregroundStyle(Color(red: 0.40, green: 0.35, blue: 0.30))
                         }
                         .padding(.horizontal)
                         
-                        Text(feedback)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color(.tertiarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
-                            .padding(.horizontal)
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(parseFeedbackWithLinks(feedback))
+                                .font(.body)
+                                .lineSpacing(4)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color(red: 0.98, green: 0.97, blue: 0.95),
+                                            Color(red: 0.96, green: 0.94, blue: 0.92)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(Color(red: 0.88, green: 0.85, blue: 0.82), lineWidth: 1)
+                                )
+                                .shadow(color: Color.black.opacity(0.03), radius: 12, x: 0, y: 4)
+                        )
+                        .padding(.horizontal)
                     }
                 }
                 
@@ -207,8 +246,15 @@ struct DailyReflectionView: View {
                     .padding()
                     .background(
                         ((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
-                        ? Color.gray
-                        : Color.accentColor,
+                        ? Color(red: 0.85, green: 0.83, blue: 0.80)
+                        : LinearGradient(
+                            colors: [
+                                Color(red: 0.70, green: 0.65, blue: 0.60),
+                                Color(red: 0.65, green: 0.60, blue: 0.55)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
                         in: RoundedRectangle(cornerRadius: 12)
                     )
                     .foregroundStyle(.white)
@@ -218,9 +264,40 @@ struct DailyReflectionView: View {
                 .padding(.bottom)
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 0.99, green: 0.98, blue: 0.97),
+                    Color(red: 0.97, green: 0.96, blue: 0.95)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
         .navigationTitle("Daily Reflection")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private func parseFeedbackWithLinks(_ text: String) -> AttributedString {
+        var attributedString = AttributedString(text)
+        
+        // Find URLs and make them clickable
+        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        let matches = detector?.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+        
+        if let matches = matches {
+            for match in matches.reversed() {
+                if let url = match.url,
+                   let range = Range(match.range, in: text) {
+                    if let attributedRange = Range(range, in: attributedString) {
+                        attributedString[attributedRange].link = url
+                        attributedString[attributedRange].foregroundColor = .blue
+                    }
+                }
+            }
+        }
+        
+        return attributedString
     }
     
     private func generateFeedback() {
@@ -254,9 +331,13 @@ struct DailyReflectionView: View {
                     
                     \(moodContext)\(influencesContext)\(trimmed.isEmpty ? "" : "Here's my reflection:\n\n\(trimmed)")
                     
-                    Please respond as a caring friend would - be warm, empathetic, and encouraging. Keep your response concise (5 sentences MAX). Acknowledge my feelings briefly, then:
-                    1. Give me ONE quick mental exercise I can do right now (like a breathing technique, gratitude practice, or mindfulness tip)
-                    2. Suggest ONE relevant podcast episode or series that might help (mention the podcast name and why it's relevant)
+                    Please respond as a caring friend would - be warm, empathetic, and encouraging. Use emojis to make it feel friendly and approachable. Keep your response concise (5 sentences MAX). Format it like this:
+                    
+                    [Brief empathetic acknowledgment with emoji]
+                    
+                    💡 Mental Exercise: [ONE quick exercise I can do right now - like a breathing technique, gratitude practice, or mindfulness tip]
+                    
+                    🎧 Podcast Recommendation: [Podcast name and episode/topic] - [brief why it's relevant]. Include the full podcast link/URL if available.
                     
                     Be friendly, actionable, and supportive. I need a friend's perspective, not a long lecture.
                     """
