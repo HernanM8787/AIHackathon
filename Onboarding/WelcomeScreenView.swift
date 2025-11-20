@@ -168,48 +168,21 @@ struct WelcomeScreenView: View {
     
     private func blobPath(geometry: GeometryProxy) -> Path {
         Path { path in
-            // Make it more circular and stretch horizontally
-            let width = geometry.size.width * 1.2  // Stretch more horizontally
-            let height = geometry.size.width * 0.6  // Make it more circular (similar width/height ratio)
+            // Create a circular blob with padding from edges
+            let padding: CGFloat = 40  // Padding from screen edges
+            let maxRadius = min(geometry.size.width, geometry.size.height) * 0.35  // 35% of smaller dimension
+            let radius = maxRadius - padding  // Ensure padding from edges
+            
             let centerX = geometry.size.width * 0.5  // Center horizontally
             let centerY = geometry.size.height * 0.4  // Center vertically
             
-            // Create a more circular blob shape
-            let radiusX = width * 0.4
-            let radiusY = height * 0.5
-            
-            // Use a more circular approach with smooth curves
-            path.move(to: CGPoint(x: centerX, y: centerY - radiusY))
-            
-            // Top curve
-            path.addCurve(
-                to: CGPoint(x: centerX + radiusX, y: centerY),
-                control1: CGPoint(x: centerX + radiusX * 0.3, y: centerY - radiusY),
-                control2: CGPoint(x: centerX + radiusX, y: centerY - radiusY * 0.3)
-            )
-            
-            // Right curve
-            path.addCurve(
-                to: CGPoint(x: centerX, y: centerY + radiusY),
-                control1: CGPoint(x: centerX + radiusX, y: centerY + radiusY * 0.3),
-                control2: CGPoint(x: centerX + radiusX * 0.3, y: centerY + radiusY)
-            )
-            
-            // Bottom curve
-            path.addCurve(
-                to: CGPoint(x: centerX - radiusX, y: centerY),
-                control1: CGPoint(x: centerX - radiusX * 0.3, y: centerY + radiusY),
-                control2: CGPoint(x: centerX - radiusX, y: centerY + radiusY * 0.3)
-            )
-            
-            // Left curve
-            path.addCurve(
-                to: CGPoint(x: centerX, y: centerY - radiusY),
-                control1: CGPoint(x: centerX - radiusX, y: centerY - radiusY * 0.3),
-                control2: CGPoint(x: centerX - radiusX * 0.3, y: centerY - radiusY)
-            )
-            
-            path.closeSubpath()
+            // Create a perfect circle
+            path.addEllipse(in: CGRect(
+                x: centerX - radius,
+                y: centerY - radius,
+                width: radius * 2,
+                height: radius * 2
+            ))
         }
     }
 }
