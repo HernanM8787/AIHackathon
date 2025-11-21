@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C8BDFD72ECEA7E9008B451A /* DailyReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BDFD62ECEA7E9008B451A /* DailyReflectionView.swift */; };
 		5C919FA12ECD7D540054DE34 /* PermissionRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F8D2ECD7D540054DE34 /* PermissionRequestView.swift */; };
 		5C919FA32ECD7D540054DE34 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F942ECD7D540054DE34 /* FirebaseService.swift */; };
 		5C919FA52ECD7D540054DE34 /* VirtualAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C919F7A2ECD7D540054DE34 /* VirtualAssistantView.swift */; };
@@ -65,6 +66,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5C8BDFD62ECEA7E9008B451A /* DailyReflectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyReflectionView.swift; sourceTree = "<group>"; };
 		5C919F752ECD7D540054DE34 /* AIHackathonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHackathonApp.swift; sourceTree = "<group>"; };
 		5C919F762ECD7D540054DE34 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		5C919F772ECD7D540054DE34 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				5C919F7A2ECD7D540054DE34 /* VirtualAssistantView.swift */,
+				5C8BDFD62ECEA7E9008B451A /* DailyReflectionView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -424,6 +427,7 @@
 				5C919FAB2ECD7D540054DE34 /* CalendarService.swift in Sources */,
 				5C919FAC2ECD7D540054DE34 /* AuthService.swift in Sources */,
 				5C919FF12ECD87E50054DE34 /* GeminiConfig.swift in Sources */,
+				5C8BDFD72ECEA7E9008B451A /* DailyReflectionView.swift in Sources */,
 				5C919FAD2ECD7D540054DE34 /* Match.swift in Sources */,
 				5C91A0102ECE484B0054DE34 /* BottomTabBar.swift in Sources */,
 				5C919FAE2ECD7D540054DE34 /* MatchRow.swift in Sources */,
