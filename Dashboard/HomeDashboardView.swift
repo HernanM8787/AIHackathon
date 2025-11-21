@@ -8,7 +8,7 @@ struct HomeDashboardView: View {
     @State private var isHeartRateLoading = false
     private let heartRateRefreshInterval: TimeInterval = 300
     @State private var heartRateTimer = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
-    @State private var showingAddAssignment = false
+    @State private var showingCreatePost = false
     @State private var showingProfile = false
 
     var body: some View {
@@ -42,9 +42,11 @@ struct HomeDashboardView: View {
                 await appState.refreshCalendarEvents()
             }
         }
-        .sheet(isPresented: $showingAddAssignment) {
-            AddAssignmentView()
-                .environmentObject(appState)
+        .sheet(isPresented: $showingCreatePost) {
+            NavigationStack {
+                CreatePostView()
+                    .environmentObject(appState)
+            }
         }
         .sheet(isPresented: $showingProfile) {
             NavigationStack {
@@ -69,9 +71,29 @@ struct HomeDashboardView: View {
     
     private var addView: some View {
         NavigationStack {
-            AddAssignmentView()
-                .environmentObject(appState)
-                .navigationTitle("Add")
+            ZStack {
+                Color.black.ignoresSafeArea()
+                VStack(spacing: 24) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 48))
+                        .foregroundStyle(.white)
+                    Text("Create a new anonymous post for the Forum.")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.white.opacity(0.8))
+                    Button {
+                        showingCreatePost = true
+                    } label: {
+                        Text("Start a Post")
+                            .font(.headline)
+                            .foregroundStyle(.black)
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 14)
+                            .background(Capsule().fill(Color.white))
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Create")
         }
     }
     
@@ -101,21 +123,13 @@ struct HomeDashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header with profile and welcome
                     HStack(spacing: 12) {
-                        // Profile avatar
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.blue.opacity(0.6), .purple.opacity(0.6)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
+                        Button(action: { showingProfile = true }) {
+                            SchoolLogoView(school: appState.userProfile.school, size: 50)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                 )
-                            )
-                            .frame(width: 50, height: 50)
-                            .overlay {
-                                Image(systemName: "person.fill")
-                                    .foregroundStyle(.white)
-                                    .font(.title3)
-                            }
+                        }
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Welcome back,")
@@ -130,13 +144,10 @@ struct HomeDashboardView: View {
                         
                         Spacer()
                         
-                        Button(action: { showingProfile = true }) {
-                            SchoolLogoView(school: appState.userProfile.school, size: 42)
-                                .overlay(
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                )
-                                .shadow(color: .black.opacity(0.35), radius: 4, y: 2)
+                        Button(action: {}) {
+                            Image(systemName: "bell")
+                                .font(.title3)
+                                .foregroundStyle(.white)
                         }
                     }
                     .padding(.horizontal)

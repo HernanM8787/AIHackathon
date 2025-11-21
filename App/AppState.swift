@@ -1,5 +1,7 @@
 import Foundation
 import Combine
+import CryptoKit
+import UIKit
 
 @MainActor
 final class AppState: ObservableObject {
@@ -256,4 +258,18 @@ struct PermissionState: Codable {
     var remindersGranted = false
     var healthKitGranted = false
     var calendarGranted = false
+}
+
+extension AppState {
+    var peerSupportAnonId: String {
+        let key = "peer_support_id_\(userProfile.id)"
+        if let cached = UserDefaults.standard.string(forKey: key) {
+            return cached
+        }
+        let deviceID = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+        let raw = "\(userProfile.id)-\(deviceID)"
+        let hashed = SHA256.hash(data: Data(raw.utf8)).map { String(format: "%02x", $0) }.joined()
+        UserDefaults.standard.set(hashed, forKey: key)
+        return hashed
+    }
 }

@@ -128,7 +128,7 @@ struct CreatePostView: View {
             do {
                 let newPost = Post(
                     id: "",
-                    userId: appState.userProfile.id,
+                    userId: appState.peerSupportAnonId,
                     title: title,
                     body: bodyText,
                     category: selectedCategory,

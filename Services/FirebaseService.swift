@@ -169,6 +169,47 @@ actor FirebaseService {
             try? doc.data(as: FirestoreComment.self).toComment(id: doc.documentID)
         }
     }
+    
+    nonisolated func observePosts(onUpdate: @escaping ([Post]) -> Void) -> ListenerRegistration {
+        let firestore = Firestore.firestore()
+        return firestore.collection("posts")
+            .order(by: "createdAt", descending: true)
+            .limit(to: 50)
+            .addSnapshotListener { snapshot, error in
+                guard let documents = snapshot?.documents else {
+                    if let error {
+                        print("Error observing posts: \(error)")
+                    }
+                    return
+                }
+                
+                let posts = documents.compactMap { doc in
+                    try? doc.data(as: FirestorePost.self).toPost(id: doc.documentID)
+                }
+                onUpdate(posts)
+            }
+    }
+    
+    nonisolated func observeComments(for postId: String, onUpdate: @escaping ([Comment]) -> Void) -> ListenerRegistration {
+        let firestore = Firestore.firestore()
+        return firestore.collection("posts")
+            .document(postId)
+            .collection("comments")
+            .order(by: "createdAt", descending: false)
+            .addSnapshotListener { snapshot, error in
+                guard let documents = snapshot?.documents else {
+                    if let error {
+                        print("Error observing comments: \(error)")
+                    }
+                    return
+                }
+                
+                let comments = documents.compactMap { doc in
+                    try? doc.data(as: FirestoreComment.self).toComment(id: doc.documentID)
+                }
+                onUpdate(comments)
+            }
+    }
 
     // MARK: - Assignments
 

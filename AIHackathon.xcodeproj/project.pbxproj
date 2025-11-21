@@ -62,6 +62,7 @@
 		5CA95C9F2ECFB05E005C9EE1 /* AddAssignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95C9D2ECFB05E005C9EE1 /* AddAssignmentView.swift */; };
 		5CA95CA12ECFB06B005C9EE1 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA02ECFB06B005C9EE1 /* Assignment.swift */; };
 		5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */; };
+		5CA95CA72ED01475005C9EE1 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA62ED01475005C9EE1 /* PostDetailView.swift */; };
 		C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */; };
 		C347AE9D2ECEB6C4004A51E4 /* AIInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */; };
 		C347AE9F2ECEB754004A51E4 /* ActivityCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */; };
@@ -141,6 +142,7 @@
 		5CA95C9D2ECFB05E005C9EE1 /* AddAssignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAssignmentView.swift; sourceTree = "<group>"; };
 		5CA95CA02ECFB06B005C9EE1 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionStorage.swift; sourceTree = "<group>"; };
+		5CA95CA62ED01475005C9EE1 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
 		C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCalendarView.swift; sourceTree = "<group>"; };
 		C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightCard.swift; sourceTree = "<group>"; };
 		C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCard.swift; sourceTree = "<group>"; };
@@ -348,6 +350,7 @@
 				5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */,
 				C37827742ECFDACB00E4D5C6 /* CreatePostView.swift */,
 				C37827762ECFDAD000E4D5C6 /* PeerSupportView.swift */,
+				5CA95CA62ED01475005C9EE1 /* PostDetailView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -519,6 +522,7 @@
 				5C91A0062ED09A1C0054DE34 /* SignupView.swift in Sources */,
 				5C91A00D2ED0C8750054DE34 /* LoginView.swift in Sources */,
 				C37827752ECFDACB00E4D5C6 /* CreatePostView.swift in Sources */,
+				5CA95CA72ED01475005C9EE1 /* PostDetailView.swift in Sources */,
 				5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */,
 				5C919FA62ECD7D540054DE34 /* CreateEventView.swift in Sources */,
 				5C919FA72ECD7D540054DE34 /* EventCard.swift in Sources */,

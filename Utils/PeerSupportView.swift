@@ -1,12 +1,15 @@
 import SwiftUI
+import FirebaseFirestore
 
 struct PeerSupportView: View {
-    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var appState: AppState
     @State private var selectedCategory: PostCategory = .all
     @State private var showingCreatePost = false
     @State private var posts: [Post] = []
     @State private var isLoading = false
+    @State private var showMyPostsOnly = false
+    @State private var selectedPost: Post?
+    @State private var postsListener: ListenerRegistration?
     
     var body: some View {
         ZStack {
@@ -14,33 +17,32 @@ struct PeerSupportView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title3)
-                            .foregroundStyle(.white)
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Peer Support")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                    
-                    Spacer()
-                    
-                    Button(action: {}) {
-                        Image(systemName: "line.3.horizontal.decrease")
-                            .font(.title3)
-                            .foregroundStyle(.white)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 12)
-                
                 ScrollView {
                     VStack(spacing: 20) {
+                        // Header
+                        HStack {
+                            Text("Peer Support")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                            Spacer()
+                            Button(action: {
+                                showMyPostsOnly.toggle()
+                            }) {
+                                Label(showMyPostsOnly ? "My Posts" : "All Posts", systemImage: showMyPostsOnly ? "person.fill.badge.plus" : "line.3.horizontal.decrease")
+                                    .font(.caption)
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 12)
+                                    .background(
+                                        Capsule()
+                                            .fill(showMyPostsOnly ? Color.purple.opacity(0.3) : Color(white: 0.15))
+                                    )
+                            }
+                            .foregroundStyle(.white)
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 12)
+                        
                         // Community Guidelines Card
                         CommunityGuidelinesCard()
                             .padding(.horizontal)
@@ -55,7 +57,6 @@ struct PeerSupportView: View {
                                         isSelected: selectedCategory == category
                                     ) {
                                         selectedCategory = category
-                                        loadPosts()
                                     }
                                 }
                             }
@@ -68,10 +69,6 @@ struct PeerSupportView: View {
                             ProgressView()
                                 .padding()
                         } else {
-                            let filteredPosts = selectedCategory == .all 
-                                ? posts 
-                                : posts.filter { $0.category == selectedCategory }
-                            
                             if filteredPosts.isEmpty {
                                 VStack(spacing: 12) {
                                     Image(systemName: "bubble.left.and.bubble.right")
@@ -87,8 +84,13 @@ struct PeerSupportView: View {
                                 .padding(.vertical, 60)
                             } else {
                                 ForEach(filteredPosts) { post in
-                                    PostCard(post: post)
-                                        .padding(.horizontal)
+                                    Button {
+                                        selectedPost = post
+                                    } label: {
+                                        PostCard(post: post)
+                                            .padding(.horizontal)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
@@ -98,26 +100,7 @@ struct PeerSupportView: View {
             }
             
             // Floating Action Button
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: { showingCreatePost = true }) {
-                        Image(systemName: "pencil")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .frame(width: 56, height: 56)
-                            .background(
-                                Circle()
-                                    .fill(Color.purple)
-                            )
-                            .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
-                    }
-                    .padding(.trailing)
-                    .padding(.bottom, 24)
-                }
-            }
+            // Floating button removed; creation handled via main Add tab
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $showingCreatePost) {
@@ -126,29 +109,47 @@ struct PeerSupportView: View {
                     .environmentObject(appState)
             }
         }
+        .sheet(item: $selectedPost) { post in
+            NavigationStack {
+                PostDetailView(post: post, myAnonymousId: appState.peerSupportAnonId)
+                    .environmentObject(appState)
+            }
+        }
         .onAppear {
-            loadPosts()
+            startListening()
+        }
+        .onDisappear {
+            postsListener?.remove()
+            postsListener = nil
         }
         .refreshable {
-            await loadPostsAsync()
+            startListening()
         }
     }
     
-    private func loadPosts() {
-        Task {
-            await loadPostsAsync()
+    private var filteredPosts: [Post] {
+        let baseCategoryFiltered: [Post]
+        if selectedCategory == .all {
+            baseCategoryFiltered = posts
+        } else {
+            baseCategoryFiltered = posts.filter { $0.category == selectedCategory }
         }
+        if showMyPostsOnly {
+            let anonId = appState.peerSupportAnonId
+            return baseCategoryFiltered.filter { $0.userId == anonId }
+        }
+        return baseCategoryFiltered
     }
     
-    private func loadPostsAsync() async {
+    private func startListening() {
+        postsListener?.remove()
         isLoading = true
-        do {
-            let firebaseService = FirebaseService()
-            posts = try await firebaseService.fetchPosts(category: selectedCategory == .all ? nil : selectedCategory)
-        } catch {
-            print("Error loading posts: \(error)")
+        postsListener = FirebaseService().observePosts { newPosts in
+            DispatchQueue.main.async {
+                self.posts = newPosts
+                self.isLoading = false
+            }
         }
-        isLoading = false
     }
 }
 
@@ -196,13 +197,6 @@ struct CategoryFilterButton: View {
 
 struct PostCard: View {
     let post: Post
-    @State private var careCount: Int
-    @State private var isCared: Bool = false
-    
-    init(post: Post) {
-        self.post = post
-        _careCount = State(initialValue: post.careCount)
-    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -243,25 +237,14 @@ struct PostCard: View {
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
             
-            // Engagement Metrics
-            HStack(spacing: 20) {
-                Button(action: toggleCare) {
-                    HStack(spacing: 6) {
-                        Image(systemName: isCared ? "hand.raised.fill" : "hand.raised")
-                            .foregroundStyle(.purple)
-                            .font(.system(size: 16))
-                        Text("\(careCount)")
-                            .font(.subheadline)
-                            .foregroundStyle(.purple)
-                    }
-                }
-                
-                HStack(spacing: 6) {
+            HStack {
+                Spacer()
+                HStack(spacing: 4) {
                     Image(systemName: "bubble.right")
+                        .font(.caption)
                         .foregroundStyle(.purple)
-                        .font(.system(size: 16))
                     Text("\(post.commentCount)")
-                        .font(.subheadline)
+                        .font(.caption)
                         .foregroundStyle(.purple)
                 }
             }
@@ -271,21 +254,6 @@ struct PostCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(white: 0.15))
         )
-    }
-    
-    private func toggleCare() {
-        isCared.toggle()
-        careCount += isCared ? 1 : -1
-        
-        // Update in Firebase
-        Task {
-            do {
-                let firebaseService = FirebaseService()
-                try await firebaseService.updatePostCare(postId: post.id, increment: isCared ? 1 : -1)
-            } catch {
-                print("Error updating care: \(error)")
-            }
-        }
     }
 }
 
