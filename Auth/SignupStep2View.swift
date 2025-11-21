@@ -2,11 +2,24 @@ import SwiftUI
 
 struct SignupStep2View: View {
     @EnvironmentObject private var appState: AppState
+    @Environment(\.dismiss) private var dismiss
     @State private var academicLevel: String = "Undergraduate"
     @State private var major: String = ""
     @State private var isSubmitting = false
-    @State private var showSuccessAlert = false
+    @State private var activeAlert: SignupAlert?
     @FocusState private var isMajorFieldFocused: Bool
+    private enum SignupAlert: Identifiable {
+        case success
+        case error(String)
+        
+        var id: String {
+            switch self {
+            case .success: return "success"
+            case .error(let message): return "error-\(message)"
+            }
+        }
+    }
+    
     
     // These should be passed from step 1
     let email: String
@@ -25,7 +38,7 @@ struct SignupStep2View: View {
                 VStack(spacing: 16) {
                     HStack {
                         Button(action: {
-                            // Navigation handled by NavigationStack - will go back to step 1
+                            dismiss()
                         }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 18, weight: .semibold))
@@ -178,12 +191,21 @@ struct SignupStep2View: View {
             }
         }
         .navigationBarHidden(true)
-        .alert("Welcome to your journey!", isPresented: $showSuccessAlert) {
-            Button("Get Started") {
-                // User will be automatically navigated to dashboard via authStep change
+        .alert(item: $activeAlert) { alert in
+            switch alert {
+            case .success:
+                return Alert(
+                    title: Text("Welcome to your journey!"),
+                    message: Text("Enjoy your journey to a balanced student life."),
+                    dismissButton: .default(Text("Get Started"))
+                )
+            case .error(let message):
+                return Alert(
+                    title: Text("Sign Up Failed"),
+                    message: Text(message),
+                    dismissButton: .default(Text("OK"))
+                )
             }
-        } message: {
-            Text("Enjoy your journey to a balanced student life.")
         }
     }
     
@@ -212,13 +234,13 @@ struct SignupStep2View: View {
                     isSubmitting = false
                     // Show success alert after a brief delay to ensure state is updated
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showSuccessAlert = true
+                        activeAlert = .success
                     }
                 }
             } catch {
                 await MainActor.run {
                     isSubmitting = false
-                    // Handle error - could show error alert
+                    activeAlert = .error(error.localizedDescription)
                 }
             }
         }
