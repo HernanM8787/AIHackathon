@@ -27,6 +27,7 @@ final class AppState: ObservableObject {
     @Published var heartRateHistory: [HeartRateSample] = []
     @Published var assignments: [Assignment] = MockData.assignments
     @Published var stressSamples: [StressSample] = []
+    @Published var stressForecast: StressForecast?
 
     private let permissionStorage = PermissionStorage()
     private let authService = AuthService()
@@ -251,6 +252,42 @@ final class AppState: ObservableObject {
             try await firebaseService.saveStressSamples(generated, userId: userProfile.id, date: date)
         } catch {
             print("Failed to generate stress levels: \(error)")
+        }
+    }
+    
+    func refreshStressForecast(for date: Date = Date(), forceRegenerate: Bool = false) async {
+        guard isAuthenticated else {
+            stressForecast = nil
+            return
+        }
+        if !forceRegenerate, let cached = stressForecast, cached.dateKey == FirebaseService.dayFormatter.string(from: date) {
+            return
+        }
+        do {
+            let fetched = try await firebaseService.fetchStressForecast(for: userProfile.id, date: date)
+            await MainActor.run {
+                stressForecast = fetched
+            }
+        } catch {
+            await generateStressForecast(for: date)
+        }
+    }
+    
+    private func generateStressForecast(for date: Date) async {
+        do {
+            let context = StressContext(events: events, assignments: assignments, heartRates: heartRateHistory)
+            let result = try await stressAnalysisService.generateStressForecast(for: date, context: context, profile: userProfile)
+            let forecast = StressForecast(
+                dateKey: FirebaseService.dayFormatter.string(from: date),
+                emoji: result.emoji,
+                summary: result.text
+            )
+            await MainActor.run {
+                stressForecast = forecast
+            }
+            try await firebaseService.saveStressForecast(forecast, userId: userProfile.id, date: date)
+        } catch {
+            print("Failed to generate stress forecast: \(error)")
         }
     }
 

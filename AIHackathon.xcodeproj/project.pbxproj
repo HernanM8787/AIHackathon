@@ -63,6 +63,12 @@
 		5CA95CA12ECFB06B005C9EE1 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA02ECFB06B005C9EE1 /* Assignment.swift */; };
 		5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */; };
 		5CA95CA72ED01475005C9EE1 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA62ED01475005C9EE1 /* PostDetailView.swift */; };
+		5CA95CA92ED02CE1005C9EE1 /* MonthYearPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CA82ED02CE1005C9EE1 /* MonthYearPicker.swift */; };
+		5CA95CAB2ED02D06005C9EE1 /* SchoolEventsNewsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CAA2ED02D06005C9EE1 /* SchoolEventsNewsCard.swift */; };
+		5CA95CAD2ED02D4F005C9EE1 /* HourlyItineraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CAC2ED02D4F005C9EE1 /* HourlyItineraryView.swift */; };
+		5CA95CAF2ED02DE2005C9EE1 /* AISuggestionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CAE2ED02DE2005C9EE1 /* AISuggestionsListView.swift */; };
+		5CA95CB12ED02DEF005C9EE1 /* CalendarSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB02ED02DEF005C9EE1 /* CalendarSearchView.swift */; };
+		5CA95CB32ED0322A005C9EE1 /* StressForecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB22ED0322A005C9EE1 /* StressForecast.swift */; };
 		C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */; };
 		C347AE9D2ECEB6C4004A51E4 /* AIInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */; };
 		C347AE9F2ECEB754004A51E4 /* ActivityCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */; };
@@ -150,6 +156,12 @@
 		5CA95CA02ECFB06B005C9EE1 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionStorage.swift; sourceTree = "<group>"; };
 		5CA95CA62ED01475005C9EE1 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
+		5CA95CA82ED02CE1005C9EE1 /* MonthYearPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthYearPicker.swift; sourceTree = "<group>"; };
+		5CA95CAA2ED02D06005C9EE1 /* SchoolEventsNewsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolEventsNewsCard.swift; sourceTree = "<group>"; };
+		5CA95CAC2ED02D4F005C9EE1 /* HourlyItineraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourlyItineraryView.swift; sourceTree = "<group>"; };
+		5CA95CAE2ED02DE2005C9EE1 /* AISuggestionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISuggestionsListView.swift; sourceTree = "<group>"; };
+		5CA95CB02ED02DEF005C9EE1 /* CalendarSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSearchView.swift; sourceTree = "<group>"; };
+		5CA95CB22ED0322A005C9EE1 /* StressForecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressForecast.swift; sourceTree = "<group>"; };
 		C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCalendarView.swift; sourceTree = "<group>"; };
 		C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightCard.swift; sourceTree = "<group>"; };
 		C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCard.swift; sourceTree = "<group>"; };
@@ -252,12 +264,14 @@
 				5C91A00F2ECE484B0054DE34 /* BottomTabBar.swift */,
 				5C919F7C2ECD7D540054DE34 /* EventCard.swift */,
 				5C919F7D2ECD7D540054DE34 /* MatchRow.swift */,
+				5CA95CAC2ED02D4F005C9EE1 /* HourlyItineraryView.swift */,
 				5C919F7E2ECD7D540054DE34 /* MetricCard.swift */,
 				C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */,
 				C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */,
 				C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */,
 				C347AEA22ECEB767004A51E4 /* EventCard.swift */,
 				C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */,
+				5CA95CAA2ED02D06005C9EE1 /* SchoolEventsNewsCard.swift */,
 				C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */,
 				C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */,
 				C37827902ED0314E00E4D5C6 /* MonthYearPicker.swift */,
@@ -279,6 +293,8 @@
 			isa = PBXGroup;
 			children = (
 				5C919F822ECD7D540054DE34 /* CreateEventView.swift */,
+				5CA95CB02ED02DEF005C9EE1 /* CalendarSearchView.swift */,
+				5CA95CAE2ED02DE2005C9EE1 /* AISuggestionsListView.swift */,
 				5C919F832ECD7D540054DE34 /* EventCalendarView.swift */,
 				C37827942ED0325600E4D5C6 /* AISuggestionsListView.swift */,
 				C37827962ED0325B00E4D5C6 /* CalendarSearchView.swift */,
@@ -307,6 +323,7 @@
 				C37827722ECFDA8200E4D5C6 /* Post.swift */,
 				C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */,
 				C3A0B0112ED17B0400A93F22 /* StressSample.swift */,
+				5CA95CB22ED0322A005C9EE1 /* StressForecast.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -532,6 +549,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CA95CB32ED0322A005C9EE1 /* StressForecast.swift in Sources */,
 				C3A0B0122ED17B0400A93F22 /* StressSample.swift in Sources */,
 				C3A0B0142ED17B0400A93F22 /* StressAnalysisService.swift in Sources */,
 				C37827772ECFDAD000E4D5C6 /* PeerSupportView.swift in Sources */,
@@ -548,6 +566,7 @@
 				5CA95CA72ED01475005C9EE1 /* PostDetailView.swift in Sources */,
 				5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */,
 				5C919FA62ECD7D540054DE34 /* CreateEventView.swift in Sources */,
+				5CA95CB12ED02DEF005C9EE1 /* CalendarSearchView.swift in Sources */,
 				5C919FA72ECD7D540054DE34 /* EventCard.swift in Sources */,
 				C347AEA52ECEB770004A51E4 /* MentalStateCard.swift in Sources */,
 				5C919FA82ECD7D540054DE34 /* PreferenceSetupView.swift in Sources */,
@@ -574,6 +593,7 @@
 				5C8BE0032ECEEC2E008B451A /* AccountInformationView.swift in Sources */,
 				5C8BE0012ECEEC25008B451A /* SignupStep2View.swift in Sources */,
 				5C8BE0052ECEEC34008B451A /* WelcomeScreenView.swift in Sources */,
+				5CA95CAD2ED02D4F005C9EE1 /* HourlyItineraryView.swift in Sources */,
 				5C919FB12ECD7D540054DE34 /* OnboardingFlowView.swift in Sources */,
 				5C919FB22ECD7D540054DE34 /* AIHackathonApp.swift in Sources */,
 				5C919FB32ECD7D540054DE34 /* UserProfile.swift in Sources */,
