@@ -58,7 +58,7 @@ enum School: String, CaseIterable {
     
     var logoIcon: String {
         switch self {
-        case .kennesawState: return "bird.fill" // Owl fallback
+        case .kennesawState: return "bird.fill" // Owl icon for Kennesaw State
         case .georgiaState: return "pawprint.fill" // Panther fallback
         case .uga: return "dog.fill" // Bulldog fallback
         case .defaultSchool: return "building.columns.fill"

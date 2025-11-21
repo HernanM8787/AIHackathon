@@ -11,56 +11,81 @@ struct VirtualAssistantView: View {
     private let service = GeminiService()
 
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(messages) { message in
-                            MessageBubble(message: message)
-                                .id(message.id)
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(messages) { message in
+                                MessageBubble(message: message)
+                                    .id(message.id)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 16)
+                        .padding(.bottom, 100)
+                    }
+                    .onChange(of: messages.count) { _, _ in
+                        guard let id = messages.last?.id else { return }
+                        DispatchQueue.main.async {
+                            withAnimation(.easeOut) {
+                                proxy.scrollTo(id, anchor: .bottom)
+                            }
                         }
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 16)
-                    .padding(.bottom, 80)
                 }
-                .background(Color(.systemGroupedBackground))
-                .onChange(of: messages.count) { _, _ in
-                    guard let id = messages.last?.id else { return }
-                    DispatchQueue.main.async {
-                        withAnimation(.easeOut) {
-                            proxy.scrollTo(id, anchor: .bottom)
-                        }
-                    }
+                
+                // Chat input bar
+                VStack(spacing: 0) {
+                    Divider()
+                        .background(Color(white: 0.2))
+                    inputBar
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(Color(white: 0.1))
                 }
             }
-            Divider()
-            inputBar
-                .padding(.horizontal)
-                .padding(.vertical, 12)
-                .background(Material.bar)
         }
         .navigationTitle("AI Assistant")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.black, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     private var inputBar: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             TextField("Ask about focus, energy, classes...", text: $input, axis: .vertical)
-                .textFieldStyle(.roundedBorder)
+                .textFieldStyle(.plain)
                 .focused($isInputFocused)
                 .disabled(isSending)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(Color(white: 0.15))
+                )
+                .foregroundStyle(.white)
+                .lineLimit(1...5)
 
             if isSending {
                 ProgressView()
-                    .padding(.horizontal, 8)
+                    .tint(.white)
+                    .frame(width: 44, height: 44)
             } else {
                 Button(action: sendMessage) {
                     Image(systemName: "paperplane.fill")
-                        .foregroundStyle(.white)
-                        .padding(10)
-                        .background(Color.accentColor, in: Circle())
+                        .foregroundStyle(.black)
+                        .font(.system(size: 18, weight: .semibold))
+                        .frame(width: 44, height: 44)
+                        .background(
+                            Circle()
+                                .fill(Color.white)
+                        )
                 }
                 .disabled(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .opacity(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.5 : 1.0)
             }
         }
     }
@@ -109,13 +134,15 @@ private struct MessageBubble: View {
 
     private var bubble: some View {
         Text(message.text)
-            .padding(12)
-            .foregroundStyle(message.role == .assistant ? Color.primary : Color.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .foregroundStyle(message.role == .assistant ? .white : .black)
             .background(
                 message.role == .assistant
-                ? Color(.secondarySystemBackground)
-                : Color.accentColor
+                ? Color(white: 0.2)
+                : Color.white
             )
-            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .frame(maxWidth: UIScreen.main.bounds.width * 0.75, alignment: message.role == .assistant ? .leading : .trailing)
     }
 }

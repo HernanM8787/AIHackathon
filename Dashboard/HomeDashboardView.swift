@@ -55,10 +55,254 @@ struct HomeDashboardView: View {
     }
     
     private var statsView: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            Text("Stats View")
-                .foregroundStyle(.white)
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        // Header
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Your Statistics")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                            Text("Track your progress and insights")
+                                .font(.subheadline)
+                                .foregroundStyle(.gray)
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        
+                        // Weekly Study Hours
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Weekly Study Hours")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("28.5")
+                                        .font(.system(size: 36, weight: .bold))
+                                        .foregroundStyle(.white)
+                                    Text("hours this week")
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                Spacer()
+                                Image(systemName: "book.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundStyle(.yellow)
+                            }
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(white: 0.15))
+                            )
+                        }
+                        .padding(.horizontal)
+                        
+                        // Screen Time Stats
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Screen Time")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            
+                            VStack(spacing: 16) {
+                                StatRow(label: "Today", value: "6.2 hours", icon: "iphone", color: .blue)
+                                StatRow(label: "This Week", value: "42.8 hours", icon: "chart.bar.fill", color: .green)
+                                StatRow(label: "Daily Average", value: "6.1 hours", icon: "clock.fill", color: .orange)
+                            }
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(white: 0.15))
+                            )
+                        }
+                        .padding(.horizontal)
+                        
+                        // Heart Rate Stats
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Health Metrics")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            
+                            HStack(spacing: 16) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Image(systemName: "heart.fill")
+                                            .foregroundStyle(.red)
+                                        Text("Resting HR")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.gray)
+                                    }
+                                    Text("\(appState.userProfile.metrics.restingHeartRate)")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                    Text("bpm")
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color(white: 0.15))
+                                )
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Image(systemName: "figure.walk")
+                                            .foregroundStyle(.green)
+                                        Text("Steps")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.gray)
+                                    }
+                                    Text("8,432")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                    Text("today")
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color(white: 0.15))
+                                )
+                            }
+                        }
+                        .padding(.horizontal)
+                        
+                        // Assignment Completion
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Assignments")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            
+                            VStack(spacing: 12) {
+                                HStack {
+                                    Text("Completed This Week")
+                                        .foregroundStyle(.gray)
+                                    Spacer()
+                                    Text("12/15")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                }
+                                
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color(white: 0.2))
+                                            .frame(height: 12)
+                                        
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color.green)
+                                            .frame(width: geometry.size.width * 0.8, height: 12)
+                                    }
+                                }
+                                .frame(height: 12)
+                                
+                                Text("80% completion rate")
+                                    .font(.caption)
+                                    .foregroundStyle(.gray)
+                            }
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(white: 0.15))
+                            )
+                        }
+                        .padding(.horizontal)
+                        
+                        // Calendar Events
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Calendar Activity")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            
+                            HStack(spacing: 16) {
+                                VStack {
+                                    Text("\(appState.deviceCalendarEvents.count)")
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                    Text("Events")
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                VStack {
+                                    Text("5")
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                    Text("This Week")
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                VStack {
+                                    Text("2")
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                    Text("Today")
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(white: 0.15))
+                            )
+                        }
+                        .padding(.horizontal)
+                        
+                        Spacer()
+                            .frame(height: 100)
+                    }
+                }
+            }
+            .navigationTitle("Stats")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.black, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+        }
+    }
+    
+    private struct StatRow: View {
+        let label: String
+        let value: String
+        let icon: String
+        let color: Color
+        
+        var body: some View {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundStyle(color)
+                    .font(.title3)
+                    .frame(width: 30)
+                
+                Text(label)
+                    .foregroundStyle(.white)
+                    .font(.subheadline)
+                
+                Spacer()
+                
+                Text(value)
+                    .foregroundStyle(.white)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+            }
         }
     }
     
@@ -102,8 +346,12 @@ struct HomeDashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header with profile and welcome
                     HStack(spacing: 12) {
-                        // School logo/profile picture
-                        SchoolLogoView(school: appState.userProfile.school, size: 50)
+                        // School logo/profile picture - clickable to go to profile
+                        Button(action: {
+                            selectedTab = .profile
+                        }) {
+                            SchoolLogoView(school: appState.userProfile.school, size: 50)
+                        }
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Welcome back,")
