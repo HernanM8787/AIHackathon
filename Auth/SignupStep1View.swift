@@ -6,6 +6,7 @@ struct SignupStep1View: View {
     @Binding var password: String
     @State private var showPassword = false
     @State private var errorMessage: String?
+    @State private var selectedInstitution: USInstitution? = nil
     var onNext: () -> Void
     
     var body: some View {
@@ -65,6 +66,57 @@ struct SignupStep1View: View {
                 
                 ScrollView {
                     VStack(spacing: 24) {
+                        // School Selection Dropdown
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Select Your Institution")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.9))
+                            
+                            Menu {
+                                ForEach(USInstitution.allInstitutions, id: \.domain) { institution in
+                                    Button(action: {
+                                        selectedInstitution = institution
+                                        email = "\(institution.domain)"
+                                    }) {
+                                        HStack {
+                                            Text(institution.name)
+                                            if institution.domain == "kennesaw.edu" || 
+                                               institution.domain == "gsu.edu" || 
+                                               institution.domain == "uga.edu" {
+                                                Text("(Demo)")
+                                                    .font(.caption)
+                                                    .foregroundColor(.gray)
+                                            }
+                                        }
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    if let selected = selectedInstitution {
+                                        SchoolLogoView(school: SchoolBranding.detectSchool(from: selected.domain), size: 24)
+                                        Text(selected.name)
+                                            .foregroundColor(.white)
+                                    } else {
+                                        Text("Choose your school...")
+                                            .foregroundColor(.white.opacity(0.5))
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.down")
+                                        .foregroundColor(.white.opacity(0.6))
+                                        .font(.system(size: 12))
+                                }
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color(red: 0x2A/255.0, green: 0x2A/255.0, blue: 0x3A/255.0))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                        )
+                                )
+                            }
+                        }
+                        
                         // Student Email Field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Student Email")
@@ -90,6 +142,36 @@ struct SignupStep1View: View {
                                             .stroke(Color.white.opacity(0.1), lineWidth: 1)
                                     )
                             )
+                            .onChange(of: selectedInstitution) { _ in
+                                if let institution = selectedInstitution {
+                                    // Auto-fill domain if user hasn't typed yet
+                                    if email.isEmpty || !email.contains("@") {
+                                        email = "@\(institution.domain)"
+                                    }
+                                }
+                            }
+                            
+                            // School Detection Preview
+                            if !email.isEmpty && email.contains("@") {
+                                let detectedSchool = SchoolBranding.detectSchool(from: email)
+                                if detectedSchool != .defaultSchool {
+                                    HStack(spacing: 8) {
+                                        SchoolLogoView(school: detectedSchool, size: 24)
+                                        Text("Detected: \(detectedSchool.name)")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(detectedSchool.primaryColor)
+                                    }
+                                    .padding(.top, 4)
+                                } else if let selected = selectedInstitution {
+                                    let school = SchoolBranding.detectSchool(from: selected.domain)
+                                    if school == .defaultSchool {
+                                        Text("Note: This school is not in the demo. Only KSU, GSU, and UGA are supported.")
+                                            .font(.system(size: 11, weight: .regular))
+                                            .foregroundColor(.orange.opacity(0.8))
+                                            .padding(.top, 4)
+                                    }
+                                }
+                            }
                         }
                         
                         // Password Field

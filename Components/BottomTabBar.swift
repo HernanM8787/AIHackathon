@@ -1,10 +1,11 @@
 import SwiftUI
 
 enum DashboardTab: Hashable {
-    case assistant
-    case chat
     case home
+    case stats
+    case add
     case calendar
+    case gemini
     case profile
 }
 
@@ -12,20 +13,39 @@ struct BottomTabBar: View {
     @Binding var selected: DashboardTab
 
     var body: some View {
-        HStack(spacing: 18) {
-            tabButton(icon: "sparkles", title: "Assistant", tab: .assistant)
-            tabButton(icon: "bubble.left.and.bubble.right.fill", title: "Chat", tab: .chat)
+        HStack(spacing: 12) {
             tabButton(icon: "house.fill", title: "Home", tab: .home)
+            tabButton(icon: "chart.bar.fill", title: "Stats", tab: .stats)
+            
+            // Center + button
+            Button {
+                selected = .add
+            } label: {
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 56, height: 56)
+                    .overlay {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.black)
+                    }
+                    .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+            }
+            .padding(.horizontal, 8)
+            
             tabButton(icon: "calendar", title: "Calendar", tab: .calendar)
-            tabButton(icon: "person.crop.circle.fill", title: "Profile", tab: .profile)
+            tabButton(icon: "sparkles", title: "AI", tab: .gemini)
+            tabButton(icon: "person.fill", title: "Profile", tab: .profile)
         }
         .padding(.vertical, 12)
-        .padding(.horizontal, 22)
+        .padding(.horizontal, 18)
         .background(
             Capsule()
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
+                .fill(Color(white: 0.1))
+                .shadow(color: .black.opacity(0.3), radius: 10, y: 6)
         )
+        .padding(.horizontal, 16)
     }
 
     private func tabButton(icon: String, title: String, tab: DashboardTab) -> some View {
@@ -34,12 +54,12 @@ struct BottomTabBar: View {
         } label: {
             VStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 20))
                 Text(title)
-                    .font(.caption2)
+                    .font(.caption)
             }
-            .foregroundStyle(selected == tab ? Color.accentColor : Color.primary.opacity(0.6))
-            .padding(.horizontal, 4)
+            .foregroundStyle(selected == tab ? .white : .gray)
+            .frame(maxWidth: .infinity)
         }
     }
 }

@@ -14,14 +14,16 @@ struct HomeDashboardView: View {
         ZStack {
             Group {
                 switch selectedTab {
-                case .assistant:
-                    assistantView
-                case .chat:
-                    chatView
                 case .home:
                     dashboard
+                case .stats:
+                    statsView
+                case .add:
+                    addView
                 case .calendar:
                     calendarView
+                case .gemini:
+                    geminiView
                 case .profile:
                     profileView
                 }
@@ -29,13 +31,8 @@ struct HomeDashboardView: View {
             
             VStack {
                 Spacer()
-                HStack {
-                    Spacer()
-                    BottomTabBar(selected: $selectedTab)
-                        .frame(maxWidth: 420)
-                    Spacer()
-                }
-                .padding(.bottom, 8)
+                BottomTabBar(selected: $selectedTab)
+                    .padding(.bottom, 8)
             }
         }
         .task(id: appState.permissionState.healthKitGranted) {
@@ -56,20 +53,37 @@ struct HomeDashboardView: View {
             }
         }
     }
-    private var assistantView: some View {
+    private var statsView: some View {
         NavigationStack {
-            VirtualAssistantView()
-                .environmentObject(appState)
-                .navigationTitle("Assistant")
+            ZStack {
+                Color.black.ignoresSafeArea()
+                Text("Stats View")
+                    .foregroundStyle(.white)
+                    .font(.headline)
+            }
+            .navigationTitle("Stats")
         }
     }
     
-    private var chatView: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            Text("Chat coming soon")
-                .foregroundStyle(.white.opacity(0.8))
-                .font(.headline)
+    private var addView: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                VStack(spacing: 20) {
+                    Text("Create New")
+                        .foregroundStyle(.white)
+                        .font(.headline)
+                    
+                    Button(action: { showingAddAssignment = true }) {
+                        Text("Add Assignment")
+                            .foregroundStyle(.black)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(10)
+                    }
+                }
+            }
+            .navigationTitle("Create")
         }
     }
     
@@ -80,38 +94,33 @@ struct HomeDashboardView: View {
         }
     }
     
+    private var geminiView: some View {
+        NavigationStack {
+            VirtualAssistantView()
+                .environmentObject(appState)
+        }
+    }
+    
     private var profileView: some View {
         NavigationStack {
-            AccountInformationView()
+            ProfileView()
                 .environmentObject(appState)
         }
     }
 
     private var dashboard: some View {
-        ZStack {
-            // Dark background
-            Color.black
-                .ignoresSafeArea()
-            
-            ScrollView {
+        NavigationStack {
+            ZStack {
+                // Dark background
+                Color.black
+                    .ignoresSafeArea()
+                
+                ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header with profile and welcome
                     HStack(spacing: 12) {
-                        // Profile picture
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.blue.opacity(0.6), .purple.opacity(0.6)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 50, height: 50)
-                            .overlay {
-                                Image(systemName: "person.fill")
-                                    .foregroundStyle(.white)
-                                    .font(.title3)
-                            }
+                        // School logo/profile picture
+                        SchoolLogoView(school: appState.userProfile.school, size: 50)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Welcome back,")
@@ -121,6 +130,7 @@ struct HomeDashboardView: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundStyle(.white)
+                            SchoolBadgeView(school: appState.userProfile.school)
                         }
                         
                         Spacer()
@@ -189,11 +199,59 @@ struct HomeDashboardView: View {
                         }
                     }
                     .padding(.top, 8)
-                    .padding(.bottom, 100) // Space for bottom tab bar
+                    
+                    // Peer Support Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Peer Support")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        NavigationLink(destination: PeerSupportView().environmentObject(appState)) {
+                            HStack(spacing: 16) {
+                                Image(systemName: "bubble.left.and.bubble.right.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.purple)
+                                    .frame(width: 50, height: 50)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.purple.opacity(0.2))
+                                    )
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Connect with Peers")
+                                        .font(.headline)
+                                        .foregroundStyle(.white)
+                                    Text("Share experiences and get support")
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(.gray)
+                                    .font(.caption)
+                            }
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(white: 0.15))
+                            )
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 90) // Space for bottom tab bar
                 }
             }
+            }
+            .navigationBarHidden(true)
         }
-        .navigationBarHidden(true)
     }
     
     private func formatScreenTime(_ hours: Double) -> String {
