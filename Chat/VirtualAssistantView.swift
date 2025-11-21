@@ -5,7 +5,7 @@ struct VirtualAssistantView: View {
     @EnvironmentObject private var appState: AppState
     @Binding var selectedTab: DashboardTab
     @State private var messages: [ChatMessage] = [
-        ChatMessage(role: .assistant, text: "I'm your AI assistant")
+        ChatMessage(role: .assistant, text: "Hello! I'm here to help you balance your academic life and well-being. How can I assist you today?")
     ]
     @State private var input: String = ""
     @State private var isSending = false
