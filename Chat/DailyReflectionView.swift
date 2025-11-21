@@ -257,7 +257,6 @@ struct DailyReflectionView: View {
                         .foregroundStyle(.white)
                         .scaleEffect(isGenerating ? 0.98 : 1.0)
                     }
-<<<<<<< HEAD
                     .disabled((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
                     .buttonStyle(PressedButtonStyle())
                     .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isGenerating)
@@ -266,41 +265,11 @@ struct DailyReflectionView: View {
                     // Extra spacing at bottom
                     Spacer(minLength: 20)
                 }
-=======
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(submitBackground, in: RoundedRectangle(cornerRadius: 12))
-                    .foregroundStyle(.white)
-                }
-                .disabled(isSubmitDisabled)
-                .padding(.horizontal)
-                .padding(.bottom)
->>>>>>> 012802e68087cea02288bf5070ea5b3ca8051605
             }
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Daily Reflection")
         .navigationBarTitleDisplayMode(.inline)
-    }
-    
-    private var isSubmitDisabled: Bool {
-        (reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating
-    }
-    
-    private var submitBackground: AnyShapeStyle {
-        if isSubmitDisabled {
-            return AnyShapeStyle(Color(red: 0.85, green: 0.83, blue: 0.80))
-        } else {
-            return AnyShapeStyle(LinearGradient(
-                colors: [
-                    Color(red: 0.70, green: 0.65, blue: 0.60),
-                    Color(red: 0.65, green: 0.60, blue: 0.55)
-                ],
-                startPoint: .topLeading,
-
-                endPoint: .bottomTrailing
-            ))
-        }
     }
     
     private func parseFeedbackWithLinks(_ text: String) -> AttributedString {
