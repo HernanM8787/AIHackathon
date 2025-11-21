@@ -10,6 +10,7 @@ struct HomeDashboardView: View {
     @State private var heartRateTimer = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
     @State private var showingCreatePost = false
     @State private var showingProfile = false
+    @State private var isForecastRefreshing = false
 
     var body: some View {
         ZStack {
@@ -47,12 +48,19 @@ struct HomeDashboardView: View {
         }
         .task(id: appState.userProfile.id) {
             await appState.refreshStressLevels()
+            await appState.refreshStressForecast()
         }
         .onChange(of: appState.events) {
-            Task { await appState.refreshStressLevels() }
+            Task {
+                await appState.refreshStressLevels()
+                await appState.refreshStressForecast()
+            }
         }
         .onChange(of: appState.assignments) {
-            Task { await appState.refreshStressLevels() }
+            Task {
+                await appState.refreshStressLevels()
+                await appState.refreshStressForecast()
+            }
         }
         .sheet(isPresented: $showingCreatePost) {
             NavigationStack {
@@ -166,11 +174,23 @@ struct HomeDashboardView: View {
                     StressLevelGraphView(samples: appState.stressSamples)
                         .padding(.horizontal)
                     
-                    // AI Insight Card
-                    AIInsightCard(
-                        insight: "Your mood is stable, but your upcoming PSY-201 exam might be a stressor. Prioritizing study breaks could improve focus and wellbeing."
-                    )
+                    StressForecastCard(
+                        forecast: appState.stressForecast,
+                        isRefreshing: isForecastRefreshing
+                    ) {
+                        guard !isForecastRefreshing else { return }
+                        isForecastRefreshing = true
+                        Task {
+                            await appState.refreshStressForecast(forceRegenerate: true)
+                            await MainActor.run {
+                                isForecastRefreshing = false
+                            }
+                        }
+                    }
                     .padding(.horizontal)
+                    
+                    // AI Insight Card
+                    // removed, replaced by StressForecastCard
                     
                     // Activity Cards (side by side)
                     HStack(spacing: 12) {
@@ -553,6 +573,49 @@ private struct StressLevelGraphView: View {
                     AxisMarks(position: .leading, values: Array(stride(from: 0, through: 10, by: 2)))
                 }
                 .frame(height: 200)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(white: 0.12))
+        )
+    }
+}
+
+private struct StressForecastCard: View {
+    let forecast: StressForecast?
+    let isRefreshing: Bool
+    let onRefresh: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Stress Forecast")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                Spacer()
+                Button(action: onRefresh) {
+                    Image(systemName: "arrow.clockwise")
+                        .rotationEffect(isRefreshing ? .degrees(360) : .degrees(0))
+                        .animation(isRefreshing ? .linear.repeatForever(autoreverses: false).speed(0.5) : .default, value: isRefreshing)
+                }
+                .buttonStyle(.plain)
+                .disabled(isRefreshing)
+            }
+            
+            if let forecast {
+                HStack(alignment: .top, spacing: 12) {
+                    Text(forecast.emoji)
+                        .font(.system(size: 40))
+                    Text(forecast.summary)
+                        .font(.body)
+                        .foregroundStyle(.white)
+                }
+            } else {
+                Text("No forecast yet. Refresh to generate today’s outlook.")
+                    .font(.caption)
+                    .foregroundStyle(.gray)
             }
         }
         .padding()

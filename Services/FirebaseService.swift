@@ -244,6 +244,29 @@ actor FirebaseService {
         try await docRef.setData(payload.toDictionary())
     }
 
+    func fetchStressForecast(for userId: String, date: Date) async throws -> StressForecast {
+        let key = Self.dayFormatter.string(from: date)
+        let docRef = db.collection("users")
+            .document(userId)
+            .collection("stressForecasts")
+            .document(key)
+        let snapshot = try await docRef.getDocument()
+        guard snapshot.exists, let data = try? snapshot.data(as: FirestoreStressForecast.self) else {
+            throw StressDataError.notFound
+        }
+        return data.toForecast()
+    }
+    
+    func saveStressForecast(_ forecast: StressForecast, userId: String, date: Date) async throws {
+        let key = Self.dayFormatter.string(from: date)
+        let docRef = db.collection("users")
+            .document(userId)
+            .collection("stressForecasts")
+            .document(key)
+        let payload = FirestoreStressForecast(from: forecast)
+        try await docRef.setData(payload.toDictionary())
+    }
+
     // MARK: - Assignments
 
     func fetchAssignments(for userId: String) async throws -> [Assignment] {
@@ -487,8 +510,31 @@ private struct FirestoreStressSample: Codable {
     }
 }
 
+private struct FirestoreStressForecast: Codable {
+    let dateKey: String
+    let emoji: String
+    let summary: String
+    let generatedAt: Timestamp?
+    
+    init(from forecast: StressForecast) {
+        self.dateKey = forecast.dateKey
+        self.emoji = forecast.emoji
+        self.summary = forecast.summary
+        self.generatedAt = Timestamp(date: Date())
+    }
+    
+    func toForecast() -> StressForecast {
+        StressForecast(dateKey: dateKey, emoji: emoji, summary: summary)
+    }
+    
+    func toDictionary() throws -> [String: Any] {
+        let encoder = Firestore.Encoder()
+        return try encoder.encode(self)
+    }
+}
+
 extension FirebaseService {
-    private static var dayFormatter: DateFormatter = {
+    static var dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.timeZone = .current

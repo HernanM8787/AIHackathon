@@ -114,6 +114,86 @@ final class StressAnalysisService {
     }
 }
 
+struct StressForecastResult {
+    let emoji: String
+    let text: String
+}
+
+extension StressAnalysisService {
+    func generateStressForecast(for date: Date, context: StressContext, profile: UserProfile) async throws -> StressForecastResult {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        let dateLabel = formatter.string(from: date)
+        
+        let eventsDescription = context.events.prefix(5).map { event in
+            "\(event.title) at \(event.startDate.formatted(date: .omitted, time: .shortened))"
+        }.joined(separator: "\n")
+        
+        let assignmentsDescription = context.assignments.prefix(5).map { assignment in
+            "\(assignment.title) due \(assignment.dueDate.formatted(date: .abbreviated, time: .shortened))"
+        }.joined(separator: "\n")
+        
+        let heartSummary = context.heartRates.isEmpty ? "No heart data" : "Recent BPMs: \(context.heartRates.map { "\($0.bpm)" }.joined(separator: ", "))"
+        
+        let prompt = """
+        You are a stress forecasting assistant. Based on today's schedule for \(dateLabel), estimate how stressful the day will feel. Respond with JSON:
+        {
+          "emoji": "😌",
+          "summary": "2-3 sentences here"
+        }
+        Where emoji reflects the tone (😰 for stressful, 🙂 for calm, 😐 neutral, 😴 restful, 😬 tense, 😄 energized, etc).
+        Consider events and assignments and heart rate context below:
+        Events:
+        \(eventsDescription)
+        
+        Assignments:
+        \(assignmentsDescription)
+        
+        Heart:
+        \(heartSummary)
+        """
+        
+        let message = ChatMessage(role: .user, text: prompt)
+        do {
+            let response = try await gemini.sendChat(messages: [message], profile: profile)
+            if let result = try parseForecast(response) {
+                return result
+            }
+        } catch {
+            // fallback below
+        }
+        
+        let stressScore = fallbackStressScore(context: context)
+        switch stressScore {
+        case 7...10:
+            return StressForecastResult(emoji: "😰", text: "Today looks intense. Pace yourself and take breathers between obligations.")
+        case 4..<7:
+            return StressForecastResult(emoji: "😐", text: "A mixed day ahead. Stay organized and you'll handle the pressure.")
+        default:
+            return StressForecastResult(emoji: "😄", text: "Light commitments today—perfect for catching up calmly.")
+        }
+    }
+    
+    private func parseForecast(_ response: String) throws -> StressForecastResult? {
+        struct DTO: Decodable {
+            let emoji: String
+            let summary: String
+        }
+        guard let data = response.data(using: .utf8) else { return nil }
+        if let dto = try? JSONDecoder().decode(DTO.self, from: data) {
+            return StressForecastResult(emoji: dto.emoji, text: dto.summary)
+        }
+        return nil
+    }
+    
+    private func fallbackStressScore(context: StressContext) -> Double {
+        let eventWeight = Double(context.events.count) * 0.6
+        let assignmentWeight = Double(context.assignments.count) * 0.8
+        let heartWeight = Double(max(0, context.heartRates.map(\.bpm).average() - 70)) / 6.0
+        return min(10, 2 + eventWeight + assignmentWeight + heartWeight)
+    }
+}
+
 private extension Collection where Element == Int {
     func average() -> Double {
         guard !isEmpty else { return 0 }
