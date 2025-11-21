@@ -13,7 +13,7 @@ struct PostDetailView: View {
     
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Theme.background.ignoresSafeArea()
             
             VStack(spacing: 16) {
                 ScrollView {
@@ -26,15 +26,15 @@ struct PostDetailView: View {
                             
                             HStack(spacing: 8) {
                                 Text(post.category.rawValue)
-                                    .font(.caption)
+                                    .font(.caption.weight(.semibold))
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 4)
-                                    .background(Capsule().fill(Color.purple.opacity(0.25)))
-                                    .foregroundStyle(.purple)
+                                    .background(Capsule().fill(Theme.accent.opacity(0.2)))
+                                    .foregroundStyle(Theme.accent)
                                 
                                 Text(post.createdAt.formatted(date: .abbreviated, time: .shortened))
                                     .font(.caption)
-                                    .foregroundStyle(.gray)
+                                    .foregroundStyle(Theme.subtitle)
                             }
                         }
                         
@@ -52,13 +52,13 @@ struct PostDetailView: View {
                                         .foregroundStyle(.white)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 4)
-                                        .background(Capsule().fill(Color(white: 0.15)))
+                                        .background(Capsule().fill(Theme.surface))
                                 }
                             }
                         }
                         
                         Divider()
-                            .background(Color.white.opacity(0.2))
+                            .background(Theme.outline)
                         
                         // Comments Section
                         VStack(alignment: .leading, spacing: 12) {
@@ -69,7 +69,7 @@ struct PostDetailView: View {
                             if comments.isEmpty {
                                 Text("No comments yet. Start the conversation!")
                                     .font(.caption)
-                                    .foregroundStyle(.gray)
+                                    .foregroundStyle(Theme.subtitle)
                             } else {
                                 ForEach(comments) { comment in
                                     CommentRow(comment: comment)
@@ -87,8 +87,12 @@ struct PostDetailView: View {
                         .foregroundStyle(.white)
                         .padding(12)
                         .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(white: 0.15))
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .fill(Theme.card)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .stroke(Theme.outline, lineWidth: 1)
+                                )
                         )
                     
                     Button(action: sendComment) {
@@ -101,7 +105,11 @@ struct PostDetailView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.purple))
+                        .background(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .fill(Theme.accentGradient)
+                        )
+                        .foregroundStyle(.white)
                     }
                     .disabled(newComment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSending)
                 }
@@ -162,7 +170,7 @@ private struct CommentRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Circle()
-                .fill(Color(white: 0.2))
+                .fill(Theme.surface)
                 .frame(width: 36, height: 36)
                 .overlay {
                     Image(systemName: comment.userIconType.systemImage)
@@ -172,14 +180,21 @@ private struct CommentRow: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Anonymous")
                     .font(.caption)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Theme.subtitle)
                 Text(comment.body)
                     .foregroundStyle(.white)
             }
             Spacer()
         }
         .padding()
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(white: 0.12)))
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
+        )
     }
 }
 

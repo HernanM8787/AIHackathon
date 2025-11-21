@@ -13,7 +13,7 @@ struct CreatePostView: View {
     
     var body: some View {
         ZStack {
-            Color.black
+            Theme.background
                 .ignoresSafeArea()
             
             Form {
@@ -32,7 +32,7 @@ struct CreatePostView: View {
                     }
                     .foregroundStyle(.white)
                 }
-                .listRowBackground(Color(white: 0.15))
+                .listRowBackground(Theme.card)
                 
                 Section("Hashtags (optional)") {
                     TextField("Add hashtag", text: $currentHashtag)
@@ -65,7 +65,7 @@ struct CreatePostView: View {
                         }
                     }
                 }
-                .listRowBackground(Color(white: 0.15))
+                .listRowBackground(Theme.card)
                 
                 if let errorMessage = errorMessage {
                     Section {
@@ -73,7 +73,7 @@ struct CreatePostView: View {
                             .foregroundStyle(.red)
                             .font(.caption)
                     }
-                    .listRowBackground(Color(white: 0.15))
+                    .listRowBackground(Theme.card)
                 }
                 
                 Section {
@@ -87,12 +87,14 @@ struct CreatePostView: View {
                         }
                         .frame(maxWidth: .infinity)
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Theme.accent)
                     .disabled(title.isEmpty || bodyText.isEmpty || isSaving)
                 }
-                .listRowBackground(Color(white: 0.15))
+                .listRowBackground(Theme.card)
             }
             .scrollContentBackground(.hidden)
-            .background(Color.black)
+            .background(Theme.background)
         }
         .navigationTitle("New Post")
         .navigationBarTitleDisplayMode(.inline)
@@ -103,7 +105,7 @@ struct CreatePostView: View {
                     .disabled(isSaving)
             }
         }
-        .toolbarBackground(Color.black, for: .navigationBar)
+        .toolbarBackground(Theme.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }
     

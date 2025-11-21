@@ -12,19 +12,23 @@ struct BottomTabBar: View {
     @Binding var selected: DashboardTab
 
     var body: some View {
-        HStack(spacing: 18) {
+        HStack(spacing: 12) {
             tabButton(icon: "house.fill", title: "Home", tab: .home)
             tabButton(icon: "sparkles", title: "Assistant", tab: .assistant)
             addButton
             tabButton(icon: "calendar", title: "Calendar", tab: .calendar)
             tabButton(icon: "person.3.fill", title: "Forum", tab: .forum)
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 24)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 18)
         .background(
             Capsule()
-                .fill(Color(white: 0.1))
-                .shadow(color: .black.opacity(0.35), radius: 10, y: 6)
+                .fill(Theme.surface)
+                .overlay(
+                    Capsule()
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
+                .shadow(color: Theme.accent.opacity(0.25), radius: 18, y: 10)
         )
     }
 
@@ -32,14 +36,24 @@ struct BottomTabBar: View {
         Button {
             selected = tab
         } label: {
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(.system(size: 19))
                 Text(title)
                     .font(.caption)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .allowsTightening(true)
+                    .multilineTextAlignment(.center)
             }
-            .foregroundStyle(selected == tab ? .white : .gray)
+            .foregroundStyle(selected == tab ? Theme.accent : Theme.subtitle)
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 5)
+            .padding(.horizontal, 10)
+            .background(
+                Capsule()
+                    .fill(selected == tab ? Theme.accent.opacity(0.15) : .clear)
+            )
         }
     }
 
@@ -48,14 +62,14 @@ struct BottomTabBar: View {
             selected = .add
         } label: {
             Circle()
-                .fill(Color.white)
-                .frame(width: 54, height: 54)
+                .fill(Theme.accentGradient)
+                .frame(width: 44, height: 44)
                 .overlay {
                     Image(systemName: "plus")
-                        .font(.headline)
-                        .foregroundStyle(.black)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(.white)
                 }
-                .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+                .shadow(color: Theme.accent.opacity(0.4), radius: 8, y: 4)
         }
         .padding(.horizontal, 4)
     }

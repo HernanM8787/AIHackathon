@@ -87,23 +87,28 @@ struct HomeDashboardView: View {
     private var addView: some View {
         NavigationStack {
             ZStack {
-                Color.black.ignoresSafeArea()
+                Theme.background.ignoresSafeArea()
                 VStack(spacing: 24) {
                     Image(systemName: "square.and.pencil")
                         .font(.system(size: 48))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.accent)
+                        .padding()
+                        .background(
+                            Circle()
+                                .fill(Theme.accent.opacity(0.15))
+                        )
                     Text("Create a new anonymous post for the Forum.")
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(Theme.subtitle)
                     Button {
                         showingCreatePost = true
                     } label: {
                         Text("Start a Post")
                             .font(.headline)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.white)
                             .padding(.horizontal, 32)
                             .padding(.vertical, 14)
-                            .background(Capsule().fill(Color.white))
+                            .background(Capsule().fill(Theme.accentGradient))
                     }
                 }
                 .padding()
@@ -114,7 +119,7 @@ struct HomeDashboardView: View {
     
     private var calendarView: some View {
         NavigationStack {
-            EventCalendarView()
+            EventCalendarView(selectedTab: $selectedTab)
                 .environmentObject(appState)
         }
     }
@@ -130,26 +135,25 @@ struct HomeDashboardView: View {
     private var dashboard: some View {
         NavigationStack {
             ZStack {
-                // Dark background
-                Color.black
+                Theme.background
                     .ignoresSafeArea()
                 
                 ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 24) {
                     // Header with profile and welcome
-                    HStack(spacing: 12) {
+                    HStack(spacing: 14) {
                         Button(action: { showingProfile = true }) {
                             SchoolLogoView(school: appState.userProfile.school, size: 50)
                                 .overlay(
                                     Circle()
-                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                        .stroke(Theme.outline, lineWidth: 1)
                                 )
                         }
                         
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("Welcome back,")
                                 .font(.subheadline)
-                                .foregroundStyle(.gray)
+                                .foregroundStyle(Theme.subtitle)
                             Text(appState.userProfile.displayName)
                                 .font(.title2)
                                 .fontWeight(.bold)
@@ -163,6 +167,11 @@ struct HomeDashboardView: View {
                             Image(systemName: "bell")
                                 .font(.title3)
                                 .foregroundStyle(.white)
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(Theme.surface)
+                                )
                         }
                     }
                     .padding(.horizontal)
@@ -197,13 +206,10 @@ struct HomeDashboardView: View {
                             icon: "heart.fill",
                             progress: nil
                         )
+                        .frame(maxWidth: .infinity)
                         
-                        ActivityCard(
-                            title: "Upcoming Assignments",
-                            value: assignmentCompletionLabel,
-                            icon: "checklist",
-                            progress: weeklyAssignmentProgress
-                        )
+                        DailyReflectionCard()
+                            .frame(maxWidth: .infinity)
                     }
                     .padding(.horizontal)
                     
@@ -231,7 +237,7 @@ struct HomeDashboardView: View {
                         if appState.permissionState.calendarGranted {
                             if appState.deviceCalendarEvents.isEmpty {
                                 Text("No upcoming events in your calendar.")
-                                    .foregroundStyle(.gray)
+                                    .foregroundStyle(Theme.subtitle)
                                     .padding(.horizontal)
                             } else {
                                 ForEach(Array(appState.deviceCalendarEvents.prefix(5))) { event in
@@ -241,7 +247,7 @@ struct HomeDashboardView: View {
                             }
                         } else {
                             Text("Calendar Not Linked")
-                                .foregroundStyle(.gray)
+                                .foregroundStyle(Theme.subtitle)
                                 .padding(.horizontal)
                         }
                     }
@@ -262,11 +268,11 @@ struct HomeDashboardView: View {
                             HStack(spacing: 16) {
                                 Image(systemName: "bubble.left.and.bubble.right.fill")
                                     .font(.title2)
-                                    .foregroundStyle(.purple)
+                                    .foregroundStyle(Theme.accent)
                                     .frame(width: 50, height: 50)
                                     .background(
                                         Circle()
-                                            .fill(Color.purple.opacity(0.2))
+                                            .fill(Theme.accent.opacity(0.15))
                                     )
                                 
                                 VStack(alignment: .leading, spacing: 4) {
@@ -275,19 +281,23 @@ struct HomeDashboardView: View {
                                         .foregroundStyle(.white)
                                     Text("Share experiences and get support")
                                         .font(.caption)
-                                        .foregroundStyle(.gray)
+                                        .foregroundStyle(Theme.subtitle)
                                 }
                                 
                                 Spacer()
                                 
                                 Image(systemName: "chevron.right")
-                                    .foregroundStyle(.gray)
+                                    .foregroundStyle(Theme.subtitle)
                                     .font(.caption)
                             }
                             .padding()
                             .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color(white: 0.15))
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .fill(Theme.card)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                            .stroke(Theme.outline, lineWidth: 1)
+                                    )
                             )
                         }
                         .padding(.horizontal)
@@ -502,7 +512,7 @@ private struct StressLevelGraphView: View {
     private let currentHour = Calendar.current.component(.hour, from: Date())
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Stress Level")
                     .font(.headline)
@@ -510,13 +520,13 @@ private struct StressLevelGraphView: View {
                 Spacer()
                 Text("0 – 10")
                     .font(.caption)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Theme.subtitle)
             }
             
             if samples.isEmpty {
                 Text("No stress data yet. Keep logging events and heart rate.")
                     .font(.caption)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Theme.subtitle)
             } else {
                 Chart {
                     ForEach(samples) { sample in
@@ -528,8 +538,8 @@ private struct StressLevelGraphView: View {
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [
-                                    Color.purple.opacity(0.35),
-                                    Color.purple.opacity(0.05)
+                                    Theme.accent.opacity(0.35),
+                                    Theme.accent.opacity(0.05)
                                 ],
                                 startPoint: .top,
                                 endPoint: .bottom
@@ -542,13 +552,13 @@ private struct StressLevelGraphView: View {
                             y: .value("Stress", sample.value)
                         )
                         .interpolationMethod(.catmullRom)
-                        .foregroundStyle(Color.purple)
+                        .foregroundStyle(Theme.accent)
                         .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
                     }
                     if let current = samples.first(where: { $0.hour == currentHour }) {
                         RuleMark(x: .value("Hour", currentHour))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
-                            .foregroundStyle(Color.white.opacity(0.4))
+                            .foregroundStyle(Theme.accent.opacity(0.4))
                         PointMark(
                             x: .value("Hour", current.hour),
                             y: .value("Stress", current.value)
@@ -572,10 +582,14 @@ private struct StressLevelGraphView: View {
                 .frame(height: 200)
             }
         }
-        .padding()
+        .padding(20)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(white: 0.12))
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
 }
@@ -586,7 +600,7 @@ private struct StressForecastCard: View {
     let onRefresh: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Stress Forecast")
                     .font(.headline)
@@ -596,6 +610,7 @@ private struct StressForecastCard: View {
                     Image(systemName: "arrow.clockwise")
                         .rotationEffect(isRefreshing ? .degrees(360) : .degrees(0))
                         .animation(isRefreshing ? .linear.repeatForever(autoreverses: false).speed(0.5) : .default, value: isRefreshing)
+                        .foregroundStyle(Theme.accent)
                 }
                 .buttonStyle(.plain)
                 .disabled(isRefreshing)
@@ -612,13 +627,62 @@ private struct StressForecastCard: View {
             } else {
                 Text("No forecast yet. Refresh to generate today’s outlook.")
                     .font(.caption)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Theme.subtitle)
             }
         }
-        .padding()
+        .padding(20)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(white: 0.12))
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
+        )
+    }
+}
+
+private struct DailyReflectionCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Image(systemName: "pencil.line")
+                    .font(.title3)
+                    .foregroundStyle(Theme.accent)
+                    .padding(10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Theme.accent.opacity(0.1))
+                    )
+                Spacer()
+            }
+            Text("Daily Reflection")
+                .font(.subheadline)
+                .foregroundStyle(Theme.subtitle)
+            
+            NavigationLink {
+                DailyReflectionView()
+            } label: {
+                Text("Start Entry")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Theme.accentGradient)
+                    )
+                    .foregroundStyle(.white)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, minHeight: 0, maxHeight: 180, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
 }

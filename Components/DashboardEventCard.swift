@@ -22,7 +22,7 @@ struct DashboardEventCard: View {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(white: 0.2))
+                    .fill(Theme.surface)
             )
             
             // Event details
@@ -33,15 +33,19 @@ struct DashboardEventCard: View {
                 
                 Text(timeDescription)
                     .font(.subheadline)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Theme.subtitle)
             }
             
             Spacer()
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(white: 0.15))
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
     

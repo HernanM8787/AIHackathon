@@ -18,14 +18,14 @@ struct EventCard: View {
                 HStack(spacing: 6) {
                     Text(timeString)
                         .font(.subheadline)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Theme.subtitle)
                     
                     if !event.location.isEmpty && event.location != "No location" {
                         Text("•")
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Theme.subtitle)
                         Text(event.location)
                             .font(.subheadline)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Theme.subtitle)
                     }
                 }
                 
@@ -44,7 +44,11 @@ struct EventCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(white: 0.12))
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
 

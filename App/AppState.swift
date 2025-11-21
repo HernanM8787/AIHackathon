@@ -28,6 +28,7 @@ final class AppState: ObservableObject {
     @Published var assignments: [Assignment] = MockData.assignments
     @Published var stressSamples: [StressSample] = []
     @Published var stressForecast: StressForecast?
+    @Published var pendingAssistantPrompt: String?
 
     private let permissionStorage = PermissionStorage()
     private let authService = AuthService()
@@ -84,6 +85,7 @@ final class AppState: ObservableObject {
         userProfile = .mock
         deviceCalendarEvents = []
         assignments = []
+        pendingAssistantPrompt = nil
         authStep = .welcome
     }
     

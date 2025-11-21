@@ -69,6 +69,8 @@
 		5CA95CAF2ED02DE2005C9EE1 /* AISuggestionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CAE2ED02DE2005C9EE1 /* AISuggestionsListView.swift */; };
 		5CA95CB12ED02DEF005C9EE1 /* CalendarSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB02ED02DEF005C9EE1 /* CalendarSearchView.swift */; };
 		5CA95CB32ED0322A005C9EE1 /* StressForecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB22ED0322A005C9EE1 /* StressForecast.swift */; };
+		5CA95CB52ED0352B005C9EE1 /* DailyReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB42ED0352B005C9EE1 /* DailyReflectionView.swift */; };
+		C3D4D1A72F0C8A8D00AB1234 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4D1A62F0C8A8D00AB1234 /* Theme.swift */; };
 		C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */; };
 		C347AE9D2ECEB6C4004A51E4 /* AIInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */; };
 		C347AE9F2ECEB754004A51E4 /* ActivityCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */; };
@@ -157,6 +159,8 @@
 		5CA95CAE2ED02DE2005C9EE1 /* AISuggestionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISuggestionsListView.swift; sourceTree = "<group>"; };
 		5CA95CB02ED02DEF005C9EE1 /* CalendarSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSearchView.swift; sourceTree = "<group>"; };
 		5CA95CB22ED0322A005C9EE1 /* StressForecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressForecast.swift; sourceTree = "<group>"; };
+		5CA95CB42ED0352B005C9EE1 /* DailyReflectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyReflectionView.swift; sourceTree = "<group>"; };
+		C3D4D1A62F0C8A8D00AB1234 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCalendarView.swift; sourceTree = "<group>"; };
 		C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightCard.swift; sourceTree = "<group>"; };
 		C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCard.swift; sourceTree = "<group>"; };
@@ -242,6 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				5C919F7A2ECD7D540054DE34 /* VirtualAssistantView.swift */,
+				5CA95CB42ED0352B005C9EE1 /* DailyReflectionView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -375,6 +380,7 @@
 				C37827742ECFDACB00E4D5C6 /* CreatePostView.swift */,
 				C37827762ECFDAD000E4D5C6 /* PeerSupportView.swift */,
 				5CA95CA62ED01475005C9EE1 /* PostDetailView.swift */,
+				C3D4D1A62F0C8A8D00AB1234 /* Theme.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -548,9 +554,11 @@
 				5C919FA52ECD7D540054DE34 /* VirtualAssistantView.swift in Sources */,
 				5C91A0062ED09A1C0054DE34 /* SignupView.swift in Sources */,
 				5C91A00D2ED0C8750054DE34 /* LoginView.swift in Sources */,
+				5CA95CB52ED0352B005C9EE1 /* DailyReflectionView.swift in Sources */,
 				C37827752ECFDACB00E4D5C6 /* CreatePostView.swift in Sources */,
 				5CA95CA72ED01475005C9EE1 /* PostDetailView.swift in Sources */,
 				5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */,
+				C3D4D1A72F0C8A8D00AB1234 /* Theme.swift in Sources */,
 				5C919FA62ECD7D540054DE34 /* CreateEventView.swift in Sources */,
 				5CA95CB12ED02DEF005C9EE1 /* CalendarSearchView.swift in Sources */,
 				5C919FA72ECD7D540054DE34 /* EventCard.swift in Sources */,

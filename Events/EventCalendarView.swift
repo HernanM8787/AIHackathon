@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct EventCalendarView: View {
+    @Binding var selectedTab: DashboardTab
     @EnvironmentObject private var appState: AppState
+    @Environment(\.dismiss) private var dismiss
     @State private var showingCreateSheet = false
     @State private var showingCreateEvent = false
     @State private var showingCreateAssignment = false
@@ -14,9 +16,13 @@ struct EventCalendarView: View {
     
     private let calendar = Calendar.current
     
+    init(selectedTab: Binding<DashboardTab>) {
+        self._selectedTab = selectedTab
+    }
+    
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Theme.background.ignoresSafeArea()
             
             if appState.permissionState.calendarGranted {
                 ScrollView {
@@ -52,12 +58,24 @@ struct EventCalendarView: View {
                                     title: "AI Suggestion: Study Break",
                                     message: "You've been studying hard. A 15-minute stretch session can boost your focus. Try some simple neck and shoulder stretches.",
                                     onStart: {
-                                        showingSuggestionsList = true
+                                        startGuidedActivity(
+                                            title: "15-Minute Stretch Session",
+                                            description: "Simple neck and shoulder stretches to boost focus."
+                                        )
                                     },
                                     onDismiss: {
                                         showingDismissedSuggestion = true
                                     }
                                 )
+                                
+                                Button(action: { showingSuggestionsList = true }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "sparkles")
+                                        Text("Browse more AI suggestions")
+                                            .font(.footnote)
+                                    }
+                                    .foregroundStyle(Theme.accent)
+                                }
                             }
                             
                             // Events Section
@@ -66,7 +84,7 @@ struct EventCalendarView: View {
                                     Text("Events")
                                         .font(.subheadline)
                                         .fontWeight(.semibold)
-                                        .foregroundStyle(.gray)
+                                        .foregroundStyle(Theme.subtitle)
                                     
                                     VStack(spacing: 14) {
                                         ForEach(eventsForSelectedDate) { event in
@@ -82,7 +100,7 @@ struct EventCalendarView: View {
                                     Text("Assignments Due")
                                         .font(.subheadline)
                                         .fontWeight(.semibold)
-                                        .foregroundStyle(.gray)
+                                        .foregroundStyle(Theme.subtitle)
                                     
                                     VStack(spacing: 12) {
                                         ForEach(assignmentsForSelectedDate) { assignment in
@@ -96,9 +114,9 @@ struct EventCalendarView: View {
                                 VStack(spacing: 12) {
                                     Image(systemName: "calendar")
                                         .font(.largeTitle)
-                                        .foregroundStyle(.gray)
+                                        .foregroundStyle(Theme.subtitle)
                                     Text("No events or assignments on \(formattedDate(selectedDate))")
-                                        .foregroundStyle(.gray)
+                                        .foregroundStyle(Theme.subtitle)
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 40)
@@ -112,10 +130,10 @@ struct EventCalendarView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "calendar.badge.exclamationmark")
                         .font(.largeTitle)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Theme.subtitle)
                     Text("Calendar access is not linked. Enable it from Permissions to sync events.")
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Theme.subtitle)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
@@ -137,13 +155,13 @@ struct EventCalendarView: View {
                         Text("Add")
                             .font(.headline)
                     }
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 14)
                     .background(
                         Capsule()
-                            .fill(Color.white)
-                            .shadow(color: .black.opacity(0.3), radius: 10, y: 6)
+                            .fill(Theme.accentGradient)
+                            .shadow(color: Theme.accent.opacity(0.35), radius: 10, y: 6)
                     )
                 }
                 .padding(.bottom, 24)
@@ -158,7 +176,7 @@ struct EventCalendarView: View {
                     .foregroundStyle(.white)
             }
         }
-        .toolbarBackground(Color.black, for: .navigationBar)
+        .toolbarBackground(Theme.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $showingCreateEvent) {
             NavigationStack {
@@ -180,8 +198,10 @@ struct EventCalendarView: View {
         }
         .sheet(isPresented: $showingSuggestionsList) {
             NavigationStack {
-                AISuggestionsListView()
-                    .environmentObject(appState)
+                AISuggestionsListView { suggestion in
+                    startGuidedActivity(title: suggestion.title, description: suggestion.description)
+                }
+                .environmentObject(appState)
             }
         }
         .onAppear {
@@ -230,6 +250,15 @@ struct EventCalendarView: View {
         formatter.timeStyle = .none
         return formatter.string(from: date)
     }
+    
+    private func startGuidedActivity(title: String, description: String) {
+        let prompt = """
+        The student just selected the activity "\(title)" described as "\(description)". Ask them if they are ready to begin, then guide them step-by-step in a friendly tone.
+        """
+        appState.pendingAssistantPrompt = prompt
+        selectedTab = .assistant
+        dismiss()
+    }
 }
 
 // MARK: - Assignment Row Card
@@ -240,7 +269,7 @@ struct AssignmentRowCard: View {
         HStack(spacing: 12) {
             // Status indicator
             Circle()
-                .fill(assignment.isCompleted ? Color.green : Color.orange)
+                .fill(assignment.isCompleted ? Color.green.opacity(0.8) : Theme.accent)
                 .frame(width: 8, height: 8)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -252,16 +281,16 @@ struct AssignmentRowCard: View {
                 HStack(spacing: 8) {
                     Text(assignment.course)
                         .font(.caption)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Theme.subtitle)
                     
                     if !assignment.course.isEmpty {
                         Text("•")
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Theme.subtitle)
                     }
                     
                     Text(formatTime(assignment.dueDate))
                         .font(.caption)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Theme.subtitle)
                 }
             }
             
@@ -274,8 +303,12 @@ struct AssignmentRowCard: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(white: 0.15))
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
     

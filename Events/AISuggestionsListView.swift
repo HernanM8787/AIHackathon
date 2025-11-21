@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AISuggestionsListView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var appState: AppState
+    let onSuggestionSelected: (AISuggestion) -> Void
     
     let suggestions = [
         AISuggestion(
@@ -62,7 +62,10 @@ struct AISuggestionsListView: View {
                         .padding(.horizontal)
                     
                     ForEach(suggestions) { suggestion in
-                        SuggestionRowCard(suggestion: suggestion)
+                        SuggestionRowCard(suggestion: suggestion) {
+                            onSuggestionSelected(suggestion)
+                            dismiss()
+                        }
                             .padding(.horizontal)
                     }
                 }
@@ -93,6 +96,7 @@ struct AISuggestion: Identifiable {
 
 struct SuggestionRowCard: View {
     let suggestion: AISuggestion
+    var onStart: (() -> Void)?
     
     var body: some View {
         HStack(spacing: 16) {
@@ -128,9 +132,7 @@ struct SuggestionRowCard: View {
             
             Spacer()
             
-            Button(action: {
-                // Start activity
-            }) {
+            Button(action: { onStart?() }) {
                 Image(systemName: "play.circle.fill")
                     .font(.title2)
                     .foregroundStyle(suggestion.category.itineraryColor)

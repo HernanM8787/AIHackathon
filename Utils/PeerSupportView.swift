@@ -12,7 +12,7 @@ struct PeerSupportView: View {
     
     var body: some View {
         ZStack {
-            Color.black
+            Theme.background
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -34,7 +34,11 @@ struct PeerSupportView: View {
                                     .padding(.horizontal, 12)
                                     .background(
                                         Capsule()
-                                            .fill(showMyPostsOnly ? Color.purple.opacity(0.3) : Color(white: 0.15))
+                                            .fill(showMyPostsOnly ? Theme.accent.opacity(0.25) : Theme.card)
+                                    )
+                                    .overlay(
+                                        Capsule()
+                                            .stroke(Theme.outline, lineWidth: showMyPostsOnly ? 0 : 1)
                                     )
                             }
                             .foregroundStyle(.white)
@@ -156,13 +160,17 @@ struct CommunityGuidelinesCard: View {
             
             Text("This is a safe space for empathy and support. All posts are anonymous. Please be respectful and follow our moderation rules to ensure a positive environment for everyone.")
                 .font(.subheadline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.subtitle)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(white: 0.15))
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
 }
@@ -177,12 +185,21 @@ struct CategoryFilterButton: View {
             Text(title)
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundStyle(isSelected ? .white : .white)
+                .foregroundStyle(isSelected ? .white : Theme.subtitle)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
                     Capsule()
-                        .fill(isSelected ? Color.purple : Color(white: 0.15))
+                        .fill(Theme.card)
+                        .overlay(
+                            Capsule()
+                                .fill(Theme.accentGradient)
+                                .opacity(isSelected ? 1 : 0)
+                        )
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(Theme.outline, lineWidth: isSelected ? 0 : 1)
                 )
         }
     }
@@ -197,7 +214,7 @@ struct PostCard: View {
             HStack(spacing: 12) {
                 // Anonymous User Icon
                 Circle()
-                    .fill(Color.purple)
+                    .fill(Theme.accentGradient)
                     .frame(width: 40, height: 40)
                     .overlay {
                         Image(systemName: post.userIconType.systemImage)
@@ -235,17 +252,21 @@ struct PostCard: View {
                 HStack(spacing: 4) {
                     Image(systemName: "bubble.right")
                         .font(.caption)
-                        .foregroundStyle(.purple)
+                        .foregroundStyle(Theme.accent)
                     Text("\(post.commentCount)")
                         .font(.caption)
-                        .foregroundStyle(.purple)
+                        .foregroundStyle(Theme.accent)
                 }
             }
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(white: 0.15))
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
 }

@@ -20,7 +20,7 @@ struct VirtualAssistantView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Theme.background.ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Custom header with back button
@@ -57,7 +57,7 @@ struct VirtualAssistantView: View {
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 12)
-                .background(Color.black)
+                .background(Theme.surface)
                 
                 // Messages area - takes available space
                 ScrollViewReader { proxy in
@@ -97,16 +97,22 @@ struct VirtualAssistantView: View {
                 // Input bar - positioned above nav bar, will be pushed up by keyboard
                 VStack(spacing: 0) {
                     Divider()
-                        .background(Color(white: 0.2))
+                        .background(Theme.outline)
                     inputBar
                         .padding(.horizontal)
                         .padding(.vertical, 12)
-                        .background(Color(white: 0.1))
+                        .background(Theme.surface)
                 }
                 .padding(.bottom, 80) // Space for nav bar at bottom
             }
         }
         .navigationBarHidden(true)
+        .task {
+            handlePendingAssistantPrompt()
+        }
+        .onChange(of: appState.pendingAssistantPrompt) { _, _ in
+            handlePendingAssistantPrompt()
+        }
     }
 
     private var inputBar: some View {
@@ -132,7 +138,7 @@ struct VirtualAssistantView: View {
             HStack(spacing: 12) {
                 Button(action: { showImagePicker = true }) {
                     Image(systemName: "photo")
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(Theme.accent)
                         .font(.system(size: 20))
                         .frame(width: 44, height: 44)
                 }
@@ -145,25 +151,29 @@ struct VirtualAssistantView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(
-                        RoundedRectangle(cornerRadius: 24)
-                            .fill(Color(white: 0.15))
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .fill(Theme.card)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                    .stroke(Theme.outline, lineWidth: 1)
+                            )
                     )
                     .foregroundStyle(.white)
                     .lineLimit(1...5)
 
                 if isSending {
                     ProgressView()
-                        .tint(.white)
+                        .tint(Theme.accent)
                         .frame(width: 44, height: 44)
                 } else {
                     Button(action: sendMessage) {
                         Image(systemName: "paperplane.fill")
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.white)
                             .font(.system(size: 18, weight: .semibold))
                             .frame(width: 44, height: 44)
                             .background(
                                 Circle()
-                                    .fill(Color.white)
+                                    .fill(Theme.accentGradient)
                             )
                     }
                     .disabled(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedImage == nil)
@@ -216,24 +226,51 @@ struct VirtualAssistantView: View {
             }
         }
     }
+    
+    private func sendHiddenPrompt(_ prompt: String) {
+        let userMessage = ChatMessage(role: .user, text: prompt)
+        messages.append(userMessage)
+        isSending = true
+        let history = messages
+        Task {
+            do {
+                let reply = try await service.sendChat(messages: history, profile: appState.userProfile)
+                await MainActor.run {
+                    messages.append(ChatMessage(role: .assistant, text: reply))
+                    isSending = false
+                }
+            } catch {
+                await MainActor.run {
+                    messages.append(ChatMessage(role: .assistant, text: "I ran into an issue: \(error.localizedDescription)"))
+                    isSending = false
+                }
+            }
+        }
+    }
+    
+    private func handlePendingAssistantPrompt() {
+        guard let prompt = appState.pendingAssistantPrompt else { return }
+        appState.pendingAssistantPrompt = nil
+        sendHiddenPrompt(prompt)
+    }
 }
 
 private struct MessageBubble: View {
     let message: ChatMessage
-
+    
     var body: some View {
         HStack {
             if message.role == .assistant {
-                bubble
+                bubble(alignment: .leading, isAssistant: true)
                 Spacer()
             } else {
                 Spacer()
-                bubble
+                bubble(alignment: .trailing, isAssistant: false)
             }
         }
     }
-
-    private var bubble: some View {
+    
+    private func bubble(alignment: Alignment, isAssistant: Bool) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if let imageData = message.imageData,
                let uiImage = UIImage(data: imageData) {
@@ -241,23 +278,26 @@ private struct MessageBubble: View {
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: 250, maxHeight: 250)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
             
             if !message.text.isEmpty {
                 Text(message.text)
+                    .foregroundStyle(isAssistant ? .white : .white)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .foregroundStyle(message.role == .assistant ? .white : .black)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 14)
         .background(
-            message.role == .assistant
-            ? Color(white: 0.2)
-            : Color.white
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(isAssistant ? AnyShapeStyle(Theme.surface) : AnyShapeStyle(Theme.accentGradient))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(isAssistant ? Theme.outline : Color.clear, lineWidth: 1)
+                )
         )
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .frame(maxWidth: UIScreen.main.bounds.width * 0.75, alignment: message.role == .assistant ? .leading : .trailing)
+        .shadow(color: Color.black.opacity(0.15), radius: 8, y: 4)
+        .frame(maxWidth: UIScreen.main.bounds.width * 0.75, alignment: alignment)
     }
 }
 

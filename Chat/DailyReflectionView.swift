@@ -267,6 +267,11 @@ struct DailyReflectionView: View {
                 }
             }
         }
+        .scrollDismissesKeyboard(.interactively)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            isTextFocused = false
+        }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Daily Reflection")
         .navigationBarTitleDisplayMode(.inline)

@@ -37,8 +37,12 @@ struct SchoolEventsNewsCard: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(white: 0.15))
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Theme.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(Theme.outline, lineWidth: 1)
+                )
         )
     }
     
@@ -116,7 +120,7 @@ struct SchoolNewsItem: View {
                 
                 Text(description)
                     .font(.caption)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Theme.subtitle)
                     .lineLimit(2)
                 
                 Text(date)

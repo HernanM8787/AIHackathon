@@ -136,7 +136,7 @@ extension StressAnalysisService {
         let heartSummary = context.heartRates.isEmpty ? "No heart data" : "Recent BPMs: \(context.heartRates.map { "\($0.bpm)" }.joined(separator: ", "))"
         
         let prompt = """
-        You are a stress forecasting assistant. Based on today's schedule for \(dateLabel), estimate how stressful the day will feel. Respond with JSON:
+        You are a stress forecasting assistant. Based on today's schedule for \(dateLabel), estimate how stressful the day will feel. Be optimistic. Respond with JSON:
         {
           "emoji": "😌",
           "summary": "2-3 sentences here"
