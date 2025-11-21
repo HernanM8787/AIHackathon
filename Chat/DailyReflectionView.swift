@@ -85,13 +85,13 @@ struct DailyReflectionView: View {
                                 .padding(.vertical, 12)
                                 .background(
                                     selectedMood == mood
-                                    ? Color(red: 0.95, green: 0.93, blue: 0.90)
-                                    : Color(red: 0.97, green: 0.96, blue: 0.95),
+                                    ? Color.accentColor.opacity(0.15)
+                                    : Color(.secondarySystemBackground),
                                     in: RoundedRectangle(cornerRadius: 12)
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(selectedMood == mood ? Color(red: 0.75, green: 0.70, blue: 0.65) : Color.clear, lineWidth: 2)
+                                        .stroke(selectedMood == mood ? Color.accentColor : Color.clear, lineWidth: 2)
                                 )
                             }
                             .buttonStyle(.plain)
@@ -126,15 +126,15 @@ struct DailyReflectionView: View {
                                     .padding(.vertical, 10)
                                     .background(
                                         selectedInfluences.contains(influence)
-                                        ? Color(red: 0.92, green: 0.89, blue: 0.85)
-                                        : Color(red: 0.96, green: 0.95, blue: 0.94),
+                                        ? Color.accentColor.opacity(0.15)
+                                        : Color(.secondarySystemBackground),
                                         in: Capsule()
                                     )
                                     .overlay(
                                         Capsule()
-                                            .stroke(selectedInfluences.contains(influence) ? Color(red: 0.70, green: 0.65, blue: 0.60) : Color.clear, lineWidth: 1.5)
+                                            .stroke(selectedInfluences.contains(influence) ? Color.accentColor : Color.clear, lineWidth: 1.5)
                                     )
-                                    .foregroundStyle(selectedInfluences.contains(influence) ? Color(red: 0.50, green: 0.45, blue: 0.40) : Color.primary)
+                                    .foregroundStyle(selectedInfluences.contains(influence) ? Color.accentColor : Color.primary)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -152,20 +152,10 @@ struct DailyReflectionView: View {
                     TextEditor(text: $reflectionText)
                         .frame(minHeight: 150)
                         .padding(12)
-                        .background(
-                            LinearGradient(
-                                colors: [
-                                    Color(red: 0.98, green: 0.97, blue: 0.96),
-                                    Color(red: 0.96, green: 0.95, blue: 0.94)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            in: RoundedRectangle(cornerRadius: 12)
-                        )
+                        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(red: 0.90, green: 0.88, blue: 0.86), lineWidth: 1)
+                                .stroke(Color(.separator), lineWidth: 1)
                         )
                         .overlay(
                             Group {
@@ -193,11 +183,11 @@ struct DailyReflectionView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         HStack(spacing: 8) {
                             Image(systemName: "sparkles")
-                                .foregroundStyle(Color(red: 0.85, green: 0.75, blue: 0.65))
+                                .foregroundStyle(.orange)
                                 .font(.title3)
                             Text("AI Feedback")
                                 .font(.headline)
-                                .foregroundStyle(Color(red: 0.40, green: 0.35, blue: 0.30))
+                                .foregroundStyle(.primary)
                         }
                         .padding(.horizontal)
                         
@@ -211,69 +201,73 @@ struct DailyReflectionView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [
-                                            Color(red: 0.98, green: 0.97, blue: 0.95),
-                                            Color(red: 0.96, green: 0.94, blue: 0.92)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                                .fill(Color(.tertiarySystemBackground))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color(red: 0.88, green: 0.85, blue: 0.82), lineWidth: 1)
+                                        .stroke(Color(.separator), lineWidth: 1)
                                 )
-                                .shadow(color: Color.black.opacity(0.03), radius: 12, x: 0, y: 4)
+                                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
                         )
                         .padding(.horizontal)
                     }
                 }
                 
                 // Submit Button
-                Button(action: generateFeedback) {
-                    HStack {
-                        if isGenerating {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        } else {
-                            Text("Get Motivational Feedback")
-                                .fontWeight(.semibold)
+                VStack(spacing: 24) {
+                    Button(action: generateFeedback) {
+                        HStack(spacing: 12) {
+                            if isGenerating {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(0.9)
+                            } else {
+                                Image(systemName: "sparkles")
+                                    .font(.title3)
+                                Text("Log Today's Entry")
+                                    .fontWeight(.semibold)
+                                    .font(.headline)
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 24)
+                        .background(
+                            Group {
+                                if (reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating {
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color(.systemGray4))
+                                } else {
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [Color.accentColor, Color.accentColor.opacity(0.8)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .shadow(
+                                            color: Color.accentColor.opacity(0.4),
+                                            radius: 8,
+                                            x: 0,
+                                            y: 4
+                                        )
+                                }
+                            }
+                        )
+                        .foregroundStyle(.white)
+                        .scaleEffect(isGenerating ? 0.98 : 1.0)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(
-                        ((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
-                        ? Color(red: 0.85, green: 0.83, blue: 0.80)
-                        : LinearGradient(
-                            colors: [
-                                Color(red: 0.70, green: 0.65, blue: 0.60),
-                                Color(red: 0.65, green: 0.60, blue: 0.55)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: 12)
-                    )
-                    .foregroundStyle(.white)
+                    .disabled((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
+                    .buttonStyle(PressedButtonStyle())
+                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isGenerating)
+                    .padding(.horizontal, 24)
+                    
+                    // Extra spacing at bottom
+                    Spacer(minLength: 20)
                 }
-                .disabled((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
-                .padding(.horizontal)
-                .padding(.bottom)
             }
         }
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.99, green: 0.98, blue: 0.97),
-                    Color(red: 0.97, green: 0.96, blue: 0.95)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("Daily Reflection")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -357,6 +351,15 @@ struct DailyReflectionView: View {
                 }
             }
         }
+    }
+}
+
+struct PressedButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .opacity(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
