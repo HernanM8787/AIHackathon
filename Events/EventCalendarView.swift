@@ -13,8 +13,85 @@ struct EventCalendarView: View {
     @State private var selectedDate = Date()
     @State private var eventsForSelectedDate: [Event] = []
     @State private var assignmentsForSelectedDate: [Assignment] = []
+    @State private var detailTab: CalendarDetailTab = .events
     
     private let calendar = Calendar.current
+    private enum CalendarDetailTab: String, CaseIterable {
+        case events = "Events"
+        case assignments = "Assignments"
+    }
+    
+    @ViewBuilder
+    private var detailSection: some View {
+        switch detailTab {
+        case .events:
+            VStack(alignment: .leading, spacing: 12) {
+                sectionHeader(
+                    title: "Events",
+                    actionTitle: "New Event",
+                    action: { showingCreateEvent = true }
+                )
+                
+                if eventsForSelectedDate.isEmpty {
+                    Text("No events scheduled for this day.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.subtitle)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    VStack(spacing: 14) {
+                        ForEach(eventsForSelectedDate) { event in
+                            EventCard(event: event)
+                        }
+                    }
+                }
+            }
+        case .assignments:
+            VStack(alignment: .leading, spacing: 12) {
+                sectionHeader(
+                    title: "Assignments",
+                    actionTitle: "Add Assignment",
+                    action: { showingCreateAssignment = true }
+                )
+                
+                Text("Assignments added here can also create Apple Reminders when you toggle the reminder option.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.subtitle)
+                
+                if assignmentsForSelectedDate.isEmpty {
+                    Text("No assignments due on this day.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.subtitle)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    VStack(spacing: 12) {
+                        ForEach(assignmentsForSelectedDate) { assignment in
+                            AssignmentRowCard(assignment: assignment)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func sectionHeader(title: String, actionTitle: String, action: @escaping () -> Void) -> some View {
+        HStack {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(Theme.subtitle)
+            Spacer()
+            Button(action: action) {
+                Label(actionTitle, systemImage: "plus")
+                    .font(.caption)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(Theme.accent.opacity(0.2))
+                    )
+            }
+        }
+    }
     
     init(selectedTab: Binding<DashboardTab>) {
         self._selectedTab = selectedTab
@@ -27,6 +104,7 @@ struct EventCalendarView: View {
             if appState.permissionState.calendarGranted {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
+                        calendarHeader
                         MonthCalendarView(
                             events: appState.deviceCalendarEvents,
                             selectedDate: $selectedDate,
@@ -43,6 +121,13 @@ struct EventCalendarView: View {
                                 .font(.headline)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(.white)
+                            
+                            Picker("Detail", selection: $detailTab) {
+                                ForEach(CalendarDetailTab.allCases, id: \.self) { tab in
+                                    Text(tab.rawValue).tag(tab)
+                                }
+                            }
+                            .pickerStyle(.segmented)
                             
                             // Hourly Itinerary
                             HourlyItineraryView(
@@ -78,37 +163,7 @@ struct EventCalendarView: View {
                                 }
                             }
                             
-                            // Events Section
-                            if !eventsForSelectedDate.isEmpty {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("Events")
-                                        .font(.subheadline)
-                                        .fontWeight(.semibold)
-                                        .foregroundStyle(Theme.subtitle)
-                                    
-                                    VStack(spacing: 14) {
-                                        ForEach(eventsForSelectedDate) { event in
-                                            EventCard(event: event)
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            // Assignments Section
-                            if !assignmentsForSelectedDate.isEmpty {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("Assignments Due")
-                                        .font(.subheadline)
-                                        .fontWeight(.semibold)
-                                        .foregroundStyle(Theme.subtitle)
-                                    
-                                    VStack(spacing: 12) {
-                                        ForEach(assignmentsForSelectedDate) { assignment in
-                                            AssignmentRowCard(assignment: assignment)
-                                        }
-                                    }
-                                }
-                            }
+                            detailSection
                             
                             if eventsForSelectedDate.isEmpty && assignmentsForSelectedDate.isEmpty {
                                 VStack(spacing: 12) {
@@ -169,13 +224,6 @@ struct EventCalendarView: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("Events")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-            }
-        }
         .toolbarBackground(Theme.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $showingCreateEvent) {
@@ -220,6 +268,17 @@ struct EventCalendarView: View {
             loadEventsForDate(selectedDate)
             loadAssignmentsForDate(selectedDate)
         }
+    }
+    
+    private var calendarHeader: some View {
+        HStack {
+            Text("Calendar")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.horizontal)
     }
     
     private var selectedDateHeader: String {

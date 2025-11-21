@@ -188,6 +188,7 @@ struct HomeDashboardView: View {
                         isForecastRefreshing = true
                         Task {
                             await appState.refreshStressForecast(forceRegenerate: true)
+                            await appState.refreshStressLevels()
                             await MainActor.run {
                                 isForecastRefreshing = false
                             }
@@ -215,11 +216,7 @@ struct HomeDashboardView: View {
                     
                     // School Events & News Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("School Events & News")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal)
+                        sectionTitle("School Events & News")
                         
                         SchoolEventsNewsCard(school: appState.userProfile.school)
                             .padding(.horizontal)
@@ -228,11 +225,7 @@ struct HomeDashboardView: View {
                     
                     // Upcoming Events Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Your Upcoming Events")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal)
+                        sectionTitle("Your Upcoming Events")
                         
                         if appState.permissionState.calendarGranted {
                             if appState.deviceCalendarEvents.isEmpty {
@@ -253,16 +246,26 @@ struct HomeDashboardView: View {
                     }
                     .padding(.top, 8)
                     
+                    // Upcoming Assignments Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        sectionTitle("Assignments Due Soon")
+                        
+                        if upcomingAssignments.isEmpty {
+                            Text("No upcoming assignments. Add one from the Calendar tab.")
+                                .foregroundStyle(Theme.subtitle)
+                                .padding(.horizontal)
+                        } else {
+                            ForEach(upcomingAssignments.prefix(5)) { assignment in
+                                AssignmentRowCard(assignment: assignment)
+                                    .padding(.horizontal)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                    
                     // Peer Support Section
                     VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Peer Support")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.white)
-                            Spacer()
-                        }
-                        .padding(.horizontal)
+                        sectionTitle("Peer Support")
                         
                         NavigationLink(destination: PeerSupportView().environmentObject(appState)) {
                             HStack(spacing: 16) {
@@ -324,6 +327,18 @@ struct HomeDashboardView: View {
 }
 
 extension HomeDashboardView {
+    @ViewBuilder
+    private func sectionTitle(_ text: String) -> some View {
+        HStack {
+            Text(text)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.horizontal)
+    }
+    
     private var heartRateDisplayText: String {
         guard appState.permissionState.healthKitGranted else {
             return "Not Linked"
@@ -364,6 +379,13 @@ extension HomeDashboardView {
         let calendar = Calendar.current
         return appState.assignments
             .filter { calendar.isDate($0.dueDate, inSameDayAs: Date()) }
+            .sorted(by: { $0.dueDate < $1.dueDate })
+    }
+    
+    private var upcomingAssignments: [Assignment] {
+        let now = Date()
+        return appState.assignments
+            .filter { $0.dueDate >= now }
             .sorted(by: { $0.dueDate < $1.dueDate })
     }
 
@@ -509,7 +531,13 @@ private struct AssignmentRow: View {
 
 private struct StressLevelGraphView: View {
     let samples: [StressSample]
+    private let calendar = Calendar.current
     private let currentHour = Calendar.current.component(.hour, from: Date())
+    private let hourFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "ha"
+        return formatter
+    }()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -555,10 +583,12 @@ private struct StressLevelGraphView: View {
                         .foregroundStyle(Theme.accent)
                         .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
                     }
+                    
+                    RuleMark(x: .value("Hour", currentHour))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+                        .foregroundStyle(Theme.accent.opacity(0.4))
+                    
                     if let current = samples.first(where: { $0.hour == currentHour }) {
-                        RuleMark(x: .value("Hour", currentHour))
-                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
-                            .foregroundStyle(Theme.accent.opacity(0.4))
                         PointMark(
                             x: .value("Hour", current.hour),
                             y: .value("Stress", current.value)
@@ -570,9 +600,13 @@ private struct StressLevelGraphView: View {
                 .chartXAxis {
                     AxisMarks(values: Array(stride(from: 0, through: 23, by: 3))) { value in
                         AxisGridLine()
-                        AxisTick()
+                        AxisTick(length: 4)
                         if let hour = value.as(Int.self) {
-                            AxisValueLabel("\(hour)")
+                            AxisValueLabel {
+                                Text(hourLabel(for: hour))
+                                    .font(hour == currentHour ? .caption.bold() : .caption)
+                                    .foregroundStyle(hour == currentHour ? Theme.accent : Theme.subtitle)
+                            }
                         }
                     }
                 }
@@ -591,6 +625,12 @@ private struct StressLevelGraphView: View {
                         .stroke(Theme.outline, lineWidth: 1)
                 )
         )
+    }
+    
+    private func hourLabel(for hour: Int) -> String {
+        let normalized = ((hour % 24) + 24) % 24
+        let date = calendar.date(bySettingHour: normalized, minute: 0, second: 0, of: Date()) ?? Date()
+        return hourFormatter.string(from: date).lowercased()
     }
 }
 

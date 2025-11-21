@@ -23,41 +23,16 @@ struct VirtualAssistantView: View {
             Theme.background.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Custom header with back button
                 HStack {
-                    Button(action: {
-                        selectedTab = .home
-                    }) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 16, weight: .semibold))
-                            Text("Home")
-                                .font(.system(size: 16, weight: .medium))
-                        }
-                        .foregroundStyle(.white)
-                    }
-                    
-                    Spacer()
-                    
                     Text("AI Assistant")
                         .font(.title3)
                         .fontWeight(.bold)
                         .foregroundStyle(.white)
-                    
                     Spacer()
-                    
-                    // Spacer to balance the back button
-                    HStack(spacing: 8) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold))
-                        Text("Home")
-                            .font(.system(size: 16, weight: .medium))
-                    }
-                    .opacity(0)
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 12)
-                .background(Theme.surface)
+                .background(Theme.background)
                 
                 // Messages area - takes available space
                 ScrollViewReader { proxy in
@@ -79,8 +54,8 @@ struct VirtualAssistantView: View {
                             withAnimation(.easeOut) {
                                 proxy.scrollTo(id, anchor: .bottom)
                             }
-                        }
-                    }
+            }
+        }
                     .onChange(of: isInputFocused) { _, isFocused in
                         if isFocused {
                             // Scroll to bottom when keyboard appears
@@ -226,7 +201,7 @@ struct VirtualAssistantView: View {
             }
         }
     }
-    
+
     private func sendHiddenPrompt(_ prompt: String) {
         let userMessage = ChatMessage(role: .user, text: prompt)
         messages.append(userMessage)

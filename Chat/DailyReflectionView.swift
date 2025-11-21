@@ -214,24 +214,24 @@ struct DailyReflectionView: View {
                 
                 // Submit Button
                 VStack(spacing: 24) {
-                    Button(action: generateFeedback) {
+                Button(action: generateFeedback) {
                         HStack(spacing: 12) {
-                            if isGenerating {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        if isGenerating {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .scaleEffect(0.9)
-                            } else {
+                        } else {
                                 Image(systemName: "sparkles")
                                     .font(.title3)
                                 Text("Log Today's Entry")
-                                    .fontWeight(.semibold)
+                                .fontWeight(.semibold)
                                     .font(.headline)
-                            }
                         }
-                        .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .padding(.horizontal, 24)
-                        .background(
+                    .background(
                             Group {
                                 if (reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating {
                                     RoundedRectangle(cornerRadius: 16)
@@ -241,8 +241,8 @@ struct DailyReflectionView: View {
                                         .fill(
                                             LinearGradient(
                                                 colors: [Color.accentColor, Color.accentColor.opacity(0.8)],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                                             )
                                         )
                                         .shadow(
@@ -253,11 +253,11 @@ struct DailyReflectionView: View {
                                         )
                                 }
                             }
-                        )
-                        .foregroundStyle(.white)
+                    )
+                    .foregroundStyle(.white)
                         .scaleEffect(isGenerating ? 0.98 : 1.0)
-                    }
-                    .disabled((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
+                }
+                .disabled((reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedMood == nil && selectedInfluences.isEmpty) || isGenerating)
                     .buttonStyle(PressedButtonStyle())
                     .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isGenerating)
                     .padding(.horizontal, 24)

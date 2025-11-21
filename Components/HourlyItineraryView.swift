@@ -40,9 +40,12 @@ struct HourlyItineraryView: View {
     }
     
     private func eventsForHour(_ hour: Int) -> [Event] {
-        events.filter { event in
-            let eventHour = calendar.component(.hour, from: event.startDate)
-            return eventHour == hour
+        guard let hourStart = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: date),
+              let hourEnd = calendar.date(byAdding: .hour, value: 1, to: hourStart) else {
+            return []
+        }
+        return events.filter { event in
+            event.startDate < hourEnd && event.endDate > hourStart
         }
     }
     

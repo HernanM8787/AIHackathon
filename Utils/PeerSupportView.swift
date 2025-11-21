@@ -18,13 +18,13 @@ struct PeerSupportView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Header
-                        HStack {
-                            Text("Peer Support")
+                // Header
+                HStack {
+                    Text("Peer Support")
                                 .font(.title2)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(.white)
-                            Spacer()
+                        .foregroundStyle(.white)
+                    Spacer()
                             Button(action: {
                                 showMyPostsOnly.toggle()
                             }) {
@@ -42,10 +42,10 @@ struct PeerSupportView: View {
                                     )
                             }
                             .foregroundStyle(.white)
-                        }
-                        .padding(.horizontal)
+                }
+                .padding(.horizontal)
                         .padding(.top, 12)
-                        
+                
                         // Community Guidelines Card
                         CommunityGuidelinesCard()
                             .padding(.horizontal)
@@ -90,8 +90,8 @@ struct PeerSupportView: View {
                                     Button {
                                         selectedPost = post
                                     } label: {
-                                        PostCard(post: post)
-                                            .padding(.horizontal)
+                                    PostCard(post: post)
+                                        .padding(.horizontal)
                                     }
                                     .buttonStyle(.plain)
                                 }

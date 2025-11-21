@@ -70,7 +70,6 @@
 		5CA95CB12ED02DEF005C9EE1 /* CalendarSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB02ED02DEF005C9EE1 /* CalendarSearchView.swift */; };
 		5CA95CB32ED0322A005C9EE1 /* StressForecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB22ED0322A005C9EE1 /* StressForecast.swift */; };
 		5CA95CB52ED0352B005C9EE1 /* DailyReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA95CB42ED0352B005C9EE1 /* DailyReflectionView.swift */; };
-		C3D4D1A72F0C8A8D00AB1234 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4D1A62F0C8A8D00AB1234 /* Theme.swift */; };
 		C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */; };
 		C347AE9D2ECEB6C4004A51E4 /* AIInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */; };
 		C347AE9F2ECEB754004A51E4 /* ActivityCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */; };
@@ -88,6 +87,7 @@
 		C37827852ECFEBC600E4D5C6 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827842ECFEBC600E4D5C6 /* ProfileView.swift */; };
 		C3A0B0122ED17B0400A93F22 /* StressSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A0B0112ED17B0400A93F22 /* StressSample.swift */; };
 		C3A0B0142ED17B0400A93F22 /* StressAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */; };
+		C3D4D1A72F0C8A8D00AB1234 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4D1A62F0C8A8D00AB1234 /* Theme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -160,7 +160,6 @@
 		5CA95CB02ED02DEF005C9EE1 /* CalendarSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSearchView.swift; sourceTree = "<group>"; };
 		5CA95CB22ED0322A005C9EE1 /* StressForecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressForecast.swift; sourceTree = "<group>"; };
 		5CA95CB42ED0352B005C9EE1 /* DailyReflectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyReflectionView.swift; sourceTree = "<group>"; };
-		C3D4D1A62F0C8A8D00AB1234 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		C347AE9A2ECEAFA3004A51E4 /* MonthCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCalendarView.swift; sourceTree = "<group>"; };
 		C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightCard.swift; sourceTree = "<group>"; };
 		C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCard.swift; sourceTree = "<group>"; };
@@ -179,6 +178,7 @@
 		C37827842ECFEBC600E4D5C6 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		C3A0B0112ED17B0400A93F22 /* StressSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressSample.swift; sourceTree = "<group>"; };
 		C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressAnalysisService.swift; sourceTree = "<group>"; };
+		C3D4D1A62F0C8A8D00AB1234 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -763,6 +763,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = AeQuus;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "We will use your Calendar information to help you manage deadlines and give personalized advice based on it.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Allow login using Face ID to save users time.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We analyze your heart rate via HealthKit to gauge stress levels and tailor mental-health guidance.";
@@ -802,6 +803,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = AeQuus;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "We will use your Calendar information to help you manage deadlines and give personalized advice based on it.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Allow login using Face ID to save users time.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We analyze your heart rate via HealthKit to gauge stress levels and tailor mental-health guidance.";
