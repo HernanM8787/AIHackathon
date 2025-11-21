@@ -97,6 +97,78 @@ actor FirebaseService {
         // TODO: Replace with Firestore query
         return MockData.matches
     }
+    
+    // MARK: - Posts
+    
+    /// Fetch all posts (or filtered by category)
+    func fetchPosts(category: PostCategory? = nil) async throws -> [Post] {
+        let snapshot: QuerySnapshot
+        
+        if let category = category, category != .all {
+            snapshot = try await db.collection("posts")
+                .whereField("category", isEqualTo: category.rawValue)
+                .order(by: "createdAt", descending: true)
+                .limit(to: 50)
+                .getDocuments()
+        } else {
+            snapshot = try await db.collection("posts")
+                .order(by: "createdAt", descending: true)
+                .limit(to: 50)
+                .getDocuments()
+        }
+        
+        return snapshot.documents.compactMap { doc in
+            try? doc.data(as: FirestorePost.self).toPost(id: doc.documentID)
+        }
+    }
+    
+    /// Create a new post
+    func createPost(post: Post) async throws {
+        let firestorePost = FirestorePost(from: post)
+        let data = try firestorePost.toDictionary()
+        
+        let docRef = db.collection("posts").document()
+        try await docRef.setData(data)
+    }
+    
+    /// Update post care count
+    func updatePostCare(postId: String, increment: Int) async throws {
+        let docRef = db.collection("posts").document(postId)
+        try await docRef.updateData([
+            "careCount": FieldValue.increment(Int64(increment)),
+            "updatedAt": FieldValue.serverTimestamp()
+        ])
+    }
+    
+    /// Add a comment to a post
+    func addComment(postId: String, comment: Comment) async throws {
+        let firestoreComment = FirestoreComment(from: comment)
+        let data = try firestoreComment.toDictionary()
+        
+        let commentRef = db.collection("posts").document(postId)
+            .collection("comments").document()
+        try await commentRef.setData(data)
+        
+        // Update post comment count
+        let postRef = db.collection("posts").document(postId)
+        try await postRef.updateData([
+            "commentCount": FieldValue.increment(Int64(1)),
+            "updatedAt": FieldValue.serverTimestamp()
+        ])
+    }
+    
+    /// Fetch comments for a post
+    func fetchComments(for postId: String) async throws -> [Comment] {
+        let snapshot = try await db.collection("posts")
+            .document(postId)
+            .collection("comments")
+            .order(by: "createdAt", descending: false)
+            .getDocuments()
+        
+        return snapshot.documents.compactMap { doc in
+            try? doc.data(as: FirestoreComment.self).toComment(id: doc.documentID)
+        }
+    }
 
     // MARK: - Assignments
 
@@ -179,6 +251,92 @@ private struct FirestoreEvent: Codable {
             description: description,
             rsvp: RSVPStatus(rawValue: rsvp) ?? .undecided,
             category: EventCategory(rawValue: category) ?? .other
+        )
+    }
+    
+    func toDictionary() throws -> [String: Any] {
+        let encoder = Firestore.Encoder()
+        return try encoder.encode(self)
+    }
+}
+
+// MARK: - Firestore Post Model
+
+private struct FirestorePost: Codable {
+    let userId: String
+    let title: String
+    let body: String
+    let category: String
+    let hashtags: [String]
+    let careCount: Int
+    let commentCount: Int
+    let createdAt: Timestamp
+    let updatedAt: Timestamp
+    let userIconType: String
+    
+    init(from post: Post) {
+        self.userId = post.userId
+        self.title = post.title
+        self.body = post.body
+        self.category = post.category.rawValue
+        self.hashtags = post.hashtags
+        self.careCount = post.careCount
+        self.commentCount = post.commentCount
+        self.createdAt = Timestamp(date: post.createdAt)
+        self.updatedAt = Timestamp(date: post.updatedAt)
+        self.userIconType = post.userIconType.rawValue
+    }
+    
+    func toPost(id: String) -> Post {
+        Post(
+            id: id,
+            userId: userId,
+            title: title,
+            body: body,
+            category: PostCategory(rawValue: category) ?? .other,
+            hashtags: hashtags,
+            careCount: careCount,
+            commentCount: commentCount,
+            createdAt: createdAt.dateValue(),
+            updatedAt: updatedAt.dateValue(),
+            userIconType: UserIconType(rawValue: userIconType) ?? .random
+        )
+    }
+    
+    func toDictionary() throws -> [String: Any] {
+        let encoder = Firestore.Encoder()
+        return try encoder.encode(self)
+    }
+}
+
+// MARK: - Firestore Comment Model
+
+private struct FirestoreComment: Codable {
+    let postId: String
+    let userId: String
+    let body: String
+    let careCount: Int
+    let createdAt: Timestamp
+    let userIconType: String
+    
+    init(from comment: Comment) {
+        self.postId = comment.postId
+        self.userId = comment.userId
+        self.body = comment.body
+        self.careCount = comment.careCount
+        self.createdAt = Timestamp(date: comment.createdAt)
+        self.userIconType = comment.userIconType.rawValue
+    }
+    
+    func toComment(id: String) -> Comment {
+        Comment(
+            id: id,
+            postId: postId,
+            userId: userId,
+            body: body,
+            careCount: careCount,
+            createdAt: createdAt.dateValue(),
+            userIconType: UserIconType(rawValue: userIconType) ?? .random
         )
     }
     

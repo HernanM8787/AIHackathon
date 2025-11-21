@@ -9,6 +9,8 @@ struct LoginView: View {
     @State private var errorMessage: String?
     @State private var showPassword = false
     @State private var showErrorAlert = false
+    @State private var showManualLogin = false
+    @State private var hasAttemptedFaceID = false
     
     var body: some View {
         ZStack {
@@ -29,7 +31,7 @@ struct LoginView: View {
                                 .fill(Color(red: 0x20/255.0, green: 0x20/255.0, blue: 0x2A/255.0))
                                 .frame(width: 80, height: 80)
                             
-                            Image(systemName: "figure.mind.and.body")
+                            Image(systemName: showManualLogin ? "person.fill" : "faceid")
                                 .font(.system(size: 40, weight: .light))
                                 .foregroundColor(Color(red: 0x42/255.0, green: 0x85/255.0, blue: 0xF4/255.0))
                         }
@@ -38,14 +40,51 @@ struct LoginView: View {
                             .font(.system(size: 32, weight: .bold))
                             .foregroundColor(.white)
                         
-                        Text("Log in to continue your journey.")
+                        Text(showManualLogin ? "Enter your credentials to log in." : "Use Face ID to securely access your account.")
                             .font(.system(size: 16, weight: .regular))
                             .foregroundColor(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
                     }
                     .padding(.bottom, 40)
                     
-                    // Input Fields Section
-                    VStack(alignment: .leading, spacing: 24) {
+                    // Face ID Section (Primary)
+                    if !showManualLogin {
+                        VStack(spacing: 24) {
+                            // Face ID Button (Primary)
+                            Button(action: authenticateWithFaceID) {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "faceid")
+                                        .font(.system(size: 60))
+                                        .foregroundColor(.white)
+                                    Text("Sign in with Face ID")
+                                        .font(.system(size: 20, weight: .semibold))
+                                        .foregroundColor(.white)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 40)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
+                                )
+                            }
+                            .disabled(isSubmitting)
+                            .padding(.horizontal)
+                            
+                            // Manual Login Fallback
+                            Button(action: {
+                                showManualLogin = true
+                            }) {
+                                Text("Use Email & Password Instead")
+                                    .font(.system(size: 14, weight: .regular))
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                            .padding(.bottom, 20)
+                        }
+                    }
+                    
+                    // Input Fields Section (Manual Login)
+                    if showManualLogin {
+                        VStack(alignment: .leading, spacing: 24) {
                         // Student Email Address
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Student Email Address")
@@ -111,21 +150,35 @@ struct LoginView: View {
                             .padding(.top, 4)
                         }
                         
-                        // Forgot Password Link
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                // TODO: Implement forgot password functionality
-                            }) {
-                                Text("Forgot Password?")
-                                    .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
+                            // Forgot Password Link
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    // TODO: Implement forgot password functionality
+                                }) {
+                                    Text("Forgot Password?")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
+                                }
                             }
+                            .padding(.top, -8)
+                            
+                            // Back to Face ID
+                            Button(action: {
+                                showManualLogin = false
+                            }) {
+                                HStack {
+                                    Image(systemName: "arrow.left")
+                                    Text("Back to Face ID")
+                                }
+                                .font(.system(size: 14, weight: .regular))
+                                .foregroundColor(.white.opacity(0.7))
+                            }
+                            .padding(.top, 8)
                         }
-                        .padding(.top, -8)
+                        .padding(.horizontal)
+                        .padding(.bottom, 32)
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom, 32)
                     
                     // Error Message
                     if let errorMessage {
@@ -136,47 +189,29 @@ struct LoginView: View {
                             .padding(.bottom, 16)
                     }
                     
-                    // Login Button
-                    Button(action: submit) {
-                        if isSubmitting {
-                            ProgressView()
-                                .tint(.white)
-                        } else {
-                            Text("Login")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
-                    )
-                    .disabled(isSubmitting || !canSubmit)
-                    .opacity(canSubmit && !isSubmitting ? 1.0 : 0.6)
-                    .padding(.horizontal)
-                    .padding(.bottom, 24)
-                    
-                        // Face ID Button
-                        Button(action: authenticateWithFaceID) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "faceid")
-                                    .font(.system(size: 20))
-                                Text("Use Face ID")
-                                    .font(.system(size: 16, weight: .semibold))
+                    // Login Button (Manual)
+                    if showManualLogin {
+                        Button(action: submit) {
+                            if isSubmitting {
+                                ProgressView()
+                                    .tint(.white)
+                            } else {
+                                Text("Login")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.white)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0), lineWidth: 1.5)
-                            )
-                            .foregroundColor(.white)
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(red: 0x6B/255.0, green: 0x46/255.0, blue: 0xC8/255.0))
+                        )
+                        .disabled(isSubmitting || !canSubmit)
+                        .opacity(canSubmit && !isSubmitting ? 1.0 : 0.6)
                         .padding(.horizontal)
-                        .padding(.bottom, 16)
-                        .disabled(isSubmitting)
+                        .padding(.bottom, 24)
+                    }
 
                         // Sign Up Link
                     HStack(spacing: 4) {
@@ -205,6 +240,15 @@ struct LoginView: View {
         } message: {
             if let errorMessage {
                 Text(errorMessage)
+            }
+        }
+        .onAppear {
+            // Auto-trigger Face ID on appear if credentials exist
+            if !hasAttemptedFaceID {
+                hasAttemptedFaceID = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    authenticateWithFaceID()
+                }
             }
         }
     }

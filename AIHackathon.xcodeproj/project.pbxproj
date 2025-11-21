@@ -66,10 +66,17 @@
 		C347AE9D2ECEB6C4004A51E4 /* AIInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9C2ECEB6C4004A51E4 /* AIInsightCard.swift */; };
 		C347AE9F2ECEB754004A51E4 /* ActivityCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AE9E2ECEB754004A51E4 /* ActivityCard.swift */; };
 		C347AEA12ECEB75D004A51E4 /* DashboardEventCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA02ECEB75D004A51E4 /* DashboardEventCard.swift */; };
-		C347AEA32ECEB767004A51E4 /* EventCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA22ECEB767004A51E4 /* EventCard.swift */; };
 		C347AEA52ECEB770004A51E4 /* MentalStateCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */; };
 		C347AEA72ECEB782004A51E4 /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C347AEA62ECEB782004A51E4 /* MetricCard.swift */; };
 		C37102792ECF6E89007915AF /* CalendarSuggestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */; };
+		C37827732ECFDA8200E4D5C6 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827722ECFDA8200E4D5C6 /* Post.swift */; };
+		C37827752ECFDACB00E4D5C6 /* CreatePostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827742ECFDACB00E4D5C6 /* CreatePostView.swift */; };
+		C37827772ECFDAD000E4D5C6 /* PeerSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827762ECFDAD000E4D5C6 /* PeerSupportView.swift */; };
+		C378277E2ECFDC9A00E4D5C6 /* CreatePostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C378277B2ECFDC9A00E4D5C6 /* CreatePostView.swift */; };
+		C378277F2ECFDC9A00E4D5C6 /* PeerSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C378277C2ECFDC9A00E4D5C6 /* PeerSupportView.swift */; };
+		C37827812ECFE7D800E4D5C6 /* SchoolLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */; };
+		C37827832ECFE84200E4D5C6 /* SchoolBranding.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */; };
+		C37827852ECFEBC600E4D5C6 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827842ECFEBC600E4D5C6 /* ProfileView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,13 +90,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5C8BDFCC2ECE93A0008B451A /* AIHackathon-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AIHackathon-Info.plist"; sourceTree = "<group>"; };
+		5C8BDFCD2ECE9634008B451A /* AIHackathon.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIHackathon.entitlements; sourceTree = "<group>"; };
 		5C8BDFFE2ECEEC20008B451A /* SignupStep1View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupStep1View.swift; sourceTree = "<group>"; };
 		5C8BE0002ECEEC25008B451A /* SignupStep2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupStep2View.swift; sourceTree = "<group>"; };
 		5C8BE0022ECEEC2E008B451A /* AccountInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInformationView.swift; sourceTree = "<group>"; };
 		5C8BE0042ECEEC34008B451A /* WelcomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreenView.swift; sourceTree = "<group>"; };
 		5C8BE0062ECEEC64008B451A /* SignupFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupFlowView.swift; sourceTree = "<group>"; };
-		5C8BDFCC2ECE93A0008B451A /* AIHackathon-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AIHackathon-Info.plist"; sourceTree = "<group>"; };
-		5C8BDFCD2ECE9634008B451A /* AIHackathon.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIHackathon.entitlements; sourceTree = "<group>"; };
 		5C919F752ECD7D540054DE34 /* AIHackathonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHackathonApp.swift; sourceTree = "<group>"; };
 		5C919F762ECD7D540054DE34 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		5C919F772ECD7D540054DE34 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -142,6 +149,14 @@
 		C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentalStateCard.swift; sourceTree = "<group>"; };
 		C347AEA62ECEB782004A51E4 /* MetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCard.swift; sourceTree = "<group>"; };
 		C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSuggestionCard.swift; sourceTree = "<group>"; };
+		C37827722ECFDA8200E4D5C6 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		C37827742ECFDACB00E4D5C6 /* CreatePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePostView.swift; sourceTree = "<group>"; };
+		C37827762ECFDAD000E4D5C6 /* PeerSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeerSupportView.swift; sourceTree = "<group>"; };
+		C378277B2ECFDC9A00E4D5C6 /* CreatePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePostView.swift; sourceTree = "<group>"; };
+		C378277C2ECFDC9A00E4D5C6 /* PeerSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeerSupportView.swift; sourceTree = "<group>"; };
+		C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolLogoView.swift; sourceTree = "<group>"; };
+		C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolBranding.swift; sourceTree = "<group>"; };
+		C37827842ECFEBC600E4D5C6 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +243,7 @@
 				C347AEA22ECEB767004A51E4 /* EventCard.swift */,
 				C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */,
 				C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */,
+				C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -267,6 +283,8 @@
 				5C919F892ECD7D540054DE34 /* Match.swift */,
 				5C919F8A2ECD7D540054DE34 /* UserProfile.swift */,
 				5CA95C982ECF9CFE005C9EE1 /* HeartRateSample.swift */,
+				C37827722ECFDA8200E4D5C6 /* Post.swift */,
+				C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -278,7 +296,6 @@
 				5C919F8C2ECD7D540054DE34 /* OnboardingFlowView.swift */,
 				5C919F8D2ECD7D540054DE34 /* PermissionRequestView.swift */,
 				5C919F8E2ECD7D540054DE34 /* PreferenceSetupView.swift */,
-				5C8BDFFC2ECED3EF008B451A /* WelcomeScreenView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -315,6 +332,7 @@
 		5C919F9D2ECD7D540054DE34 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C378277D2ECFDC9A00E4D5C6 /* Views */,
 				5C919F9A2ECD7D540054DE34 /* Services */,
 				5C919F9C2ECD7D540054DE34 /* Views */,
 			);
@@ -328,6 +346,8 @@
 				5C919F9F2ECD7D540054DE34 /* MockData.swift */,
 				5C91A23F2ED1FACE0054DE34 /* KeychainHelper.swift */,
 				5CA95CA42ECFB4CD005C9EE1 /* PermissionStorage.swift */,
+				C37827742ECFDACB00E4D5C6 /* CreatePostView.swift */,
+				C37827762ECFDAD000E4D5C6 /* PeerSupportView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -359,6 +379,16 @@
 				5CA95C9D2ECFB05E005C9EE1 /* AddAssignmentView.swift */,
 			);
 			path = Assignments;
+			sourceTree = SOURCE_ROOT;
+		};
+		C378277D2ECFDC9A00E4D5C6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C378277B2ECFDC9A00E4D5C6 /* CreatePostView.swift */,
+				C378277C2ECFDC9A00E4D5C6 /* PeerSupportView.swift */,
+				C37827842ECFEBC600E4D5C6 /* ProfileView.swift */,
+			);
+			path = Views;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -478,34 +508,35 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C37827772ECFDAD000E4D5C6 /* PeerSupportView.swift in Sources */,
 				C347AEA72ECEB782004A51E4 /* MetricCard.swift in Sources */,
+				C37827832ECFE84200E4D5C6 /* SchoolBranding.swift in Sources */,
 				5C919FA12ECD7D540054DE34 /* PermissionRequestView.swift in Sources */,
 				5C919FA32ECD7D540054DE34 /* FirebaseService.swift in Sources */,
 				C37102792ECF6E89007915AF /* CalendarSuggestionCard.swift in Sources */,
-				5C8BDFFD2ECED3EF008B451A /* WelcomeScreenView.swift in Sources */,
+				C37827732ECFDA8200E4D5C6 /* Post.swift in Sources */,
 				5C919FA52ECD7D540054DE34 /* VirtualAssistantView.swift in Sources */,
 				5C91A0062ED09A1C0054DE34 /* SignupView.swift in Sources */,
 				5C91A00D2ED0C8750054DE34 /* LoginView.swift in Sources */,
-				5C8BDFF92ECED3DC008B451A /* SignupStep1View.swift in Sources */,
-				5C8BDFD32ECEA1C8008B451A /* AccountInformationView.swift in Sources */,
+				C37827752ECFDACB00E4D5C6 /* CreatePostView.swift in Sources */,
 				5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */,
-				5C8BDFFB2ECED3E1008B451A /* SignupStep2View.swift in Sources */,
 				5C919FA62ECD7D540054DE34 /* CreateEventView.swift in Sources */,
 				5C919FA72ECD7D540054DE34 /* EventCard.swift in Sources */,
 				C347AEA52ECEB770004A51E4 /* MentalStateCard.swift in Sources */,
 				5C919FA82ECD7D540054DE34 /* PreferenceSetupView.swift in Sources */,
 				5CA95C992ECF9CFF005C9EE1 /* HeartRateSample.swift in Sources */,
 				5C919FA92ECD7D540054DE34 /* MatchProfileView.swift in Sources */,
-				5C8BDFF72ECED3D1008B451A /* SignupFlowView.swift in Sources */,
 				5CA95C9F2ECFB05E005C9EE1 /* AddAssignmentView.swift in Sources */,
 				5C919FAA2ECD7D540054DE34 /* GeminiService.swift in Sources */,
 				5C919FAB2ECD7D540054DE34 /* CalendarService.swift in Sources */,
 				5C919FAC2ECD7D540054DE34 /* AuthService.swift in Sources */,
 				5C8BE0072ECEEC64008B451A /* SignupFlowView.swift in Sources */,
 				5C919FF12ECD87E50054DE34 /* GeminiConfig.swift in Sources */,
+				C37827812ECFE7D800E4D5C6 /* SchoolLogoView.swift in Sources */,
 				C347AE9B2ECEAFA3004A51E4 /* MonthCalendarView.swift in Sources */,
 				5C919FAD2ECD7D540054DE34 /* Match.swift in Sources */,
 				5C8BDFFF2ECEEC20008B451A /* SignupStep1View.swift in Sources */,
+				C37827852ECFEBC600E4D5C6 /* ProfileView.swift in Sources */,
 				5C91A0102ECE484B0054DE34 /* BottomTabBar.swift in Sources */,
 				5CA95CA12ECFB06B005C9EE1 /* Assignment.swift in Sources */,
 				5C919FAE2ECD7D540054DE34 /* MatchRow.swift in Sources */,
@@ -538,6 +569,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C378277E2ECFDC9A00E4D5C6 /* CreatePostView.swift in Sources */,
+				C378277F2ECFDC9A00E4D5C6 /* PeerSupportView.swift in Sources */,
 				5C919FC42ECD7D540054DE34 /* GeminiServiceTests.swift in Sources */,
 				5C919FF02ECD87E50054DE34 /* GeminiConfig.swift in Sources */,
 				5C919FC62ECD7D540054DE34 /* HomeDashboardSnapshotTests.swift in Sources */,
@@ -682,7 +715,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W459MN44JQ;
+				DEVELOPMENT_TEAM = W38TS4Z2VF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
@@ -701,7 +734,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonf;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -721,7 +754,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W459MN44JQ;
+				DEVELOPMENT_TEAM = W38TS4Z2VF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
@@ -740,7 +773,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonf;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;

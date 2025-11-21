@@ -54,7 +54,7 @@ struct EventCalendarView: View {
                             }
                         }
                         .padding(.horizontal)
-                        .padding(.bottom, 100)
+                        .padding(.bottom, 90)
                     }
                 }
             } else {
