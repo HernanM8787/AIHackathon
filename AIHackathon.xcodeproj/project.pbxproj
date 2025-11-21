@@ -78,11 +78,8 @@
 		C37827812ECFE7D800E4D5C6 /* SchoolLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */; };
 		C37827832ECFE84200E4D5C6 /* SchoolBranding.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */; };
 		C37827852ECFEBC600E4D5C6 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827842ECFEBC600E4D5C6 /* ProfileView.swift */; };
-		C37827872ED01EF600E4D5C6 /* HourlyItineraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827862ED01EF600E4D5C6 /* HourlyItineraryView.swift */; };
-		C37827892ED021CE00E4D5C6 /* MonthYearPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827882ED021CE00E4D5C6 /* MonthYearPicker.swift */; };
-		C378278B2ED0223E00E4D5C6 /* SchoolEventsNewsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C378278A2ED0223E00E4D5C6 /* SchoolEventsNewsCard.swift */; };
-		C378278D2ED0255E00E4D5C6 /* AISuggestionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C378278C2ED0255E00E4D5C6 /* AISuggestionsListView.swift */; };
-		C378278F2ED0256600E4D5C6 /* CalendarSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C378278E2ED0256600E4D5C6 /* CalendarSearchView.swift */; };
+		C3A0B0122ED17B0400A93F22 /* StressSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A0B0112ED17B0400A93F22 /* StressSample.swift */; };
+		C3A0B0142ED17B0400A93F22 /* StressAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,11 +161,8 @@
 		C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolLogoView.swift; sourceTree = "<group>"; };
 		C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolBranding.swift; sourceTree = "<group>"; };
 		C37827842ECFEBC600E4D5C6 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		C37827862ED01EF600E4D5C6 /* HourlyItineraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourlyItineraryView.swift; sourceTree = "<group>"; };
-		C37827882ED021CE00E4D5C6 /* MonthYearPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthYearPicker.swift; sourceTree = "<group>"; };
-		C378278A2ED0223E00E4D5C6 /* SchoolEventsNewsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolEventsNewsCard.swift; sourceTree = "<group>"; };
-		C378278C2ED0255E00E4D5C6 /* AISuggestionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISuggestionsListView.swift; sourceTree = "<group>"; };
-		C378278E2ED0256600E4D5C6 /* CalendarSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSearchView.swift; sourceTree = "<group>"; };
+		C3A0B0112ED17B0400A93F22 /* StressSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressSample.swift; sourceTree = "<group>"; };
+		C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressAnalysisService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,9 +250,6 @@
 				C347AEA42ECEB770004A51E4 /* MentalStateCard.swift */,
 				C37102782ECF6E89007915AF /* CalendarSuggestionCard.swift */,
 				C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */,
-				C37827862ED01EF600E4D5C6 /* HourlyItineraryView.swift */,
-				C37827882ED021CE00E4D5C6 /* MonthYearPicker.swift */,
-				C378278A2ED0223E00E4D5C6 /* SchoolEventsNewsCard.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -276,8 +267,6 @@
 			children = (
 				5C919F822ECD7D540054DE34 /* CreateEventView.swift */,
 				5C919F832ECD7D540054DE34 /* EventCalendarView.swift */,
-				C378278C2ED0255E00E4D5C6 /* AISuggestionsListView.swift */,
-				C378278E2ED0256600E4D5C6 /* CalendarSearchView.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -302,6 +291,7 @@
 				5CA95C982ECF9CFE005C9EE1 /* HeartRateSample.swift */,
 				C37827722ECFDA8200E4D5C6 /* Post.swift */,
 				C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */,
+				C3A0B0112ED17B0400A93F22 /* StressSample.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -326,6 +316,7 @@
 				5C919F952ECD7D540054DE34 /* GeminiService.swift */,
 				5C919F962ECD7D540054DE34 /* HealthKitService.swift */,
 				5C919F972ECD7D540054DE34 /* ScreenTimeService.swift */,
+				C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -526,8 +517,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3A0B0122ED17B0400A93F22 /* StressSample.swift in Sources */,
+				C3A0B0142ED17B0400A93F22 /* StressAnalysisService.swift in Sources */,
 				C37827772ECFDAD000E4D5C6 /* PeerSupportView.swift in Sources */,
-				C378278B2ED0223E00E4D5C6 /* SchoolEventsNewsCard.swift in Sources */,
 				C347AEA72ECEB782004A51E4 /* MetricCard.swift in Sources */,
 				C37827832ECFE84200E4D5C6 /* SchoolBranding.swift in Sources */,
 				5C919FA12ECD7D540054DE34 /* PermissionRequestView.swift in Sources */,
@@ -540,12 +532,10 @@
 				C37827752ECFDACB00E4D5C6 /* CreatePostView.swift in Sources */,
 				5CA95CA72ED01475005C9EE1 /* PostDetailView.swift in Sources */,
 				5CA95CA52ECFB4CD005C9EE1 /* PermissionStorage.swift in Sources */,
-				C378278D2ED0255E00E4D5C6 /* AISuggestionsListView.swift in Sources */,
 				5C919FA62ECD7D540054DE34 /* CreateEventView.swift in Sources */,
 				5C919FA72ECD7D540054DE34 /* EventCard.swift in Sources */,
 				C347AEA52ECEB770004A51E4 /* MentalStateCard.swift in Sources */,
 				5C919FA82ECD7D540054DE34 /* PreferenceSetupView.swift in Sources */,
-				C37827872ED01EF600E4D5C6 /* HourlyItineraryView.swift in Sources */,
 				5CA95C992ECF9CFF005C9EE1 /* HeartRateSample.swift in Sources */,
 				5C919FA92ECD7D540054DE34 /* MatchProfileView.swift in Sources */,
 				5CA95C9F2ECFB05E005C9EE1 /* AddAssignmentView.swift in Sources */,
@@ -560,7 +550,6 @@
 				5C8BDFFF2ECEEC20008B451A /* SignupStep1View.swift in Sources */,
 				C37827852ECFEBC600E4D5C6 /* ProfileView.swift in Sources */,
 				5C91A0102ECE484B0054DE34 /* BottomTabBar.swift in Sources */,
-				C378278F2ED0256600E4D5C6 /* CalendarSearchView.swift in Sources */,
 				5CA95CA12ECFB06B005C9EE1 /* Assignment.swift in Sources */,
 				5C919FAE2ECD7D540054DE34 /* MatchRow.swift in Sources */,
 				5C919FAF2ECD7D540054DE34 /* AppRootView.swift in Sources */,
@@ -571,7 +560,6 @@
 				5C8BE0052ECEEC34008B451A /* WelcomeScreenView.swift in Sources */,
 				5C919FB12ECD7D540054DE34 /* OnboardingFlowView.swift in Sources */,
 				5C919FB22ECD7D540054DE34 /* AIHackathonApp.swift in Sources */,
-				C37827892ED021CE00E4D5C6 /* MonthYearPicker.swift in Sources */,
 				5C919FB32ECD7D540054DE34 /* UserProfile.swift in Sources */,
 				5C919FB42ECD7D540054DE34 /* EventCalendarView.swift in Sources */,
 				5C919FB52ECD7D540054DE34 /* HealthKitService.swift in Sources */,
@@ -739,7 +727,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W38TS4Z2VF;
+				DEVELOPMENT_TEAM = W459MN44JQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
@@ -758,7 +746,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonf;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -778,7 +766,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIHackathon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W38TS4Z2VF;
+				DEVELOPMENT_TEAM = W459MN44JQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AIHackathon-Info.plist";
@@ -797,7 +785,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathonf;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hernan.AIHackathon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;

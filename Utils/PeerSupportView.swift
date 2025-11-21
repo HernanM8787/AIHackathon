@@ -4,7 +4,6 @@ import FirebaseFirestore
 struct PeerSupportView: View {
     @EnvironmentObject private var appState: AppState
     @State private var selectedCategory: PostCategory = .all
-    @State private var showingCreatePost = false
     @State private var posts: [Post] = []
     @State private var isLoading = false
     @State private var showMyPostsOnly = false
@@ -103,12 +102,6 @@ struct PeerSupportView: View {
             // Floating button removed; creation handled via main Add tab
         }
         .navigationBarHidden(true)
-        .sheet(isPresented: $showingCreatePost) {
-            NavigationStack {
-                CreatePostView()
-                    .environmentObject(appState)
-            }
-        }
         .sheet(item: $selectedPost) { post in
             NavigationStack {
                 PostDetailView(post: post, myAnonymousId: appState.peerSupportAnonId)

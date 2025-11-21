@@ -43,6 +43,15 @@ struct HomeDashboardView: View {
                 await appState.refreshCalendarEvents()
             }
         }
+        .task(id: appState.userProfile.id) {
+            await appState.refreshStressLevels()
+        }
+        .onChange(of: appState.events) {
+            Task { await appState.refreshStressLevels() }
+        }
+        .onChange(of: appState.assignments) {
+            Task { await appState.refreshStressLevels() }
+        }
         .sheet(isPresented: $showingCreatePost) {
             NavigationStack {
                 CreatePostView()
@@ -151,8 +160,7 @@ struct HomeDashboardView: View {
                     .padding(.horizontal)
                     .padding(.top, 8)
                     
-                    // Mental State Card
-                    MentalStateCard()
+                    StressLevelGraphView(samples: appState.stressSamples)
                         .padding(.horizontal)
                     
                     // AI Insight Card
@@ -466,5 +474,88 @@ private struct AssignmentRow: View {
             .buttonStyle(.plain)
         }
         .padding(.vertical, 4)
+    }
+}
+
+private struct StressLevelGraphView: View {
+    let samples: [StressSample]
+    private let currentHour = Calendar.current.component(.hour, from: Date())
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Stress Level")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                Spacer()
+                Text("0 – 10")
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+            }
+            
+            if samples.isEmpty {
+                Text("No stress data yet. Keep logging events and heart rate.")
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+            } else {
+                Chart {
+                    ForEach(samples) { sample in
+                        AreaMark(
+                            x: .value("Hour", sample.hour),
+                            y: .value("Stress", sample.value)
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color.purple.opacity(0.35),
+                                    Color.purple.opacity(0.05)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                    }
+                    ForEach(samples) { sample in
+                        LineMark(
+                            x: .value("Hour", sample.hour),
+                            y: .value("Stress", sample.value)
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(Color.purple)
+                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+                    }
+                    if let current = samples.first(where: { $0.hour == currentHour }) {
+                        RuleMark(x: .value("Hour", currentHour))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+                            .foregroundStyle(Color.white.opacity(0.4))
+                        PointMark(
+                            x: .value("Hour", current.hour),
+                            y: .value("Stress", current.value)
+                        )
+                        .foregroundStyle(Color.white)
+                    }
+                }
+                .chartYScale(domain: 0...10)
+                .chartXAxis {
+                    AxisMarks(values: Array(stride(from: 0, through: 23, by: 3))) { value in
+                        AxisGridLine()
+                        AxisTick()
+                        if let hour = value.as(Int.self) {
+                            AxisValueLabel("\(hour)")
+                        }
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading, values: Array(stride(from: 0, through: 10, by: 2)))
+                }
+                .frame(height: 200)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(white: 0.12))
+        )
     }
 }

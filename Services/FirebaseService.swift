@@ -211,6 +211,39 @@ actor FirebaseService {
             }
     }
 
+    // MARK: - Stress Levels
+
+    func fetchStressSamples(for userId: String, date: Date) async throws -> [StressSample] {
+        let key = Self.dayFormatter.string(from: date)
+        let docRef = db.collection("users")
+            .document(userId)
+            .collection("stressLevels")
+            .document(key)
+        
+        let snapshot = try await docRef.getDocument()
+        guard snapshot.exists, let data = try? snapshot.data(as: FirestoreStressDay.self) else {
+            throw StressDataError.notFound
+        }
+        return data.samples.map { $0.toSample() }
+    }
+    
+    func saveStressSamples(_ samples: [StressSample], userId: String, date: Date) async throws {
+        let key = Self.dayFormatter.string(from: date)
+        let docRef = db.collection("users")
+            .document(userId)
+            .collection("stressLevels")
+            .document(key)
+        
+        let firestoreSamples = samples.map { FirestoreStressSample(from: $0) }
+        let payload = FirestoreStressDay(
+            dateKey: key,
+            samples: firestoreSamples,
+            generatedAt: Timestamp(date: Date())
+        )
+        
+        try await docRef.setData(payload.toDictionary())
+    }
+
     // MARK: - Assignments
 
     func fetchAssignments(for userId: String) async throws -> [Assignment] {
@@ -423,4 +456,42 @@ private struct FirestoreAssignment: Codable {
         let encoder = Firestore.Encoder()
         return try encoder.encode(self)
     }
+}
+
+enum StressDataError: Error {
+    case notFound
+}
+
+private struct FirestoreStressDay: Codable {
+    let dateKey: String
+    let samples: [FirestoreStressSample]
+    let generatedAt: Timestamp?
+    
+    func toDictionary() throws -> [String: Any] {
+        let encoder = Firestore.Encoder()
+        return try encoder.encode(self)
+    }
+}
+
+private struct FirestoreStressSample: Codable {
+    let hour: Int
+    let value: Double
+    
+    init(from sample: StressSample) {
+        self.hour = sample.hour
+        self.value = sample.value
+    }
+    
+    func toSample() -> StressSample {
+        StressSample(hour: hour, value: value)
+    }
+}
+
+extension FirebaseService {
+    private static var dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = .current
+        return formatter
+    }()
 }
