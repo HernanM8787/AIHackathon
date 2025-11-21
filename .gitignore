@@ -1,6 +1,7 @@
 # Xcode
 DerivedData/
 *.xcworkspace/xcuserdata/
+.env
 
 # macOS
 .DS_Store
