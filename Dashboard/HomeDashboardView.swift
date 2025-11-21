@@ -29,13 +29,11 @@ struct HomeDashboardView: View {
                 }
             }
             
-            // Only show bottom tab bar when not on assistant view
-            if selectedTab != .assistant {
-                VStack {
-                    Spacer()
-                    BottomTabBar(selected: $selectedTab)
-                        .padding(.bottom, 8)
-                }
+            // Show bottom tab bar for all views including assistant
+            VStack {
+                Spacer()
+                BottomTabBar(selected: $selectedTab)
+                    .padding(.bottom, 8)
             }
         }
         .task(id: appState.permissionState.healthKitGranted) {
@@ -84,7 +82,6 @@ struct HomeDashboardView: View {
     private var assistantView: some View {
         VirtualAssistantView(selectedTab: $selectedTab)
             .environmentObject(appState)
-            .ignoresSafeArea(.keyboard, edges: .bottom)
     }
     
     private var addView: some View {
