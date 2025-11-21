@@ -19,24 +19,16 @@ struct ActivityCard: View {
                 .font(.subheadline)
                 .foregroundStyle(.gray)
             
-            Text(value)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-            
             if let progress = progress {
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color(white: 0.2))
-                            .frame(height: 4)
-                        
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(.blue)
-                            .frame(width: geometry.size.width * progress, height: 4)
-                    }
+                VStack(alignment: .leading, spacing: 6) {
+                    SmallStatLabel(text: value)
+                    ProgressBar(progress: progress)
                 }
-                .frame(height: 4)
+            } else {
+                Text(value)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
             }
         }
         .padding()
@@ -45,6 +37,38 @@ struct ActivityCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(white: 0.15))
         )
+    }
+}
+
+private struct SmallStatLabel: View {
+    let text: String
+    
+    var body: some View {
+        Text(text)
+            .font(.title)
+            .fontWeight(.bold)
+            .foregroundStyle(.white)
+    }
+}
+
+private struct ProgressBar: View {
+    let progress: Double
+    
+    var body: some View {
+        GeometryReader { geometry in
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color(white: 0.2))
+                            .frame(height: 2)
+                        
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.blue)
+                            .frame(width: geometry.size.width * max(0, min(1, progress)), height: 2)
+                    }
+                }
+                .frame(height: 2)
+        }
     }
 }
 

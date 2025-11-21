@@ -1,9 +1,9 @@
 import SwiftUI
 
 enum DashboardTab: Hashable {
-    case dashboard
-    case stats
-    case add
+    case assistant
+    case chat
+    case home
     case calendar
     case profile
 }
@@ -12,34 +12,19 @@ struct BottomTabBar: View {
     @Binding var selected: DashboardTab
 
     var body: some View {
-        HStack(spacing: 0) {
-            tabButton(icon: "house.fill", title: "Home", tab: .dashboard)
-            tabButton(icon: "chart.bar.fill", title: "Stats", tab: .stats)
-            
-            // Center + button
-            Button {
-                selected = .add
-            } label: {
-                Circle()
-                    .fill(Color(white: 0.2))
-                    .frame(width: 56, height: 56)
-                    .overlay {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                    }
-            }
-            .padding(.horizontal, 20)
-            
+        HStack(spacing: 18) {
+            tabButton(icon: "sparkles", title: "Assistant", tab: .assistant)
+            tabButton(icon: "bubble.left.and.bubble.right.fill", title: "Chat", tab: .chat)
+            tabButton(icon: "house.fill", title: "Home", tab: .home)
             tabButton(icon: "calendar", title: "Calendar", tab: .calendar)
-            tabButton(icon: "person.fill", title: "Profile", tab: .profile)
+            tabButton(icon: "person.crop.circle.fill", title: "Profile", tab: .profile)
         }
         .padding(.vertical, 12)
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 22)
         .background(
-            RoundedRectangle(cornerRadius: 0)
-                .fill(Color(white: 0.1))
+            Capsule()
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
         )
     }
 
@@ -49,19 +34,19 @@ struct BottomTabBar: View {
         } label: {
             VStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(.system(size: 18, weight: .semibold))
                 Text(title)
-                    .font(.caption)
+                    .font(.caption2)
             }
-            .foregroundStyle(selected == tab ? .white : .gray)
-            .frame(maxWidth: .infinity)
+            .foregroundStyle(selected == tab ? Color.accentColor : Color.primary.opacity(0.6))
+            .padding(.horizontal, 4)
         }
     }
 }
 
 #if DEBUG
 #Preview {
-    StatefulPreviewWrapper(DashboardTab.dashboard) { binding in
+    StatefulPreviewWrapper(DashboardTab.home) { binding in
         BottomTabBar(selected: binding)
             .padding()
             .background(Color.black.opacity(0.1))

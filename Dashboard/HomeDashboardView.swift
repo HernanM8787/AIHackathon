@@ -4,7 +4,7 @@ import Charts
 
 struct HomeDashboardView: View {
     @EnvironmentObject private var appState: AppState
-    @State private var selectedTab: DashboardTab = .dashboard
+    @State private var selectedTab: DashboardTab = .home
     @State private var isHeartRateLoading = false
     private let heartRateRefreshInterval: TimeInterval = 300
     @State private var heartRateTimer = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
@@ -14,12 +14,12 @@ struct HomeDashboardView: View {
         ZStack {
             Group {
                 switch selectedTab {
-                case .dashboard:
+                case .assistant:
+                    assistantView
+                case .chat:
+                    chatView
+                case .home:
                     dashboard
-                case .stats:
-                    statsView
-                case .add:
-                    addView
                 case .calendar:
                     calendarView
                 case .profile:
@@ -29,7 +29,13 @@ struct HomeDashboardView: View {
             
             VStack {
                 Spacer()
-                BottomTabBar(selected: $selectedTab)
+                HStack {
+                    Spacer()
+                    BottomTabBar(selected: $selectedTab)
+                        .frame(maxWidth: 420)
+                    Spacer()
+                }
+                .padding(.bottom, 8)
             }
         }
         .task(id: appState.permissionState.healthKitGranted) {
@@ -50,20 +56,20 @@ struct HomeDashboardView: View {
             }
         }
     }
-    
-    private var statsView: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            Text("Stats View")
-                .foregroundStyle(.white)
+    private var assistantView: some View {
+        NavigationStack {
+            VirtualAssistantView()
+                .environmentObject(appState)
+                .navigationTitle("Assistant")
         }
     }
     
-    private var addView: some View {
+    private var chatView: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            Text("Add View")
-                .foregroundStyle(.white)
+            Text("Chat coming soon")
+                .foregroundStyle(.white.opacity(0.8))
+                .font(.headline)
         }
     }
     
@@ -75,10 +81,9 @@ struct HomeDashboardView: View {
     }
     
     private var profileView: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            Text("Profile View")
-                .foregroundStyle(.white)
+        NavigationStack {
+            AccountInformationView()
+                .environmentObject(appState)
         }
     }
 
@@ -143,17 +148,17 @@ struct HomeDashboardView: View {
                     // Activity Cards (side by side)
                     HStack(spacing: 12) {
                         ActivityCard(
-                            title: "Study Activity",
-                            value: "4.5 hours",
-                            icon: "book.fill",
+                            title: "Heart Rate",
+                            value: heartRateDisplayText,
+                            icon: "heart.fill",
                             progress: nil
                         )
                         
                         ActivityCard(
-                            title: "Screen Time",
-                            value: formatScreenTime(appState.userProfile.metrics.screenTimeHours),
-                            icon: "iphone",
-                            progress: min(appState.userProfile.metrics.screenTimeHours / 10.0, 1.0)
+                            title: "Upcoming Assignments",
+                            value: assignmentCompletionLabel,
+                            icon: "checklist",
+                            progress: weeklyAssignmentProgress
                         )
                     }
                     .padding(.horizontal)
@@ -209,6 +214,35 @@ extension HomeDashboardView {
             return "Not Linked"
         }
         return isHeartRateLoading ? "Loading..." : "\(appState.userProfile.metrics.restingHeartRate) bpm"
+    }
+    
+    private var weeklyAssignments: [Assignment] {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2 // Monday
+        let today = Date()
+        let weekday = calendar.component(.weekday, from: today)
+        let daysFromMonday = (weekday + 5) % 7
+        let start = calendar.startOfDay(for: calendar.date(byAdding: .day, value: -daysFromMonday, to: today) ?? today)
+        let end = calendar.date(byAdding: .day, value: 7, to: start) ?? today
+        return appState.assignments.filter { $0.dueDate >= start && $0.dueDate < end }
+    }
+    
+    private var assignmentsCompletedThisWeek: Int {
+        weeklyAssignments.filter { $0.isCompleted }.count
+    }
+    
+    private var assignmentCompletionLabel: String {
+        let total = weeklyAssignments.count
+        if total == 0 {
+            return "0/0 completed"
+        }
+        return "\(assignmentsCompletedThisWeek)/\(total) completed"
+    }
+    
+    private var weeklyAssignmentProgress: Double? {
+        let total = weeklyAssignments.count
+        guard total > 0 else { return 0 }
+        return Double(assignmentsCompletedThisWeek) / Double(total)
     }
 
     private var assignmentsDueToday: [Assignment] {
