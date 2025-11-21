@@ -8,8 +8,11 @@ struct PermissionRequestView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Permissions")
                 .font(.title2.bold())
-            PermissionCard(title: "Screen Time", granted: appState.permissionState.screenTimeGranted) {
-                await requestScreenTime()
+            Text("Grant access once now or skip and manage later from Account.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            PermissionCard(title: "Reminders", granted: appState.permissionState.remindersGranted) {
+                await requestReminders()
             }
             PermissionCard(title: "HealthKit", granted: appState.permissionState.healthKitGranted) {
                 await requestHealthKit()
@@ -19,25 +22,33 @@ struct PermissionRequestView: View {
             }
             Spacer()
             if isProcessing { ProgressView() }
+            Button("Skip for now") {
+                withAnimation {
+                    appState.markOnboardingComplete()
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .buttonStyle(.borderedProminent)
         }
         .padding()
     }
 
-    private func requestScreenTime() async {
+    private func requestReminders() async {
         isProcessing = true
-        appState.permissionState.screenTimeGranted = await ScreenTimeService().requestAccess()
+        let granted = await CalendarService().requestReminderAccess()
+        _ = await appState.requestRemindersPermission()
         isProcessing = false
     }
 
     private func requestHealthKit() async {
         isProcessing = true
-        appState.permissionState.healthKitGranted = (try? await HealthKitService().requestAuthorization()) ?? false
+        _ = await appState.requestHealthKitPermission()
         isProcessing = false
     }
 
     private func requestCalendar() async {
         isProcessing = true
-        appState.permissionState.calendarGranted = await CalendarService().requestAccess()
+        _ = await appState.requestCalendarPermission()
         isProcessing = false
     }
 }

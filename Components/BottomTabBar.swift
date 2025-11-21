@@ -1,25 +1,46 @@
 import SwiftUI
 
 enum DashboardTab: Hashable {
-    case matcher
     case dashboard
-    case assistant
+    case stats
+    case add
+    case calendar
+    case profile
 }
 
 struct BottomTabBar: View {
     @Binding var selected: DashboardTab
 
     var body: some View {
-        HStack {
-            tabButton(icon: "person.3.fill", title: "Matcher", tab: .matcher)
+        HStack(spacing: 0) {
             tabButton(icon: "house.fill", title: "Home", tab: .dashboard)
-            tabButton(icon: "sparkles", title: "Assistant", tab: .assistant)
+            tabButton(icon: "chart.bar.fill", title: "Stats", tab: .stats)
+            
+            // Center + button
+            Button {
+                selected = .add
+            } label: {
+                Circle()
+                    .fill(Color(white: 0.2))
+                    .frame(width: 56, height: 56)
+                    .overlay {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                    }
+            }
+            .padding(.horizontal, 20)
+            
+            tabButton(icon: "calendar", title: "Calendar", tab: .calendar)
+            tabButton(icon: "person.fill", title: "Profile", tab: .profile)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal)
-        .background(.ultraThinMaterial, in: Capsule())
-        .padding(.horizontal)
-        .shadow(radius: 4, y: 2)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 0)
+                .fill(Color(white: 0.1))
+        )
     }
 
     private func tabButton(icon: String, title: String, tab: DashboardTab) -> some View {
@@ -28,15 +49,17 @@ struct BottomTabBar: View {
         } label: {
             VStack(spacing: 4) {
                 Image(systemName: icon)
+                    .font(.system(size: 20))
                 Text(title)
-                    .font(.footnote)
+                    .font(.caption)
             }
-            .foregroundStyle(selected == tab ? Color.accentColor : Color.primary.opacity(0.6))
+            .foregroundStyle(selected == tab ? .white : .gray)
             .frame(maxWidth: .infinity)
         }
     }
 }
 
+#if DEBUG
 #Preview {
     StatefulPreviewWrapper(DashboardTab.dashboard) { binding in
         BottomTabBar(selected: binding)
@@ -58,4 +81,5 @@ struct StatefulPreviewWrapper<Value: Hashable, Content: View>: View {
         content($value)
     }
 }
+#endif
 

@@ -1,107 +1,232 @@
 import SwiftUI
+import Combine
+import Charts
 
 struct HomeDashboardView: View {
     @EnvironmentObject private var appState: AppState
     @State private var selectedTab: DashboardTab = .dashboard
+    @State private var isHeartRateLoading = false
+    private let heartRateRefreshInterval: TimeInterval = 300
+    @State private var heartRateTimer = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
+    @State private var showingAddAssignment = false
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            matcher
-                .tag(DashboardTab.matcher)
-            dashboard
-                .tag(DashboardTab.dashboard)
-            assistant
-                .tag(DashboardTab.assistant)
+        ZStack {
+            Group {
+                switch selectedTab {
+                case .dashboard:
+                    dashboard
+                case .stats:
+                    statsView
+                case .add:
+                    addView
+                case .calendar:
+                    calendarView
+                case .profile:
+                    profileView
+                }
+            }
+            
+            VStack {
+                Spacer()
+                BottomTabBar(selected: $selectedTab)
+            }
         }
-        .toolbar(.hidden, for: .tabBar)
-        .overlay(alignment: .bottom) {
-            BottomTabBar(selected: $selectedTab)
-                .padding(.bottom, 8)
+        .task(id: appState.permissionState.healthKitGranted) {
+            await refreshHeartRateIfNeeded()
+        }
+        .task(id: appState.permissionState.calendarGranted) {
+            if appState.permissionState.calendarGranted {
+                await appState.refreshCalendarEvents()
+            }
+        }
+        .sheet(isPresented: $showingAddAssignment) {
+            AddAssignmentView()
+                .environmentObject(appState)
+        }
+        .onReceive(heartRateTimer) { _ in
+            Task {
+                await refreshHeartRateIfNeeded()
+            }
         }
     }
-
-    private var matcher: some View {
-        NavigationStack {
-            StudentMatcherView()
-                .environmentObject(appState)
-                .navigationTitle("Matcher")
+    
+    private var statsView: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            Text("Stats View")
+                .foregroundStyle(.white)
         }
     }
-
-    private var assistant: some View {
+    
+    private var addView: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            Text("Add View")
+                .foregroundStyle(.white)
+        }
+    }
+    
+    private var calendarView: some View {
         NavigationStack {
-            VirtualAssistantView()
+            EventCalendarView()
                 .environmentObject(appState)
-                .navigationTitle("Assistant")
+        }
+    }
+    
+    private var profileView: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            Text("Profile View")
+                .foregroundStyle(.white)
         }
     }
 
     private var dashboard: some View {
-        NavigationStack {
+        ZStack {
+            // Dark background
+            Color.black
+                .ignoresSafeArea()
+            
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Welcome, \(appState.userProfile.displayName)")
-                        .font(.largeTitle.bold())
-                        .padding(.bottom, 8)
-                    
-                    // Daily Reflection Card
-                    NavigationLink {
-                        DailyReflectionView()
-                            .environmentObject(appState)
-                    } label: {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack {
-                                    Image(systemName: "sparkles")
-                                        .foregroundStyle(.yellow)
-                                    Text("Daily Reflection")
-                                        .font(.headline)
-                                }
-                                Text("Reflect on your day and get motivational feedback")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 20) {
+                    // Header with profile and welcome
+                    HStack(spacing: 12) {
+                        // Profile picture
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [.blue.opacity(0.6), .purple.opacity(0.6)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 50, height: 50)
+                            .overlay {
+                                Image(systemName: "person.fill")
+                                    .foregroundStyle(.white)
+                                    .font(.title3)
                             }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Welcome back,")
+                                .font(.subheadline)
+                                .foregroundStyle(.gray)
+                            Text(appState.userProfile.displayName)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
                         }
-                        .padding()
-                        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
+                        
+                        Spacer()
+                        
+                        // Bell icon
+                        Button(action: {}) {
+                            Image(systemName: "bell")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
                     
-                    MetricCard(
-                        title: "Screen Time",
-                        value: String(format: "%.1f h", appState.userProfile.metrics.screenTimeHours)
+                    // Mental State Card
+                    MentalStateCard()
+                        .padding(.horizontal)
+                    
+                    // AI Insight Card
+                    AIInsightCard(
+                        insight: "Your mood is stable, but your upcoming PSY-201 exam might be a stressor. Prioritizing study breaks could improve focus and wellbeing."
                     )
-                    MetricCard(
-                        title: "Heart Rate",
-                        value: "\(appState.userProfile.metrics.restingHeartRate) bpm"
-                    )
-                    SectionHeader(title: "Suggested Matches")
-                    ForEach(appState.matches) { match in
-                        MatchRow(match: match)
+                    .padding(.horizontal)
+                    
+                    // Activity Cards (side by side)
+                    HStack(spacing: 12) {
+                        ActivityCard(
+                            title: "Study Activity",
+                            value: "4.5 hours",
+                            icon: "book.fill",
+                            progress: nil
+                        )
+                        
+                        ActivityCard(
+                            title: "Screen Time",
+                            value: formatScreenTime(appState.userProfile.metrics.screenTimeHours),
+                            icon: "iphone",
+                            progress: min(appState.userProfile.metrics.screenTimeHours / 10.0, 1.0)
+                        )
                     }
-                    SectionHeader(title: "Upcoming Events")
-                    ForEach(appState.events) { event in
-                        EventCard(event: event)
-                    }
-                }
-                .padding()
-            }
-            .navigationTitle("Dashboard")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink("Calendar") { EventCalendarView() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Sign Out", role: .destructive) {
-                        Task {
-                            await appState.signOut()
+                    .padding(.horizontal)
+                    
+                    // Upcoming Events Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Upcoming Events")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal)
+                        
+                        if appState.permissionState.calendarGranted {
+                            if appState.deviceCalendarEvents.isEmpty {
+                                Text("No upcoming events in your calendar.")
+                                    .foregroundStyle(.gray)
+                                    .padding(.horizontal)
+                            } else {
+                                ForEach(Array(appState.deviceCalendarEvents.prefix(5))) { event in
+                                    DashboardEventCard(event: event)
+                                        .padding(.horizontal)
+                                }
+                            }
+                        } else {
+                            Text("Calendar Not Linked")
+                                .foregroundStyle(.gray)
+                                .padding(.horizontal)
                         }
                     }
+                    .padding(.top, 8)
+                    .padding(.bottom, 100) // Space for bottom tab bar
                 }
             }
+        }
+        .navigationBarHidden(true)
+    }
+    
+    private func formatScreenTime(_ hours: Double) -> String {
+        let totalMinutes = Int(hours * 60)
+        let h = totalMinutes / 60
+        let m = totalMinutes % 60
+        if h > 0 {
+            return "\(h)h \(m)m"
+        } else {
+            return "\(m)m"
+        }
+    }
+}
+
+extension HomeDashboardView {
+    private var heartRateDisplayText: String {
+        guard appState.permissionState.healthKitGranted else {
+            return "Not Linked"
+        }
+        return isHeartRateLoading ? "Loading..." : "\(appState.userProfile.metrics.restingHeartRate) bpm"
+    }
+
+    private var assignmentsDueToday: [Assignment] {
+        let calendar = Calendar.current
+        return appState.assignments
+            .filter { calendar.isDate($0.dueDate, inSameDayAs: Date()) }
+            .sorted(by: { $0.dueDate < $1.dueDate })
+    }
+
+    private func refreshHeartRateIfNeeded(force: Bool = false) async {
+        guard appState.permissionState.healthKitGranted else { return }
+        if isHeartRateLoading && !force { return }
+        await MainActor.run {
+            isHeartRateLoading = true
+        }
+        await appState.refreshHealthData()
+        await MainActor.run {
+            isHeartRateLoading = false
         }
     }
 }
@@ -114,5 +239,121 @@ private struct SectionHeader: View {
                 .font(.headline)
             Spacer()
         }
+    }
+}
+
+private struct HeartRateChartView: View {
+    let samples: [HeartRateSample]
+
+    var body: some View {
+        Chart(samples) { sample in
+            LineMark(
+                x: .value("Time", sample.date),
+                y: .value("BPM", sample.bpm)
+            )
+            .interpolationMethod(.monotone)
+            PointMark(
+                x: .value("Time", sample.date),
+                y: .value("BPM", sample.bpm)
+            )
+        }
+        .chartXAxis {
+            AxisMarks(position: .bottom, values: .automatic(desiredCount: 4)) { value in
+                AxisGridLine()
+                AxisTick()
+                if let date = value.as(Date.self) {
+                    AxisValueLabel(date.formatted(.dateTime.hour().minute()))
+                }
+            }
+        }
+        .chartYAxis {
+            AxisMarks(position: .leading)
+        }
+    }
+}
+
+private struct TodayOverview: View {
+    let events: [Event]
+    let assignments: [Assignment]
+    let calendarLinked: Bool
+    let onAddAssignment: () -> Void
+    let onToggleAssignment: (Assignment, Bool) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Calendar Events")
+                .font(.headline)
+            if calendarLinked {
+                if events.isEmpty {
+                    Text("No events on your calendar today.")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(events) { event in
+                        EventCard(event: event)
+                    }
+                }
+            } else {
+                Text("Calendar Not Linked")
+                    .foregroundStyle(.secondary)
+            }
+
+            Divider()
+
+            HStack {
+                Text("Assignments Due Today")
+                    .font(.headline)
+                Spacer()
+                Button(action: onAddAssignment) {
+                    Label("Add", systemImage: "plus")
+                }
+                .buttonStyle(.bordered)
+            }
+
+            if assignments.isEmpty {
+                Text("No assignments due today.")
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(assignments) { assignment in
+                    AssignmentRow(assignment: assignment) { completed in
+                        onToggleAssignment(assignment, completed)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(.thickMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+private struct AssignmentRow: View {
+    let assignment: Assignment
+    let onToggle: (Bool) -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(assignment.title)
+                    .fontWeight(.semibold)
+                    .strikethrough(assignment.isCompleted, color: .secondary)
+                Text("\(assignment.course) • \(assignment.dueDate.formatted(date: .omitted, time: .shortened))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if !assignment.details.isEmpty {
+                    Text(assignment.details)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            Button {
+                onToggle(!assignment.isCompleted)
+            } label: {
+                Image(systemName: assignment.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .imageScale(.large)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.vertical, 4)
     }
 }

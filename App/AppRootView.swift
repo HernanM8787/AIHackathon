@@ -6,15 +6,17 @@ struct AppRootView: View {
     var body: some View {
         Group {
             switch appState.authStep {
+            case .welcome:
+                WelcomeScreenView()
             case .login:
                 LoginView()
             case .signup:
-                SignupView()
+                SignupFlowView()
             case .authenticated:
-                if appState.onboardingComplete {
-                    HomeDashboardView()
-                } else {
+                if appState.onboardingComplete == false {
                     OnboardingFlowView()
+                } else {
+                    HomeDashboardView()
                 }
             }
         }
