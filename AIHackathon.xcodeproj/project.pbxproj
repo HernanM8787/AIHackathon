@@ -78,6 +78,8 @@
 		C37827812ECFE7D800E4D5C6 /* SchoolLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */; };
 		C37827832ECFE84200E4D5C6 /* SchoolBranding.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */; };
 		C37827852ECFEBC600E4D5C6 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37827842ECFEBC600E4D5C6 /* ProfileView.swift */; };
+		C3A0B0122ED17B0400A93F22 /* StressSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A0B0112ED17B0400A93F22 /* StressSample.swift */; };
+		C3A0B0142ED17B0400A93F22 /* StressAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -159,6 +161,8 @@
 		C37827802ECFE7D800E4D5C6 /* SchoolLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolLogoView.swift; sourceTree = "<group>"; };
 		C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolBranding.swift; sourceTree = "<group>"; };
 		C37827842ECFEBC600E4D5C6 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		C3A0B0112ED17B0400A93F22 /* StressSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressSample.swift; sourceTree = "<group>"; };
+		C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressAnalysisService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -287,6 +291,7 @@
 				5CA95C982ECF9CFE005C9EE1 /* HeartRateSample.swift */,
 				C37827722ECFDA8200E4D5C6 /* Post.swift */,
 				C37827822ECFE84200E4D5C6 /* SchoolBranding.swift */,
+				C3A0B0112ED17B0400A93F22 /* StressSample.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -311,6 +316,7 @@
 				5C919F952ECD7D540054DE34 /* GeminiService.swift */,
 				5C919F962ECD7D540054DE34 /* HealthKitService.swift */,
 				5C919F972ECD7D540054DE34 /* ScreenTimeService.swift */,
+				C3A0B0132ED17B0400A93F22 /* StressAnalysisService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -511,6 +517,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3A0B0122ED17B0400A93F22 /* StressSample.swift in Sources */,
+				C3A0B0142ED17B0400A93F22 /* StressAnalysisService.swift in Sources */,
 				C37827772ECFDAD000E4D5C6 /* PeerSupportView.swift in Sources */,
 				C347AEA72ECEB782004A51E4 /* MetricCard.swift in Sources */,
 				C37827832ECFE84200E4D5C6 /* SchoolBranding.swift in Sources */,

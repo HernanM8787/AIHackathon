@@ -26,12 +26,14 @@ final class AppState: ObservableObject {
     @Published var matches: [Match] = MockData.matches
     @Published var heartRateHistory: [HeartRateSample] = []
     @Published var assignments: [Assignment] = MockData.assignments
+    @Published var stressSamples: [StressSample] = []
 
     private let permissionStorage = PermissionStorage()
     private let authService = AuthService()
     private let firebaseService = FirebaseService()
     private let calendarService = CalendarService()
     private let healthKitService = HealthKitService()
+    private let stressAnalysisService = StressAnalysisService()
 
     init() {
         permissionState = permissionStorage.load()
@@ -118,6 +120,22 @@ final class AppState: ObservableObject {
             assignments = try await firebaseService.fetchAssignments(for: userProfile.id)
         } catch {
             print("Failed to fetch assignments: \(error)")
+        }
+    }
+    
+    func refreshStressLevels(for date: Date = Date()) async {
+        guard isAuthenticated else {
+            stressSamples = []
+            return
+        }
+        do {
+            let fetched = try await firebaseService.fetchStressSamples(for: userProfile.id, date: date)
+                .sorted { $0.hour < $1.hour }
+            await MainActor.run {
+                stressSamples = fetched
+            }
+        } catch {
+            await generateStressLevels(for: date)
         }
     }
 
@@ -214,6 +232,25 @@ final class AppState: ObservableObject {
             }
         } catch {
             print("Failed to fetch heart rate: \(error)")
+        }
+    }
+    
+    private func generateStressLevels(for date: Date) async {
+        do {
+            let context = StressContext(
+                events: events,
+                assignments: assignments,
+                heartRates: heartRateHistory
+            )
+            let generated = try await stressAnalysisService
+                .generateStressSamples(for: date, context: context, profile: userProfile)
+                .sorted { $0.hour < $1.hour }
+            await MainActor.run {
+                stressSamples = generated
+            }
+            try await firebaseService.saveStressSamples(generated, userId: userProfile.id, date: date)
+        } catch {
+            print("Failed to generate stress levels: \(error)")
         }
     }
 
