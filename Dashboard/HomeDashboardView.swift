@@ -28,10 +28,13 @@ struct HomeDashboardView: View {
                 }
             }
             
-            VStack {
-                Spacer()
-                BottomTabBar(selected: $selectedTab)
-                    .padding(.bottom, 8)
+            // Only show bottom tab bar when not on assistant view
+            if selectedTab != .assistant {
+                VStack {
+                    Spacer()
+                    BottomTabBar(selected: $selectedTab)
+                        .padding(.bottom, 8)
+                }
             }
         }
         .task(id: appState.permissionState.healthKitGranted) {
@@ -62,11 +65,9 @@ struct HomeDashboardView: View {
     }
 
     private var assistantView: some View {
-        NavigationStack {
-            VirtualAssistantView()
-                .environmentObject(appState)
-                .navigationTitle("Assistant")
-        }
+        VirtualAssistantView(selectedTab: $selectedTab)
+            .environmentObject(appState)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
     }
     
     private var addView: some View {
@@ -181,9 +182,22 @@ struct HomeDashboardView: View {
                     }
                     .padding(.horizontal)
                     
+                    // School Events & News Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("School Events & News")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal)
+                        
+                        SchoolEventsNewsCard(school: appState.userProfile.school)
+                            .padding(.horizontal)
+                    }
+                    .padding(.top, 8)
+                    
                     // Upcoming Events Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Upcoming Events")
+                        Text("Your Upcoming Events")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(.white)

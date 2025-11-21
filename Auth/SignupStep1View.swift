@@ -76,7 +76,7 @@ struct SignupStep1View: View {
                                 ForEach(USInstitution.allInstitutions, id: \.domain) { institution in
                                     Button(action: {
                                         selectedInstitution = institution
-                                        email = "\(institution.domain)"
+                                        // Don't auto-fill email, let user type
                                     }) {
                                         HStack {
                                             Text(institution.name)
@@ -128,9 +128,10 @@ struct SignupStep1View: View {
                                     .foregroundColor(.white.opacity(0.6))
                                     .font(.system(size: 16))
                                 
-                                TextField("", text: $email, prompt: Text("university.email@edu.com").foregroundColor(.white.opacity(0.5)))
+                                TextField("", text: $email, prompt: Text("Enter your school email").foregroundColor(.white.opacity(0.5)))
                                     .textInputAutocapitalization(.never)
                                     .keyboardType(.emailAddress)
+                                    .autocorrectionDisabled()
                                     .foregroundColor(.white)
                             }
                             .padding()
@@ -142,13 +143,8 @@ struct SignupStep1View: View {
                                             .stroke(Color.white.opacity(0.1), lineWidth: 1)
                                     )
                             )
-                            .onChange(of: selectedInstitution) { _ in
-                                if let institution = selectedInstitution {
-                                    // Auto-fill domain if user hasn't typed yet
-                                    if email.isEmpty || !email.contains("@") {
-                                        email = "@\(institution.domain)"
-                                    }
-                                }
+                            .onChange(of: selectedInstitution) { _, _ in
+                                // Don't auto-fill, just let user type from start
                             }
                             
                             // School Detection Preview
@@ -212,14 +208,16 @@ struct SignupStep1View: View {
                             )
                         }
                         
-                        // Password requirement
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(Color(red: 0x42/255.0, green: 0x85/255.0, blue: 0xF4/255.0))
-                                .font(.system(size: 14))
-                            Text("Must be at least 8 characters long.")
-                                .font(.system(size: 13, weight: .regular))
-                                .foregroundColor(.white.opacity(0.7))
+                        // Password requirements
+                        VStack(alignment: .leading, spacing: 6) {
+                            PasswordRequirement(
+                                text: "At least 8 characters long",
+                                isValid: password.count >= 8
+                            )
+                            PasswordRequirement(
+                                text: "Include a special character (!@#$%^&*)",
+                                isValid: hasSpecialCharacter(password)
+                            )
                         }
                         .padding(.top, -8)
                         
@@ -258,17 +256,45 @@ struct SignupStep1View: View {
     }
     
     private var canProceed: Bool {
-        email.contains("@") && email.contains(".") && password.count >= 8
+        email.contains("@") && email.contains(".") && 
+        password.count >= 8 && hasSpecialCharacter(password)
+    }
+    
+    private func hasSpecialCharacter(_ password: String) -> Bool {
+        let specialCharacters = CharacterSet(charactersIn: "!@#$%^&*()_+-=[]{}|;:,.<>?/~`")
+        return password.rangeOfCharacter(from: specialCharacters) != nil
     }
     
     private func proceedToStep2() {
         guard canProceed else {
-            errorMessage = "Please enter a valid email and password (at least 8 characters)."
+            if password.count < 8 {
+                errorMessage = "Password must be at least 8 characters long."
+            } else if !hasSpecialCharacter(password) {
+                errorMessage = "Password must include at least one special character (!@#$%^&*)."
+            } else {
+                errorMessage = "Please enter a valid email and password."
+            }
             return
         }
         
         errorMessage = nil
         onNext()
+    }
+}
+
+struct PasswordRequirement: View {
+    let text: String
+    let isValid: Bool
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: isValid ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(isValid ? Color(red: 0x42/255.0, green: 0x85/255.0, blue: 0xF4/255.0) : .white.opacity(0.3))
+                .font(.system(size: 14))
+            Text(text)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(.white.opacity(0.7))
+        }
     }
 }
 

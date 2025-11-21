@@ -6,6 +6,7 @@ struct SignupStep2View: View {
     @State private var major: String = ""
     @State private var isSubmitting = false
     @State private var showSuccessAlert = false
+    @FocusState private var isMajorFieldFocused: Bool
     
     // These should be passed from step 1
     let email: String
@@ -111,6 +112,18 @@ struct SignupStep2View: View {
                             
                             TextField("", text: $major, prompt: Text("e.g., Computer Science").foregroundColor(.white.opacity(0.5)))
                                 .foregroundColor(.white)
+                                .focused($isMajorFieldFocused)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    // Dismiss keyboard and proceed
+                                    isMajorFieldFocused = false
+                                    // Small delay to ensure keyboard dismisses before button tap
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        if !isSubmitting {
+                                            completeSignup()
+                                        }
+                                    }
+                                }
                                 .padding()
                                 .background(
                                     RoundedRectangle(cornerRadius: 12)
@@ -121,14 +134,28 @@ struct SignupStep2View: View {
                                         )
                                 )
                         }
+                        
+                        // Spacer to ensure button is visible when keyboard is open
+                        Spacer()
+                            .frame(height: 100)
                     }
                     .padding(.horizontal)
                 }
+                .scrollDismissesKeyboard(.interactively)
                 
                 Spacer()
                 
                 // Continue Button
-                Button(action: completeSignup) {
+                Button(action: {
+                    // Dismiss keyboard first
+                    isMajorFieldFocused = false
+                    // Small delay to ensure keyboard dismisses
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if !isSubmitting {
+                            completeSignup()
+                        }
+                    }
+                }) {
                     if isSubmitting {
                         ProgressView()
                             .tint(.white)
@@ -161,6 +188,12 @@ struct SignupStep2View: View {
     }
     
     private func completeSignup() {
+        // Prevent multiple submissions
+        guard !isSubmitting else { return }
+        
+        // Ensure keyboard is dismissed
+        isMajorFieldFocused = false
+        
         isSubmitting = true
         
         // Generate username from email (use part before @)

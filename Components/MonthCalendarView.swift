@@ -3,10 +3,18 @@ import SwiftUI
 struct MonthCalendarView: View {
     let events: [Event]
     @Binding var selectedDate: Date
+    var onSearchTap: (() -> Void)? = nil
     @State private var currentMonth: Date = Date()
     @State private var showingMonthPicker = false
     
     private let calendar = Calendar.current
+    
+    init(events: [Event], selectedDate: Binding<Date>, onSearchTap: (() -> Void)? = nil) {
+        self.events = events
+        self._selectedDate = selectedDate
+        self.onSearchTap = onSearchTap
+    }
+    
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
@@ -15,8 +23,17 @@ struct MonthCalendarView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Month header with chevron down, search, and calendar icons
+            // Month header with navigation and month picker
             HStack {
+                // Previous month button
+                Button(action: previousMonth) {
+                    Image(systemName: "chevron.left")
+                        .font(.title3)
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                }
+                
+                // Month picker
                 Button(action: { showingMonthPicker.toggle() }) {
                     HStack(spacing: 4) {
                         Text(dateFormatter.string(from: currentMonth))
@@ -29,13 +46,23 @@ struct MonthCalendarView: View {
                     }
                 }
                 
+                // Next month button
+                Button(action: nextMonth) {
+                    Image(systemName: "chevron.right")
+                        .font(.title3)
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                }
+                
                 Spacer()
                 
                 HStack(spacing: 16) {
-                    Button(action: {}) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.title3)
-                            .foregroundStyle(.white)
+                    if let onSearchTap = onSearchTap {
+                        Button(action: onSearchTap) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                        }
                     }
                     Button(action: {}) {
                         Image(systemName: "calendar")
@@ -46,6 +73,20 @@ struct MonthCalendarView: View {
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
+            .onAppear {
+                currentMonth = selectedDate
+            }
+            .onChange(of: selectedDate) { _, _ in
+                // Update current month when selected date changes significantly
+                let selectedMonth = calendar.component(.month, from: selectedDate)
+                let currentMonthValue = calendar.component(.month, from: currentMonth)
+                if selectedMonth != currentMonthValue {
+                    currentMonth = selectedDate
+                }
+            }
+            .sheet(isPresented: $showingMonthPicker) {
+                MonthYearPicker(selectedDate: $currentMonth)
+            }
             
             // Weekday headers
             HStack(spacing: 0) {
@@ -123,13 +164,17 @@ struct MonthCalendarView: View {
     
     private func previousMonth() {
         if let newMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth) {
-            currentMonth = newMonth
+            withAnimation {
+                currentMonth = newMonth
+            }
         }
     }
     
     private func nextMonth() {
         if let newMonth = calendar.date(byAdding: .month, value: 1, to: currentMonth) {
-            currentMonth = newMonth
+            withAnimation {
+                currentMonth = newMonth
+            }
         }
     }
 }

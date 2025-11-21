@@ -122,6 +122,12 @@ actor AuthService {
         let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard trimmedEmail.isEmpty == false else { throw AuthError.emptyEmail }
         guard password.count >= 8 else { throw AuthError.weakPassword }
+        
+        // Check for special character
+        let specialCharacters = CharacterSet(charactersIn: "!@#$%^&*()_+-=[]{}|;:,.<>?/~`")
+        guard password.rangeOfCharacter(from: specialCharacters) != nil else {
+            throw AuthError.weakPassword
+        }
 
         let lower = trimmedUsername.lowercased()
         let usernameQuery = try await db.collection("users")

@@ -3,8 +3,14 @@ import SwiftUI
 struct EventCalendarView: View {
     @EnvironmentObject private var appState: AppState
     @State private var showingCreateSheet = false
+    @State private var showingCreateEvent = false
+    @State private var showingCreateAssignment = false
+    @State private var showingSearch = false
+    @State private var showingSuggestionsList = false
+    @State private var showingDismissedSuggestion = false
     @State private var selectedDate = Date()
     @State private var eventsForSelectedDate: [Event] = []
+    @State private var assignmentsForSelectedDate: [Assignment] = []
     
     private let calendar = Calendar.current
     
@@ -17,36 +23,81 @@ struct EventCalendarView: View {
                     VStack(alignment: .leading, spacing: 24) {
                         MonthCalendarView(
                             events: appState.deviceCalendarEvents,
-                            selectedDate: $selectedDate
+                            selectedDate: $selectedDate,
+                            onSearchTap: { showingSearch = true }
                         )
                         .padding(.top)
-                        .onChange(of: selectedDate) { _ in
+                        .onChange(of: selectedDate) { _, _ in
                             loadEventsForDate(selectedDate)
+                            loadAssignmentsForDate(selectedDate)
                         }
                         
-                        VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 20) {
                             Text(selectedDateHeader)
                                 .font(.headline)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(.white)
                             
-                            CalendarSuggestionCard(
-                                title: "AI Suggestion: Study Break",
-                                message: "You've been studying hard. A 15-minute stretch session can boost your focus. Try some simple neck and shoulder stretches."
+                            // Hourly Itinerary
+                            HourlyItineraryView(
+                                date: selectedDate,
+                                events: eventsForSelectedDate,
+                                assignments: assignmentsForSelectedDate
                             )
+                            .environmentObject(appState)
                             
+                            // AI Suggestion Card
+                            if !showingDismissedSuggestion {
+                                CalendarSuggestionCard(
+                                    title: "AI Suggestion: Study Break",
+                                    message: "You've been studying hard. A 15-minute stretch session can boost your focus. Try some simple neck and shoulder stretches.",
+                                    onStart: {
+                                        showingSuggestionsList = true
+                                    },
+                                    onDismiss: {
+                                        showingDismissedSuggestion = true
+                                    }
+                                )
+                            }
+                            
+                            // Events Section
                             if !eventsForSelectedDate.isEmpty {
-                                VStack(spacing: 14) {
-                                    ForEach(eventsForSelectedDate) { event in
-                                        EventCard(event: event)
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text("Events")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.gray)
+                                    
+                                    VStack(spacing: 14) {
+                                        ForEach(eventsForSelectedDate) { event in
+                                            EventCard(event: event)
+                                        }
                                     }
                                 }
-                            } else {
+                            }
+                            
+                            // Assignments Section
+                            if !assignmentsForSelectedDate.isEmpty {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text("Assignments Due")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.gray)
+                                    
+                                    VStack(spacing: 12) {
+                                        ForEach(assignmentsForSelectedDate) { assignment in
+                                            AssignmentRowCard(assignment: assignment)
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            if eventsForSelectedDate.isEmpty && assignmentsForSelectedDate.isEmpty {
                                 VStack(spacing: 12) {
                                     Image(systemName: "calendar")
                                         .font(.largeTitle)
                                         .foregroundStyle(.gray)
-                                    Text("No events on \(formattedDate(selectedDate))")
+                                    Text("No events or assignments on \(formattedDate(selectedDate))")
                                         .foregroundStyle(.gray)
                                 }
                                 .frame(maxWidth: .infinity)
@@ -72,11 +123,18 @@ struct EventCalendarView: View {
             
             VStack {
                 Spacer()
-                Button(action: { showingCreateSheet = true }) {
+                Menu {
+                    Button(action: { showingCreateEvent = true }) {
+                        Label("New Event", systemImage: "calendar")
+                    }
+                    Button(action: { showingCreateAssignment = true }) {
+                        Label("New Assignment", systemImage: "checklist")
+                    }
+                } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "plus")
                             .font(.headline)
-                        Text("New Event")
+                        Text("Add")
                             .font(.headline)
                     }
                     .foregroundStyle(.black)
@@ -102,21 +160,45 @@ struct EventCalendarView: View {
         }
         .toolbarBackground(Color.black, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .sheet(isPresented: $showingCreateSheet) {
+        .sheet(isPresented: $showingCreateEvent) {
             NavigationStack {
                 CreateEventView(initialDate: selectedDate)
                     .environmentObject(appState)
             }
         }
+        .sheet(isPresented: $showingCreateAssignment) {
+            NavigationStack {
+                AddAssignmentView(initialDate: selectedDate)
+                    .environmentObject(appState)
+            }
+        }
+        .sheet(isPresented: $showingSearch) {
+            NavigationStack {
+                CalendarSearchView()
+                    .environmentObject(appState)
+            }
+        }
+        .sheet(isPresented: $showingSuggestionsList) {
+            NavigationStack {
+                AISuggestionsListView()
+                    .environmentObject(appState)
+            }
+        }
         .onAppear {
             loadEventsForDate(selectedDate)
+            loadAssignmentsForDate(selectedDate)
         }
-        .onChange(of: appState.deviceCalendarEvents) { _ in
+        .onChange(of: appState.deviceCalendarEvents) { _, _ in
             loadEventsForDate(selectedDate)
+        }
+        .onChange(of: appState.assignments) { _, _ in
+            loadAssignmentsForDate(selectedDate)
         }
         .refreshable {
             await appState.refreshCalendarEvents()
+            await appState.refreshAssignments()
             loadEventsForDate(selectedDate)
+            loadAssignmentsForDate(selectedDate)
         }
     }
     
@@ -133,13 +215,73 @@ struct EventCalendarView: View {
     private func loadEventsForDate(_ date: Date) {
         eventsForSelectedDate = appState.deviceCalendarEvents.filter { event in
             calendar.isDate(event.startDate, inSameDayAs: date)
-        }
+        }.sorted { $0.startDate < $1.startDate }
+    }
+    
+    private func loadAssignmentsForDate(_ date: Date) {
+        assignmentsForSelectedDate = appState.assignments.filter { assignment in
+            calendar.isDate(assignment.dueDate, inSameDayAs: date)
+        }.sorted { $0.dueDate < $1.dueDate }
     }
     
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
+        return formatter.string(from: date)
+    }
+}
+
+// MARK: - Assignment Row Card
+struct AssignmentRowCard: View {
+    let assignment: Assignment
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Status indicator
+            Circle()
+                .fill(assignment.isCompleted ? Color.green : Color.orange)
+                .frame(width: 8, height: 8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(assignment.title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                
+                HStack(spacing: 8) {
+                    Text(assignment.course)
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                    
+                    if !assignment.course.isEmpty {
+                        Text("•")
+                            .foregroundStyle(.gray)
+                    }
+                    
+                    Text(formatTime(assignment.dueDate))
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                }
+            }
+            
+            Spacer()
+            
+            if assignment.isCompleted {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(white: 0.15))
+        )
+    }
+    
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
         return formatter.string(from: date)
     }
 }

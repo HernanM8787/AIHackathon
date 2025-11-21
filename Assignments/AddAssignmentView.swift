@@ -6,11 +6,15 @@ struct AddAssignmentView: View {
 
     @State private var title = ""
     @State private var course = ""
-    @State private var dueDate = Date()
+    @State private var dueDate: Date
     @State private var details = ""
     @State private var isSaving = false
     @State private var errorMessage: String?
-    @State private var createReminder = false
+    @State private var createReminder = true // Default to true to save to Reminders
+    
+    init(initialDate: Date = Date()) {
+        _dueDate = State(initialValue: initialDate)
+    }
 
     var body: some View {
         NavigationStack {
@@ -21,8 +25,21 @@ struct AddAssignmentView: View {
                     DatePicker("Due Date", selection: $dueDate)
                     TextField("Notes", text: $details, axis: .vertical)
                         .lineLimit(3...6)
-                    Toggle("Add to Reminders", isOn: $createReminder)
-                        .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                }
+                
+                if appState.permissionState.remindersGranted {
+                    Section {
+                        Toggle("Add to Reminders", isOn: $createReminder)
+                            .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    } footer: {
+                        Text("Assignments are automatically added to your Reminders app when enabled.")
+                    }
+                } else {
+                    Section {
+                        Text("Enable reminders access in Settings to save assignments to Reminders")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 if let errorMessage {
@@ -63,12 +80,15 @@ struct AddAssignmentView: View {
 
         Task {
             do {
+                // Always try to save to Reminders if permission is granted
+                let shouldCreateReminder = createReminder && appState.permissionState.remindersGranted
+                
                 try await appState.addAssignment(
                     title: title,
                     course: course,
                     dueDate: dueDate,
                     details: details,
-                    createReminder: createReminder
+                    createReminder: shouldCreateReminder
                 )
                 await MainActor.run {
                     dismiss()

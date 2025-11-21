@@ -40,7 +40,13 @@ struct CreateEventView: View {
                 Section {
                     Toggle("Save to iOS Calendar", isOn: $saveToDeviceCalendar)
                 } footer: {
-                    Text("When enabled, the event will be added to your device's Calendar app.")
+                    Text("Events are automatically saved to your Apple Calendar when enabled.")
+                }
+            } else {
+                Section {
+                    Text("Enable calendar access in Settings to save events to Apple Calendar")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
             

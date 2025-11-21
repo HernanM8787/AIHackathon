@@ -3,8 +3,9 @@ import PhotosUI
 
 struct VirtualAssistantView: View {
     @EnvironmentObject private var appState: AppState
+    @Binding var selectedTab: DashboardTab
     @State private var messages: [ChatMessage] = [
-        ChatMessage(role: .assistant, text: "Hi there! I can offer quick wellness and productivity ideas based on your dashboard. What would you like help with?")
+        ChatMessage(role: .assistant, text: "Hi there! I'm AeQuus, your AI assistant. I can offer quick wellness and productivity ideas based on your dashboard. What would you like help with?")
     ]
     @State private var input: String = ""
     @State private var isSending = false
@@ -12,38 +13,88 @@ struct VirtualAssistantView: View {
     @State private var showImagePicker = false
     @FocusState private var isInputFocused: Bool
     private let service = GeminiService()
+    
+    init(selectedTab: Binding<DashboardTab>) {
+        self._selectedTab = selectedTab
+    }
 
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(messages) { message in
-                            MessageBubble(message: message)
-                                .id(message.id)
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Custom header with back button
+                HStack {
+                    Button(action: {
+                        selectedTab = .home
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 16, weight: .semibold))
+                            Text("Home")
+                                .font(.system(size: 16, weight: .medium))
                         }
+                        .foregroundStyle(.white)
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 16)
-                    .padding(.bottom, 80)
-                }
-                .background(Color(.systemGroupedBackground))
-                .onChange(of: messages.count) { _, _ in
-                    guard let id = messages.last?.id else { return }
-                    DispatchQueue.main.async {
-                        withAnimation(.easeOut) {
-                            proxy.scrollTo(id, anchor: .bottom)
-                        }
+                    
+                    Spacer()
+                    
+                    Text("AI Assistant")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+                    
+                    Spacer()
+                    
+                    // Spacer to balance the back button
+                    HStack(spacing: 8) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .semibold))
+                        Text("Home")
+                            .font(.system(size: 16, weight: .medium))
                     }
+                    .opacity(0)
                 }
-            }
-            Divider()
-            inputBar
                 .padding(.horizontal)
                 .padding(.vertical, 12)
-                .background(Material.bar)
+                .background(Color.black)
+                
+                // Messages area
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(messages) { message in
+                                MessageBubble(message: message)
+                                    .id(message.id)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                        .padding(.bottom, 20)
+                    }
+                    .onChange(of: messages.count) { _, _ in
+                        guard let id = messages.last?.id else { return }
+                        DispatchQueue.main.async {
+                            withAnimation(.easeOut) {
+                                proxy.scrollTo(id, anchor: .bottom)
+                            }
+                        }
+                    }
+                }
+                
+                // Input bar positioned above safe area
+                VStack(spacing: 0) {
+                    Divider()
+                        .background(Color(white: 0.2))
+                    inputBar
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                        .padding(.bottom, 8)
+                        .background(Color(white: 0.1))
+                }
+            }
         }
-        .navigationTitle("AI Assistant")
+        .navigationBarHidden(true)
     }
 
     private var inputBar: some View {
@@ -58,7 +109,7 @@ struct VirtualAssistantView: View {
                     
                     Button(action: { self.selectedImage = nil }) {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.white.opacity(0.6))
                     }
                     
                     Spacer()
@@ -66,30 +117,45 @@ struct VirtualAssistantView: View {
                 .padding(.horizontal, 4)
             }
             
-            HStack(spacing: 8) {
+            HStack(spacing: 12) {
                 Button(action: { showImagePicker = true }) {
                     Image(systemName: "photo")
-                        .foregroundStyle(.secondary)
-                        .padding(10)
+                        .foregroundStyle(.white.opacity(0.7))
+                        .font(.system(size: 20))
+                        .frame(width: 44, height: 44)
                 }
                 .disabled(isSending)
                 
                 TextField("Ask about focus, energy, classes...", text: $input, axis: .vertical)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
                     .focused($isInputFocused)
                     .disabled(isSending)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(Color(white: 0.15))
+                    )
+                    .foregroundStyle(.white)
+                    .lineLimit(1...5)
 
                 if isSending {
                     ProgressView()
-                        .padding(.horizontal, 8)
+                        .tint(.white)
+                        .frame(width: 44, height: 44)
                 } else {
                     Button(action: sendMessage) {
                         Image(systemName: "paperplane.fill")
-                            .foregroundStyle(.white)
-                            .padding(10)
-                            .background(Color.accentColor, in: Circle())
+                            .foregroundStyle(.black)
+                            .font(.system(size: 18, weight: .semibold))
+                            .frame(width: 44, height: 44)
+                            .background(
+                                Circle()
+                                    .fill(Color.white)
+                            )
                     }
                     .disabled(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedImage == nil)
+                    .opacity(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedImage == nil ? 0.5 : 1.0)
                 }
             }
         }
@@ -170,14 +236,16 @@ private struct MessageBubble: View {
                 Text(message.text)
             }
         }
-        .padding(12)
-        .foregroundStyle(message.role == .assistant ? Color.primary : Color.white)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .foregroundStyle(message.role == .assistant ? .white : .black)
         .background(
             message.role == .assistant
-            ? Color(.secondarySystemBackground)
-            : Color.accentColor
+            ? Color(white: 0.2)
+            : Color.white
         )
-        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .frame(maxWidth: UIScreen.main.bounds.width * 0.75, alignment: message.role == .assistant ? .leading : .trailing)
     }
 }
 

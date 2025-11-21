@@ -41,9 +41,16 @@ enum School: String, CaseIterable {
     var secondaryColor: Color {
         switch self {
         case .kennesawState: return Color(red: 0.0, green: 0.0, blue: 0.0) // #000000 - Black
-        case .georgiaState: return Color(red: 0.890, green: 0.110, blue: 0.137) // #E31C23 - Red accent
+        case .georgiaState: return Color(red: 0.890, green: 0.110, blue: 0.137) // #E31C23 - Red
         case .uga: return Color(red: 0.0, green: 0.0, blue: 0.0) // #000000 - Black
         case .defaultSchool: return .gray
+        }
+    }
+    
+    var tertiaryColor: Color? {
+        switch self {
+        case .georgiaState: return Color.white // White for Georgia State
+        default: return nil
         }
     }
     
@@ -58,9 +65,9 @@ enum School: String, CaseIterable {
     
     var logoIcon: String {
         switch self {
-        case .kennesawState: return "bird.fill" // Owl fallback
-        case .georgiaState: return "pawprint.fill" // Panther fallback
-        case .uga: return "dog.fill" // Bulldog fallback
+        case .kennesawState: return "bird.fill" // Owl
+        case .georgiaState: return "pawprint.fill" // Panther
+        case .uga: return "dog.fill" // Bulldog
         case .defaultSchool: return "building.columns.fill"
         }
     }
