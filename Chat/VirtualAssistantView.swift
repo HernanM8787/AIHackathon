@@ -5,7 +5,7 @@ struct VirtualAssistantView: View {
     @EnvironmentObject private var appState: AppState
     @Binding var selectedTab: DashboardTab
     @State private var messages: [ChatMessage] = [
-        ChatMessage(role: .assistant, text: "Hi there! I'm AeQuus, your AI assistant. I can offer quick wellness and productivity ideas based on your dashboard. What would you like help with?")
+        ChatMessage(role: .assistant, text: "I'm your AI assistant")
     ]
     @State private var input: String = ""
     @State private var isSending = false
@@ -59,7 +59,7 @@ struct VirtualAssistantView: View {
                 .padding(.vertical, 12)
                 .background(Color.black)
                 
-                // Messages area
+                // Messages area - takes available space
                 ScrollViewReader { proxy in
                     ScrollView {
                         LazyVStack(spacing: 12) {
@@ -72,6 +72,7 @@ struct VirtualAssistantView: View {
                         .padding(.top, 16)
                         .padding(.bottom, 20)
                     }
+                    .scrollDismissesKeyboard(.interactively)
                     .onChange(of: messages.count) { _, _ in
                         guard let id = messages.last?.id else { return }
                         DispatchQueue.main.async {
@@ -80,18 +81,29 @@ struct VirtualAssistantView: View {
                             }
                         }
                     }
+                    .onChange(of: isInputFocused) { _, isFocused in
+                        if isFocused {
+                            // Scroll to bottom when keyboard appears
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                guard let id = messages.last?.id else { return }
+                                withAnimation(.easeOut) {
+                                    proxy.scrollTo(id, anchor: .bottom)
+                                }
+                            }
+                        }
+                    }
                 }
                 
-                // Input bar positioned above safe area
+                // Input bar - positioned above nav bar, will be pushed up by keyboard
                 VStack(spacing: 0) {
                     Divider()
                         .background(Color(white: 0.2))
                     inputBar
                         .padding(.horizontal)
                         .padding(.vertical, 12)
-                        .padding(.bottom, 8)
                         .background(Color(white: 0.1))
                 }
+                .padding(.bottom, 80) // Space for nav bar at bottom
             }
         }
         .navigationBarHidden(true)

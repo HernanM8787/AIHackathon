@@ -119,7 +119,7 @@ struct WelcomeScreenView: View {
                     
                     // Welcome Message
                     VStack(spacing: 12) {
-                        Text("Welcome to Balance")
+                        Text("Welcome to AeQuus")
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(.white)
                         
