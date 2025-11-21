@@ -9,6 +9,7 @@ struct HomeDashboardView: View {
     private let heartRateRefreshInterval: TimeInterval = 300
     @State private var heartRateTimer = Timer.publish(every: 300, on: .main, in: .common).autoconnect()
     @State private var showingAddAssignment = false
+    @State private var showingProfile = false
 
     var body: some View {
         ZStack {
@@ -16,16 +17,14 @@ struct HomeDashboardView: View {
                 switch selectedTab {
                 case .home:
                     dashboard
-                case .stats:
-                    statsView
+                case .assistant:
+                    assistantView
                 case .add:
                     addView
                 case .calendar:
                     calendarView
-                case .gemini:
-                    geminiView
-                case .profile:
-                    profileView
+                case .forum:
+                    peerSupportView
                 }
             }
             
@@ -47,43 +46,32 @@ struct HomeDashboardView: View {
             AddAssignmentView()
                 .environmentObject(appState)
         }
+        .sheet(isPresented: $showingProfile) {
+            NavigationStack {
+                ProfileView()
+                    .environmentObject(appState)
+            }
+        }
         .onReceive(heartRateTimer) { _ in
             Task {
                 await refreshHeartRateIfNeeded()
             }
         }
     }
-    private var statsView: some View {
+
+    private var assistantView: some View {
         NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
-                Text("Stats View")
-                    .foregroundStyle(.white)
-                    .font(.headline)
-            }
-            .navigationTitle("Stats")
+            VirtualAssistantView()
+                .environmentObject(appState)
+                .navigationTitle("Assistant")
         }
     }
     
     private var addView: some View {
         NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
-                VStack(spacing: 20) {
-                    Text("Create New")
-                        .foregroundStyle(.white)
-                        .font(.headline)
-                    
-                    Button(action: { showingAddAssignment = true }) {
-                        Text("Add Assignment")
-                            .foregroundStyle(.black)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                    }
-                }
-            }
-            .navigationTitle("Create")
+            AddAssignmentView()
+                .environmentObject(appState)
+                .navigationTitle("Add")
         }
     }
     
@@ -94,17 +82,11 @@ struct HomeDashboardView: View {
         }
     }
     
-    private var geminiView: some View {
+    private var peerSupportView: some View {
         NavigationStack {
-            VirtualAssistantView()
+            PeerSupportView()
                 .environmentObject(appState)
-        }
-    }
-    
-    private var profileView: some View {
-        NavigationStack {
-            ProfileView()
-                .environmentObject(appState)
+                .navigationTitle("Forum")
         }
     }
 
@@ -119,8 +101,21 @@ struct HomeDashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header with profile and welcome
                     HStack(spacing: 12) {
-                        // School logo/profile picture
-                        SchoolLogoView(school: appState.userProfile.school, size: 50)
+                        // Profile avatar
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [.blue.opacity(0.6), .purple.opacity(0.6)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 50, height: 50)
+                            .overlay {
+                                Image(systemName: "person.fill")
+                                    .foregroundStyle(.white)
+                                    .font(.title3)
+                            }
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Welcome back,")
@@ -135,11 +130,13 @@ struct HomeDashboardView: View {
                         
                         Spacer()
                         
-                        // Bell icon
-                        Button(action: {}) {
-                            Image(systemName: "bell")
-                                .font(.title3)
-                                .foregroundStyle(.white)
+                        Button(action: { showingProfile = true }) {
+                            SchoolLogoView(school: appState.userProfile.school, size: 42)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                )
+                                .shadow(color: .black.opacity(0.35), radius: 4, y: 2)
                         }
                     }
                     .padding(.horizontal)
